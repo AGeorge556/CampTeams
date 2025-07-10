@@ -2,9 +2,14 @@ import React, { useState } from 'react'
 import { Users, Mail, Lock, UserPlus, LogIn, Clock, AlertCircle } from 'lucide-react'
 import { useAuth } from '../hooks/useAuth'
 
-export default function Auth() {
+interface AuthProps {
+  initialMode?: 'signup' | 'signin'
+  onBack?: () => void
+}
+
+export default function Auth({ initialMode = 'signin', onBack }: AuthProps) {
   const { signUp, signIn } = useAuth()
-  const [isSignUp, setIsSignUp] = useState(false)
+  const [isSignUp, setIsSignUp] = useState(initialMode === 'signup')
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
   const [loading, setLoading] = useState(false)
@@ -79,6 +84,14 @@ export default function Auth() {
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-orange-50 to-yellow-50 px-4 sm:px-6 lg:px-8">
+      {onBack && (
+        <button
+          onClick={onBack}
+          className="absolute top-6 left-6 text-gray-600 hover:text-gray-900 transition-colors"
+        >
+          ← Back to Home
+        </button>
+      )}
       <div className="max-w-md w-full space-y-8">
         <div className="text-center">
           <div className="flex justify-center">

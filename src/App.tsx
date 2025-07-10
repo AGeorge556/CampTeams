@@ -5,6 +5,7 @@ import Auth from './components/Auth'
 import OnboardingForm from './components/OnboardingForm'
 import Dashboard from './components/Dashboard'
 import Layout from './components/Layout'
+import LandingPage from './components/LandingPage'
 
 function App() {
   const { user, loading: authLoading } = useAuth()
@@ -19,7 +20,7 @@ function App() {
   }
 
   if (!user) {
-    return <Auth />
+    return <LandingPage />
   }
 
   if (!profile) {

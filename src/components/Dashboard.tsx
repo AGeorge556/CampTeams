@@ -1,10 +1,11 @@
 import React, { useState } from 'react'
-import { Users, Shuffle, Shield, BarChart3, RefreshCw } from 'lucide-react'
+import { Users, Shield, BarChart3, Sun, Star, Flame, Trees, Mountain } from 'lucide-react'
 import { useProfile } from '../hooks/useProfile'
 import { useTeamBalance } from '../hooks/useTeamBalance'
 import { TEAMS, TeamColor, supabase } from '../lib/supabase'
-import TeamCard from './TeamCard'
 import AdminPanel from './AdminPanel'
+import PlayerLists from './PlayerLists'
+import CountdownTimer from './CountdownTimer'
 
 export default function Dashboard() {
   const { profile, updateProfile } = useProfile()
@@ -14,26 +15,18 @@ export default function Dashboard() {
 
   const handleSwitchTeam = async (newTeam: TeamColor) => {
     if (!profile || loading) return
-    
     setLoading(true)
     try {
-      // Check if switch is allowed
       const { data: canSwitch, error: validateError } = await supabase
         .rpc('can_switch_team', {
           user_id: profile.id,
           new_team: newTeam
         })
-
-      if (validateError) {
-        throw validateError
-      }
-
+      if (validateError) throw validateError
       if (!canSwitch) {
         alert('Team switch not allowed. You may have no switches remaining, teams are locked, or the team is full.')
         return
       }
-
-      // Record the switch
       const { error: switchError } = await supabase
         .from('team_switches')
         .insert({
@@ -41,37 +34,21 @@ export default function Dashboard() {
           from_team: profile.current_team,
           to_team: newTeam
         })
-
-      if (switchError) {
-        throw switchError
-      }
-
-      // Update profile
+      if (switchError) throw switchError
       const { error: updateError } = await updateProfile({
         current_team: newTeam,
         switches_remaining: profile.switches_remaining - 1
       })
-
-      if (updateError) {
-        throw updateError
-      }
-
-    } catch (error: any) {
-      console.error('Error switching team:', error)
-      alert('Error switching team: ' + error.message)
+      if (updateError) throw updateError
+    } catch (error) {
+      console.error('Error switching team:', (error as any))
+      alert('Error switching team: ' + (error as any).message)
     } finally {
       setLoading(false)
     }
   }
 
-  const handleSurpriseMe = async () => {
-    if (!profile || loading) return
-    
-    const availableTeams = Object.keys(TEAMS).filter(team => team !== profile.current_team) as TeamColor[]
-    const randomTeam = availableTeams[Math.floor(Math.random() * availableTeams.length)]
-    
-    await handleSwitchTeam(randomTeam)
-  }
+
 
   if (!profile) {
     return <div>Loading...</div>
@@ -102,8 +79,6 @@ export default function Dashboard() {
             </button>
           )}
         </div>
-
-        {/* Current Team */}
         {currentTeam && (
           <div className="mb-4">
             <h3 className="text-lg font-semibold text-gray-900 mb-2">Current Team</h3>
@@ -113,26 +88,12 @@ export default function Dashboard() {
             </div>
           </div>
         )}
-
-        {/* Switches Remaining */}
         <div className="mb-4">
-          <div className="flex items-center justify-between">
-            <span className="text-sm font-medium text-gray-700">
-              Team switches remaining: {profile.switches_remaining}
-            </span>
-            <div className="flex space-x-2">
-              {profile.switches_remaining > 0 && (
-                <button
-                  onClick={handleSurpriseMe}
-                  disabled={loading}
-                  className="inline-flex items-center px-3 py-1 border border-transparent text-sm font-medium rounded-md text-indigo-600 bg-indigo-100 hover:bg-indigo-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 disabled:opacity-50"
-                >
-                  <Shuffle className="h-4 w-4 mr-1" />
-                  Surprise Me!
-                </button>
-              )}
+                      <div className="flex items-center justify-between">
+              <span className="text-sm font-medium text-gray-700">
+                Team switches remaining: {profile.switches_remaining}
+              </span>
             </div>
-          </div>
           <div className="w-full bg-gray-200 rounded-full h-2 mt-2">
             <div 
               className="bg-orange-600 h-2 rounded-full transition-all duration-300"
@@ -140,8 +101,6 @@ export default function Dashboard() {
             ></div>
           </div>
         </div>
-
-        {/* Friend Requests */}
         {profile.friend_requests.length > 0 && (
           <div>
             <h3 className="text-lg font-semibold text-gray-900 mb-2">Friend Requests</h3>
@@ -154,6 +113,19 @@ export default function Dashboard() {
             </div>
           </div>
         )}
+      </div>
+
+      {/* Large, Fun Countdown Section with Summer Icons */}
+      <div className="relative flex items-center justify-center py-12">
+        {/* Summer Icons - background/floating */}
+        <Sun className="absolute left-4 top-2 text-orange-200 opacity-30 w-24 h-24 animate-spin-slow" />
+        <Star className="absolute right-8 top-8 text-yellow-200 opacity-30 w-16 h-16 animate-bounce" />
+        <Flame className="absolute left-1/2 -translate-x-1/2 bottom-2 text-orange-300 opacity-20 w-20 h-20" />
+        <Trees className="absolute left-8 bottom-8 text-green-200 opacity-30 w-20 h-20" />
+        <Mountain className="absolute right-4 bottom-4 text-blue-200 opacity-30 w-24 h-24" />
+        <div className="relative z-10 w-full max-w-2xl mx-auto">
+          <CountdownTimer targetDate="2025-08-28T00:00:00" compact={false} />
+        </div>
       </div>
 
       {/* Team Balance Overview */}
@@ -177,23 +149,8 @@ export default function Dashboard() {
         </div>
       </div>
 
-      {/* Team Cards */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-        {Object.entries(TEAMS).map(([key, team]) => {
-          const teamData = teamBalance.find(t => t.team === key)
-          return (
-            <TeamCard
-              key={key}
-              team={key as TeamColor}
-              teamData={teamData}
-              isCurrentTeam={profile.current_team === key}
-              canSwitch={profile.switches_remaining > 0 && profile.current_team !== key}
-              onSwitchTeam={handleSwitchTeam}
-              loading={loading}
-            />
-          )
-        })}
-      </div>
+      {/* Player Lists */}
+      <PlayerLists />
 
       {/* Admin Panel */}
       {profile.is_admin && showAdmin && (

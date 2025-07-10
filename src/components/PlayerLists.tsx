@@ -1,0 +1,205 @@
+import React from 'react'
+import { Users, User, GraduationCap, ArrowRight } from 'lucide-react'
+import { TEAMS, TeamColor, supabase } from '../lib/supabase'
+import { usePlayers } from '../hooks/usePlayers'
+import { useProfile } from '../hooks/useProfile'
+
+export default function PlayerLists() {
+  const { players, loading } = usePlayers()
+  const { profile, updateProfile } = useProfile()
+  const [switching, setSwitching] = React.useState<string | null>(null)
+
+  const handleSwitchTeam = async (newTeam: TeamColor) => {
+    if (!profile || switching) return
+    
+    setSwitching(newTeam)
+    try {
+      // Check if switch is allowed
+      const { data: canSwitch, error: validateError } = await supabase
+        .rpc('can_switch_team', {
+          user_id: profile.id,
+          new_team: newTeam
+        })
+
+      if (validateError) {
+        throw validateError
+      }
+
+      if (!canSwitch) {
+        alert('Team switch not allowed. You may have no switches remaining, teams are locked, or the team is full.')
+        return
+      }
+
+      // Record the switch
+      const { error: switchError } = await supabase
+        .from('team_switches')
+        .insert({
+          user_id: profile.id,
+          from_team: profile.current_team,
+          to_team: newTeam
+        })
+
+      if (switchError) {
+        throw switchError
+      }
+
+      // Update profile
+      const { error: updateError } = await updateProfile({
+        current_team: newTeam,
+        switches_remaining: profile.switches_remaining - 1
+      })
+
+      if (updateError) {
+        throw updateError
+      }
+
+    } catch (error: any) {
+      console.error('Error switching team:', error)
+      alert('Error switching team: ' + error.message)
+    } finally {
+      setSwitching(null)
+    }
+  }
+
+  if (loading) {
+    return (
+      <div className="bg-white rounded-lg shadow-sm p-6">
+        <div className="flex items-center justify-center">
+          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-orange-500"></div>
+        </div>
+      </div>
+    )
+  }
+
+  return (
+    <div className="bg-white rounded-lg shadow-sm p-6">
+      <h3 className="text-lg font-semibold text-gray-900 mb-6 flex items-center">
+        <Users className="h-5 w-5 mr-2" />
+        Team Rosters
+      </h3>
+      
+      <div className="grid grid-cols-1 lg:grid-cols-4 gap-6">
+        {Object.entries(TEAMS).map(([teamKey, teamConfig]) => {
+          const teamPlayers = players[teamKey as TeamColor] || []
+          const sortedPlayers = [...teamPlayers].sort((a, b) => {
+            // Sort by grade first, then by name
+            if (a.grade !== b.grade) {
+              return a.grade - b.grade
+            }
+            return a.full_name.localeCompare(b.full_name)
+          })
+
+          return (
+            <div key={teamKey} className="space-y-4">
+              {/* Team Header */}
+              <div className={`${teamConfig.color} rounded-lg p-4 text-white`}>
+                <div className="flex items-center justify-between">
+                  <div>
+                    <h4 className="font-bold text-lg">{teamConfig.name} Team</h4>
+                    <span className="text-sm opacity-90">{teamPlayers.length} players</span>
+                    {profile && profile.current_team === teamKey && (
+                      <div className="mt-1">
+                        <span className="inline-flex items-center px-2 py-1 bg-white bg-opacity-20 rounded-full text-xs font-medium">
+                          Your Current Team
+                        </span>
+                      </div>
+                    )}
+                  </div>
+                  {profile && profile.current_team !== teamKey && profile.switches_remaining > 0 && (
+                    <button
+                      onClick={() => handleSwitchTeam(teamKey as TeamColor)}
+                      disabled={switching === teamKey}
+                      className="inline-flex items-center px-3 py-1 bg-white bg-opacity-20 hover:bg-opacity-30 rounded-md text-sm font-medium transition-colors disabled:opacity-50"
+                    >
+                      {switching === teamKey ? (
+                        <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white"></div>
+                      ) : (
+                        <>
+                          <ArrowRight className="h-4 w-4 mr-1" />
+                          Join Team
+                        </>
+                      )}
+                    </button>
+                  )}
+                </div>
+              </div>
+
+              {/* Player List */}
+              <div className="space-y-2">
+                {sortedPlayers.length === 0 ? (
+                  <div className="text-center py-8 text-gray-500">
+                    <User className="h-8 w-8 mx-auto mb-2 opacity-50" />
+                    <p className="text-sm">No players assigned</p>
+                  </div>
+                ) : (
+                  sortedPlayers.map((player) => (
+                    <div
+                      key={player.id}
+                      className="bg-gray-50 rounded-lg p-3 border border-gray-200 hover:border-gray-300 transition-colors"
+                    >
+                      <div className="flex items-center justify-between">
+                        <div className="flex-1">
+                          <div className="font-medium text-gray-900 truncate">
+                            {player.full_name}
+                          </div>
+                          <div className="flex items-center text-sm text-gray-600 mt-1">
+                            <GraduationCap className="h-3 w-3 mr-1" />
+                            <span>Grade {player.grade}</span>
+                            <span className="mx-2">•</span>
+                            <span className={`px-2 py-0.5 rounded-full text-xs font-medium ${
+                              player.gender === 'male' 
+                                ? 'bg-blue-100 text-blue-800' 
+                                : 'bg-pink-100 text-pink-800'
+                            }`}>
+                              {player.gender === 'male' ? 'Male' : 'Female'}
+                            </span>
+                          </div>
+                        </div>
+                        
+                        {/* Switches remaining indicator */}
+                        <div className="ml-2">
+                          <div className={`w-2 h-2 rounded-full ${
+                            player.switches_remaining > 0 
+                              ? 'bg-green-400' 
+                              : 'bg-gray-300'
+                          }`} 
+                          title={`${player.switches_remaining} switches remaining`}
+                          />
+                        </div>
+                      </div>
+                    </div>
+                  ))
+                )}
+              </div>
+
+              {/* Team Summary */}
+              {teamPlayers.length > 0 && (
+                <div className="text-xs text-gray-500 space-y-1">
+                  <div className="flex justify-between">
+                    <span>Gender Balance:</span>
+                    <span>
+                      {teamPlayers.filter(p => p.gender === 'male').length}M / 
+                      {teamPlayers.filter(p => p.gender === 'female').length}F
+                    </span>
+                  </div>
+                  <div className="flex justify-between">
+                    <span>Grade Range:</span>
+                    <span>
+                      {Math.min(...teamPlayers.map(p => p.grade))} - {Math.max(...teamPlayers.map(p => p.grade))}
+                    </span>
+                  </div>
+                  <div className="flex justify-between">
+                    <span>Avg Grade:</span>
+                    <span>
+                      {(teamPlayers.reduce((sum, p) => sum + p.grade, 0) / teamPlayers.length).toFixed(1)}
+                    </span>
+                  </div>
+                </div>
+              )}
+            </div>
+          )
+        })}
+      </div>
+    </div>
+  )
+} 
