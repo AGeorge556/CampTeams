@@ -36,6 +36,9 @@ export default function OnboardingForm() {
       })
 
       if (error) throw error
+      
+      // Refresh the page to trigger the app to show the Dashboard
+      window.location.reload()
     } catch (error: any) {
       setError(error.message)
     } finally {
@@ -100,11 +103,12 @@ export default function OnboardingForm() {
                   onChange={(e) => setFormData({ ...formData, grade: Number(e.target.value) })}
                   className="appearance-none block w-full pl-10 pr-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-orange-500 focus:border-orange-500 sm:text-sm"
                 >
-                  {[7, 8, 9, 10, 11, 12].map(grade => (
-                    <option key={grade} value={grade}>
-                      Grade {grade}
-                    </option>
-                  ))}
+                  <option value={7}>1st Preparatory (7)</option>
+                  <option value={8}>2nd Preparatory (8)</option>
+                  <option value={9}>3rd Preparatory (9)</option>
+                  <option value={10}>1st Secondary (10)</option>
+                  <option value={11}>2nd Secondary (11)</option>
+                  <option value={12}>3rd Secondary (12)</option>
                 </select>
               </div>
             </div>

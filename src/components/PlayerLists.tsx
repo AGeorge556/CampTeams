@@ -1,8 +1,9 @@
 import React from 'react'
-import { Users, User, GraduationCap, ArrowRight } from 'lucide-react'
+import { Users, User, GraduationCap, ArrowRight, AlertTriangle } from 'lucide-react'
 import { TEAMS, TeamColor, supabase } from '../lib/supabase'
 import { usePlayers } from '../hooks/usePlayers'
 import { useProfile } from '../hooks/useProfile'
+import { getGradeDisplayWithNumber, MAX_PLAYERS_PER_GRADE, GRADES } from '../lib/utils'
 
 export default function PlayerLists() {
   const { players, loading } = usePlayers()
@@ -14,6 +15,15 @@ export default function PlayerLists() {
     
     setSwitching(newTeam)
     try {
+      // Check grade limits for the target team
+      const targetTeamPlayers = players[newTeam] || []
+      const playersInSameGrade = targetTeamPlayers.filter(p => p.grade === profile.grade)
+      
+      if (playersInSameGrade.length >= MAX_PLAYERS_PER_GRADE) {
+        alert(`Cannot switch to ${TEAMS[newTeam].name} team. Maximum of ${MAX_PLAYERS_PER_GRADE} players per grade (${getGradeDisplayWithNumber(profile.grade)}) has been reached.`)
+        return
+      }
+
       // Check if switch is allowed
       const { data: canSwitch, error: validateError } = await supabase
         .rpc('can_switch_team', {
@@ -52,6 +62,11 @@ export default function PlayerLists() {
       if (updateError) {
         throw updateError
       }
+
+      // Refresh the page to ensure all components update properly
+      setTimeout(() => {
+        window.location.reload()
+      }, 500)
 
     } catch (error: any) {
       console.error('Error switching team:', error)
@@ -142,9 +157,9 @@ export default function PlayerLists() {
                           <div className="font-medium text-gray-900 truncate">
                             {player.full_name}
                           </div>
-                          <div className="flex items-center text-sm text-gray-600 mt-1">
-                            <GraduationCap className="h-3 w-3 mr-1" />
-                            <span>Grade {player.grade}</span>
+                                                     <div className="flex items-center text-sm text-gray-600 mt-1">
+                             <GraduationCap className="h-3 w-3 mr-1" />
+                             <span>{getGradeDisplayWithNumber(player.grade)}</span>
                             <span className="mx-2">•</span>
                             <span className={`px-2 py-0.5 rounded-full text-xs font-medium ${
                               player.gender === 'male' 
@@ -193,6 +208,33 @@ export default function PlayerLists() {
                     <span>
                       {(teamPlayers.reduce((sum, p) => sum + p.grade, 0) / teamPlayers.length).toFixed(1)}
                     </span>
+                  </div>
+                  
+                  {/* Grade Distribution */}
+                  <div className="mt-2 pt-2 border-t border-gray-200">
+                    <div className="text-xs font-medium mb-1">Grade Distribution:</div>
+                    <div className="grid grid-cols-6 gap-1">
+                      {GRADES.map(grade => {
+                        const count = teamPlayers.filter(p => p.grade === grade).length
+                        const isAtLimit = count >= MAX_PLAYERS_PER_GRADE
+                        return (
+                          <div key={grade} className="text-center">
+                            <div className={`h-2 ${teamConfig.color} rounded-sm ${isAtLimit ? 'opacity-100' : 'opacity-60'}`}></div>
+                            <div className="text-xs mt-1">
+                              {grade}
+                              {isAtLimit && <span className="text-red-500">*</span>}
+                            </div>
+                            <div className="text-xs text-gray-400">{count}/{MAX_PLAYERS_PER_GRADE}</div>
+                          </div>
+                        )
+                      })}
+                    </div>
+                    {GRADES.some(grade => teamPlayers.filter(p => p.grade === grade).length >= MAX_PLAYERS_PER_GRADE) && (
+                      <div className="text-xs text-red-500 mt-1 flex items-center">
+                        <AlertTriangle className="h-3 w-3 mr-1" />
+                        * Grade limit reached
+                      </div>
+                    )}
                   </div>
                 </div>
               )}

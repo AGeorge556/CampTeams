@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react'
 import { Shield, Users, Settings, Calendar, Download, UserX, UserCheck } from 'lucide-react'
 import { supabase, Profile, TEAMS, TeamColor } from '../lib/supabase'
 import { useTeamBalance } from '../hooks/useTeamBalance'
+import { getGradeDisplayWithNumber } from '../lib/utils'
 
 export default function AdminPanel() {
   const { teamBalance } = useTeamBalance()
@@ -234,7 +235,7 @@ export default function AdminPanel() {
                     {profile.full_name}
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                    {profile.grade}
+                    {getGradeDisplayWithNumber(profile.grade)}
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
                     {profile.gender}

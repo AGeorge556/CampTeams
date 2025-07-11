@@ -1,15 +1,19 @@
-import React from 'react'
+import React, { useState } from 'react'
 import { useAuth } from './hooks/useAuth'
 import { useProfile } from './hooks/useProfile'
 import Auth from './components/Auth'
 import OnboardingForm from './components/OnboardingForm'
 import Dashboard from './components/Dashboard'
+import Schedule from './components/Schedule'
+import SportsSelection from './components/SportsSelection'
 import Layout from './components/Layout'
+import Navigation from './components/Navigation'
 import LandingPage from './components/LandingPage'
 
 function App() {
   const { user, loading: authLoading } = useAuth()
   const { profile, loading: profileLoading } = useProfile()
+  const [currentPage, setCurrentPage] = useState('dashboard')
 
   if (authLoading || profileLoading) {
     return (
@@ -27,10 +31,24 @@ function App() {
     return <OnboardingForm />
   }
 
+  const renderPage = () => {
+    switch (currentPage) {
+      case 'schedule':
+        return <Schedule />
+      case 'sports':
+        return <SportsSelection />
+      default:
+        return <Dashboard />
+    }
+  }
+
   return (
-    <Layout>
-      <Dashboard />
-    </Layout>
+    <div className="min-h-screen bg-gradient-to-br from-orange-50 to-yellow-50">
+      <Navigation currentPage={currentPage} onPageChange={setCurrentPage} />
+      <Layout>
+        {renderPage()}
+      </Layout>
+    </div>
   )
 }
 

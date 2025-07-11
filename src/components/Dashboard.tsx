@@ -6,6 +6,7 @@ import { TEAMS, TeamColor, supabase } from '../lib/supabase'
 import AdminPanel from './AdminPanel'
 import PlayerLists from './PlayerLists'
 import CountdownTimer from './CountdownTimer'
+import { getGradeDisplayWithNumber } from '../lib/utils'
 
 export default function Dashboard() {
   const { profile, updateProfile } = useProfile()
@@ -66,7 +67,7 @@ export default function Dashboard() {
               Welcome back, {profile.full_name}!
             </h2>
             <p className="text-gray-600">
-              Grade {profile.grade} • {profile.gender === 'male' ? 'Male' : 'Female'}
+              {getGradeDisplayWithNumber(profile.grade)} • {profile.gender === 'male' ? 'Male' : 'Female'}
             </p>
           </div>
           {profile.is_admin && (
@@ -128,6 +129,9 @@ export default function Dashboard() {
         </div>
       </div>
 
+            {/* Player Lists */}
+            <PlayerLists />
+
       {/* Team Balance Overview */}
       <div className="bg-white rounded-lg shadow-sm p-6">
         <h3 className="text-lg font-semibold text-gray-900 mb-4 flex items-center">
@@ -149,8 +153,7 @@ export default function Dashboard() {
         </div>
       </div>
 
-      {/* Player Lists */}
-      <PlayerLists />
+
 
       {/* Admin Panel */}
       {profile.is_admin && showAdmin && (
