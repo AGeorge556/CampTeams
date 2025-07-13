@@ -160,31 +160,31 @@ export default function Auth({ initialMode = 'signin', onBack }: AuthProps) {
           <div className="space-y-4">
             <Input
               label="Email address"
-              type="email"
+                  type="email"
               icon={<Mail />}
-              value={email}
+                  value={email}
               onChange={(e) => {
                 setEmail(e.target.value)
                 clearErrors('email')
               }}
               error={errors.email}
               placeholder="Enter your email"
-              required
+                  required
             />
 
             <Input
               label="Password"
-              type="password"
+                  type="password"
               icon={<Lock />}
-              value={password}
+                  value={password}
               onChange={(e) => {
                 setPassword(e.target.value)
                 clearErrors('password')
               }}
               error={errors.password}
               placeholder="Enter your password"
-              required
-            />
+                  required
+                />
           </div>
 
           {showEmailConfirmation && (
@@ -200,23 +200,23 @@ export default function Auth({ initialMode = 'signin', onBack }: AuthProps) {
           )}
 
           <Button
-            type="submit"
+              type="submit"
             loading={loading || rateLimitCooldown > 0}
             icon={isSignUp ? <UserPlus /> : <LogIn />}
             className="w-full"
-          >
-            {loading || rateLimitCooldown > 0 ? (
+            >
+              {loading || rateLimitCooldown > 0 ? (
               rateLimitCooldown > 0 ? (
-                <>
-                  <Clock className="h-5 w-5 mr-2" />
-                  Wait {rateLimitCooldown}s
+                    <>
+                      <Clock className="h-5 w-5 mr-2" />
+                      Wait {rateLimitCooldown}s
                 </>
               ) : (
                 'Processing...'
               )
             ) : (
               isSignUp ? 'Create Account' : 'Sign In'
-            )}
+              )}
           </Button>
 
           <div className="text-center">
@@ -225,8 +225,8 @@ export default function Auth({ initialMode = 'signin', onBack }: AuthProps) {
               onClick={() => setIsSignUp(!isSignUp)}
               className="text-sm text-orange-600 hover:text-orange-700 font-medium"
             >
-              {isSignUp 
-                ? 'Already have an account? Sign in' 
+              {isSignUp
+                ? 'Already have an account? Sign in'
                 : "Don't have an account? Sign up"
               }
             </button>

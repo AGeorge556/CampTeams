@@ -30,7 +30,7 @@ function App() {
         ) : (
           <div className="min-h-screen bg-gradient-to-br from-orange-50 to-yellow-50">
             <Navigation currentPage={currentPage} onPageChange={setCurrentPage} />
-            <Layout>
+    <Layout>
               {(() => {
                 switch (currentPage) {
                   case 'schedule':
@@ -41,7 +41,7 @@ function App() {
                     return <Dashboard />
                 }
               })()}
-            </Layout>
+    </Layout>
           </div>
         )}
       </ToastProvider>

@@ -1,19 +1,28 @@
 import React, { useState, useEffect } from 'react'
-import { Shield, Users, Settings, Calendar, Download, UserX, UserCheck } from 'lucide-react'
+import { Shield, Users, Settings, Calendar, Download, UserX, UserCheck, Trophy } from 'lucide-react'
 import { supabase, Profile, TEAMS, TeamColor } from '../lib/supabase'
 import { useTeamBalance } from '../hooks/useTeamBalance'
 import { getGradeDisplayWithNumber } from '../lib/utils'
+
+interface SportSelection {
+  sport_id: string
+  sport_name: string
+  participants: Profile[]
+}
 
 export default function AdminPanel() {
   const { teamBalance } = useTeamBalance()
   const [profiles, setProfiles] = useState<Profile[]>([])
   const [campSettings, setCampSettings] = useState<any>(null)
+  const [sportSelections, setSportSelections] = useState<SportSelection[]>([])
   const [loading, setLoading] = useState(false)
   const [selectedTeam, setSelectedTeam] = useState<TeamColor | 'all'>('all')
+  const [activeTab, setActiveTab] = useState<'participants' | 'sports'>('participants')
 
   useEffect(() => {
     fetchProfiles()
     fetchCampSettings()
+    fetchSportSelections()
   }, [])
 
   const fetchProfiles = async () => {
@@ -42,6 +51,60 @@ export default function AdminPanel() {
     } catch (error) {
       console.error('Error fetching camp settings:', error)
     }
+  }
+
+  const fetchSportSelections = async () => {
+    try {
+      // Get all sport selections with user profiles
+      const { data: selections, error: selectionsError } = await supabase
+        .from('user_sport_selections')
+        .select(`
+          sport_id,
+          profiles!inner(
+            id,
+            full_name,
+            grade,
+            gender,
+            current_team,
+            is_admin
+          )
+        `)
+
+      if (selectionsError) throw selectionsError
+
+      // Group by sport
+      const sportMap = new Map<string, SportSelection>()
+      
+      selections?.forEach(selection => {
+        const sportId = selection.sport_id
+        const profile = selection.profiles as any
+        
+        if (!sportMap.has(sportId)) {
+          sportMap.set(sportId, {
+            sport_id: sportId,
+            sport_name: getSportDisplayName(sportId),
+            participants: []
+          })
+        }
+        
+        sportMap.get(sportId)!.participants.push(profile)
+      })
+
+      setSportSelections(Array.from(sportMap.values()))
+    } catch (error) {
+      console.error('Error fetching sport selections:', error)
+    }
+  }
+
+  const getSportDisplayName = (sportId: string): string => {
+    const sportNames: Record<string, string> = {
+      'soccer': 'Soccer ⚽',
+      'dodgeball': 'Dodgeball 🏐',
+      'chairball': 'Chairball 🪑',
+      'big-game': 'Big Game 🎯',
+      'pool-time': 'Pool Time 🏊'
+    }
+    return sportNames[sportId] || sportId
   }
 
   const toggleTeamsLock = async () => {
@@ -98,180 +161,258 @@ export default function AdminPanel() {
     document.body.removeChild(link)
   }
 
+  const exportSportSelections = () => {
+    const csvContent = "data:text/csv;charset=utf-8," + 
+      "Sport,Name,Grade,Gender,Team,Admin\n" +
+      sportSelections.flatMap(sport => 
+        sport.participants.map(p => 
+          `"${sport.sport_name}","${p.full_name}",${p.grade},${p.gender},${p.current_team || 'Unassigned'},${p.is_admin ? 'Yes' : 'No'}`
+        )
+      ).join("\n")
+    
+    const encodedUri = encodeURI(csvContent)
+    const link = document.createElement("a")
+    link.setAttribute("href", encodedUri)
+    link.setAttribute("download", "sport_selections.csv")
+    document.body.appendChild(link)
+    link.click()
+    document.body.removeChild(link)
+  }
+
   const filteredProfiles = selectedTeam === 'all' 
     ? profiles 
     : profiles.filter(p => p.current_team === selectedTeam)
 
   return (
-    <div className="bg-white rounded-lg shadow-sm p-6">
-      <div className="flex items-center justify-between mb-6">
-        <h2 className="text-2xl font-bold text-gray-900 flex items-center">
-          <Shield className="h-6 w-6 mr-2 text-purple-600" />
-          Admin Panel
-        </h2>
-        <div className="flex space-x-2">
-          <button
-            onClick={exportRoster}
-            className="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md text-white bg-green-600 hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500"
-          >
-            <Download className="h-4 w-4 mr-2" />
-            Export Roster
-          </button>
-          <button
-            onClick={toggleTeamsLock}
-            disabled={loading}
-            className={`inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md text-white focus:outline-none focus:ring-2 focus:ring-offset-2 ${
-              campSettings?.teams_locked
-                ? 'bg-red-600 hover:bg-red-700 focus:ring-red-500'
-                : 'bg-orange-600 hover:bg-orange-700 focus:ring-orange-500'
-            } disabled:opacity-50`}
-          >
-            {campSettings?.teams_locked ? (
-              <>
-                <UserCheck className="h-4 w-4 mr-2" />
-                Unlock Teams
-              </>
-            ) : (
-              <>
-                <UserX className="h-4 w-4 mr-2" />
-                Lock Teams
-              </>
-            )}
-          </button>
+    <div className="space-y-8">
+      {/* Header */}
+      <div className="bg-white rounded-lg shadow-sm p-6">
+        <div className="flex items-center justify-between">
+          <div className="flex items-center space-x-3">
+            <Shield className="h-8 w-8 text-purple-500" />
+            <div>
+              <h2 className="text-2xl font-bold text-gray-900">Admin Panel</h2>
+              <p className="text-gray-600">Manage camp participants and settings</p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      {/* Tab Navigation */}
+      <div className="bg-white rounded-lg shadow-sm p-6">
+        <div className="border-b border-gray-200">
+          <nav className="-mb-px flex space-x-8">
+            <button
+              onClick={() => setActiveTab('participants')}
+              className={`py-2 px-1 border-b-2 font-medium text-sm ${
+                activeTab === 'participants'
+                  ? 'border-purple-500 text-purple-600'
+                  : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
+              }`}
+            >
+              <Users className="h-4 w-4 inline mr-2" />
+              Participant Management
+            </button>
+            <button
+              onClick={() => setActiveTab('sports')}
+              className={`py-2 px-1 border-b-2 font-medium text-sm ${
+                activeTab === 'sports'
+                  ? 'border-purple-500 text-purple-600'
+                  : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
+              }`}
+            >
+              <Trophy className="h-4 w-4 inline mr-2" />
+              Sport Selections
+            </button>
+          </nav>
         </div>
       </div>
 
       {/* Camp Settings */}
-      <div className="mb-6 p-4 bg-gray-50 rounded-lg">
-        <h3 className="font-semibold text-gray-900 mb-2 flex items-center">
-          <Settings className="h-5 w-5 mr-2" />
-          Camp Settings
-        </h3>
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-4 text-sm">
-          <div>
-            <span className="font-medium">Teams Status:</span>
-            <span className={`ml-2 px-2 py-1 rounded-full text-xs ${
-              campSettings?.teams_locked 
-                ? 'bg-red-100 text-red-800' 
-                : 'bg-green-100 text-green-800'
-            }`}>
-              {campSettings?.teams_locked ? 'Locked' : 'Open'}
-            </span>
-          </div>
-          <div>
-            <span className="font-medium">Max Team Size:</span>
-            <span className="ml-2">{campSettings?.max_team_size || 50}</span>
-          </div>
-          <div>
-            <span className="font-medium">Total Participants:</span>
-            <span className="ml-2">{profiles.length}</span>
-          </div>
-        </div>
-      </div>
-
-      {/* Team Balance Stats */}
-      <div className="mb-6">
-        <h3 className="font-semibold text-gray-900 mb-4">Team Balance Statistics</h3>
-        <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
-          {teamBalance.map((team) => (
-            <div key={team.team} className="bg-gray-50 rounded-lg p-4">
-              <div className="flex items-center justify-between mb-2">
-                <h4 className="font-medium">{TEAMS[team.team as TeamColor].name}</h4>
-                <span className="text-2xl font-bold">{team.total_count}</span>
-              </div>
-              <div className="space-y-1 text-sm text-gray-600">
-                <div>Gender: {team.male_count}M / {team.female_count}F</div>
-                <div>Grades: 7({team.grade_7_count}) 8({team.grade_8_count}) 9({team.grade_9_count}) 10({team.grade_10_count}) 11({team.grade_11_count}) 12({team.grade_12_count})</div>
-              </div>
-            </div>
-          ))}
-        </div>
-      </div>
-
-      {/* Participant Management */}
-      <div>
+      <div className="bg-white rounded-lg shadow-sm p-6">
         <div className="flex items-center justify-between mb-4">
-          <h3 className="font-semibold text-gray-900">Participant Management</h3>
-          <select
-            value={selectedTeam}
-            onChange={(e) => setSelectedTeam(e.target.value as TeamColor | 'all')}
-            className="rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50"
+          <h3 className="text-lg font-semibold text-gray-900">Camp Settings</h3>
+          <button
+            onClick={toggleTeamsLock}
+            disabled={loading}
+            className="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md text-white bg-purple-600 hover:bg-purple-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-purple-500 disabled:opacity-50"
           >
-            <option value="all">All Teams</option>
-            {Object.entries(TEAMS).map(([key, team]) => (
-              <option key={key} value={key}>{team.name}</option>
-            ))}
-          </select>
+            <Settings className="h-4 w-4 mr-2" />
+            {campSettings?.teams_locked ? 'Unlock Teams' : 'Lock Teams'}
+          </button>
         </div>
-        
-        <div className="overflow-x-auto">
-          <table className="min-w-full divide-y divide-gray-200">
-            <thead className="bg-gray-50">
-              <tr>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                  Name
-                </th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                  Grade
-                </th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                  Gender
-                </th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                  Current Team
-                </th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                  Switches
-                </th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                  Actions
-                </th>
-              </tr>
-            </thead>
-            <tbody className="bg-white divide-y divide-gray-200">
-              {filteredProfiles.map((profile) => (
-                <tr key={profile.id}>
-                  <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
-                    {profile.full_name}
-                  </td>
-                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                    {getGradeDisplayWithNumber(profile.grade)}
-                  </td>
-                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                    {profile.gender}
-                  </td>
-                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                    {profile.current_team ? (
-                      <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${
-                        TEAMS[profile.current_team].lightColor
-                      } ${TEAMS[profile.current_team].textColor}`}>
-                        {TEAMS[profile.current_team].name}
-                      </span>
-                    ) : (
-                      <span className="text-gray-400">Unassigned</span>
-                    )}
-                  </td>
-                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                    {profile.switches_remaining}
-                  </td>
-                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                    <select
-                      value={profile.current_team || ''}
-                      onChange={(e) => reassignUser(profile.id, e.target.value as TeamColor)}
-                      className="rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50 text-sm"
-                    >
-                      <option value="">Unassigned</option>
-                      {Object.entries(TEAMS).map(([key, team]) => (
-                        <option key={key} value={key}>{team.name}</option>
-                      ))}
-                    </select>
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+          <div className="bg-gray-50 rounded-lg p-4">
+            <h4 className="font-medium text-gray-900">Teams Status</h4>
+            <p className="text-sm text-gray-600">
+              {campSettings?.teams_locked ? 'Locked' : 'Unlocked'}
+            </p>
+          </div>
+          <div className="bg-gray-50 rounded-lg p-4">
+            <h4 className="font-medium text-gray-900">Lock Date</h4>
+            <p className="text-sm text-gray-600">
+              {campSettings?.lock_date 
+                ? new Date(campSettings.lock_date).toLocaleDateString()
+                : 'Not locked'
+              }
+            </p>
+          </div>
+          <div className="bg-gray-50 rounded-lg p-4">
+            <h4 className="font-medium text-gray-900">Max Team Size</h4>
+            <p className="text-sm text-gray-600">{campSettings?.max_team_size || 50}</p>
+          </div>
         </div>
       </div>
+
+      {/* Content based on active tab */}
+      {activeTab === 'participants' ? (
+        <div>
+          <div className="flex items-center justify-between mb-4">
+            <h3 className="font-semibold text-gray-900">Participant Management</h3>
+            <div className="flex space-x-2">
+              <select
+                value={selectedTeam}
+                onChange={(e) => setSelectedTeam(e.target.value as TeamColor | 'all')}
+                className="rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50"
+              >
+                <option value="all">All Teams</option>
+                {Object.entries(TEAMS).map(([key, team]) => (
+                  <option key={key} value={key}>{team.name}</option>
+                ))}
+              </select>
+              <button
+                onClick={exportRoster}
+                className="inline-flex items-center px-3 py-2 border border-gray-300 shadow-sm text-sm leading-4 font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
+              >
+                <Download className="h-4 w-4 mr-2" />
+                Export CSV
+              </button>
+            </div>
+          </div>
+          
+          <div className="overflow-x-auto">
+            <table className="min-w-full divide-y divide-gray-200">
+              <thead className="bg-gray-50">
+                <tr>
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    Name
+                  </th>
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    Grade
+                  </th>
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    Gender
+                  </th>
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    Current Team
+                  </th>
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    Switches
+                  </th>
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    Actions
+                  </th>
+                </tr>
+              </thead>
+              <tbody className="bg-white divide-y divide-gray-200">
+                {filteredProfiles.map((profile) => (
+                  <tr key={profile.id}>
+                    <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
+                      {profile.full_name}
+                    </td>
+                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                      {getGradeDisplayWithNumber(profile.grade)}
+                    </td>
+                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                      {profile.gender}
+                    </td>
+                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                      {profile.current_team ? (
+                        <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${
+                          TEAMS[profile.current_team].lightColor
+                        } ${TEAMS[profile.current_team].textColor}`}>
+                          {TEAMS[profile.current_team].name}
+                        </span>
+                      ) : (
+                        <span className="text-gray-400">Unassigned</span>
+                      )}
+                    </td>
+                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                      {profile.switches_remaining}
+                    </td>
+                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                      <select
+                        value={profile.current_team || ''}
+                        onChange={(e) => reassignUser(profile.id, e.target.value as TeamColor)}
+                        className="rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50 text-sm"
+                      >
+                        <option value="">Unassigned</option>
+                        {Object.entries(TEAMS).map(([key, team]) => (
+                          <option key={key} value={key}>{team.name}</option>
+                        ))}
+                      </select>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        </div>
+      ) : (
+        <div>
+          <div className="flex items-center justify-between mb-4">
+            <h3 className="font-semibold text-gray-900">Sport Selections</h3>
+            <button
+              onClick={exportSportSelections}
+              className="inline-flex items-center px-3 py-2 border border-gray-300 shadow-sm text-sm leading-4 font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
+            >
+              <Download className="h-4 w-4 mr-2" />
+              Export CSV
+            </button>
+          </div>
+          
+          <div className="space-y-6">
+            {sportSelections.map((sport) => (
+              <div key={sport.sport_id} className="bg-white rounded-lg shadow-sm border border-gray-200">
+                <div className="px-6 py-4 border-b border-gray-200">
+                  <h4 className="text-lg font-semibold text-gray-900">{sport.sport_name}</h4>
+                  <p className="text-sm text-gray-600">{sport.participants.length} participants</p>
+                </div>
+                <div className="px-6 py-4">
+                  {sport.participants.length > 0 ? (
+                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                      {sport.participants.map((participant) => (
+                        <div key={participant.id} className="flex items-center space-x-3 p-3 bg-gray-50 rounded-lg">
+                          <div className="flex-1">
+                            <p className="text-sm font-medium text-gray-900">{participant.full_name}</p>
+                            <p className="text-xs text-gray-500">
+                              {getGradeDisplayWithNumber(participant.grade)} • {participant.gender}
+                              {participant.current_team && (
+                                <span className={`ml-2 inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium ${
+                                  TEAMS[participant.current_team].lightColor
+                                } ${TEAMS[participant.current_team].textColor}`}>
+                                  {TEAMS[participant.current_team].name}
+                                </span>
+                              )}
+                            </p>
+                          </div>
+                          {participant.is_admin && (
+                            <span className="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-purple-100 text-purple-800">
+                              Admin
+                            </span>
+                          )}
+                        </div>
+                      ))}
+                    </div>
+                  ) : (
+                    <p className="text-gray-500 text-center py-4">No participants yet</p>
+                  )}
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
     </div>
   )
 }
