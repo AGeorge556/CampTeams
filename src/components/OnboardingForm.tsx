@@ -1,46 +1,120 @@
 import React, { useState } from 'react'
 import { User, GraduationCap, Users, Heart, Save } from 'lucide-react'
 import { useProfile } from '../hooks/useProfile'
+import { useToast } from './Toast'
 import { TEAMS, TeamColor } from '../lib/supabase'
+import Button from './ui/Button'
+import Input from './ui/Input'
+
+interface FormData {
+  full_name: string
+  grade: number
+  gender: 'male' | 'female'
+  preferred_team: TeamColor
+  friend_requests: string[]
+}
+
+interface FormErrors {
+  full_name?: string
+  friend_requests?: string
+}
 
 export default function OnboardingForm() {
   const { createProfile } = useProfile()
-  const [formData, setFormData] = useState({
+  const { addToast } = useToast()
+  const [formData, setFormData] = useState<FormData>({
     full_name: '',
     grade: 7,
-    gender: 'male' as 'male' | 'female',
-    preferred_team: 'red' as TeamColor,
+    gender: 'male',
+    preferred_team: 'red',
     friend_requests: ['', '', '']
   })
+  const [errors, setErrors] = useState<FormErrors>({})
   const [loading, setLoading] = useState(false)
-  const [error, setError] = useState('')
+
+  const validateForm = (): boolean => {
+    const newErrors: FormErrors = {}
+
+    // Validate full name
+    if (!formData.full_name.trim()) {
+      newErrors.full_name = 'Full name is required'
+    } else if (formData.full_name.trim().length < 2) {
+      newErrors.full_name = 'Full name must be at least 2 characters'
+    } else if (formData.full_name.trim().length > 50) {
+      newErrors.full_name = 'Full name must be less than 50 characters'
+    }
+
+    // Validate friend requests
+    const validFriends = formData.friend_requests.filter(friend => friend.trim() !== '')
+    if (validFriends.length > 0) {
+      const uniqueFriends = new Set(validFriends.map(f => f.trim().toLowerCase()))
+      if (uniqueFriends.size !== validFriends.length) {
+        newErrors.friend_requests = 'Friend names must be unique'
+      }
+      
+      for (const friend of validFriends) {
+        if (friend.trim().length < 2) {
+          newErrors.friend_requests = 'Friend names must be at least 2 characters'
+          break
+        }
+        if (friend.trim().toLowerCase() === formData.full_name.trim().toLowerCase()) {
+          newErrors.friend_requests = 'You cannot add yourself as a friend'
+          break
+        }
+      }
+    }
+
+    setErrors(newErrors)
+    return Object.keys(newErrors).length === 0
+  }
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
+    
+    if (!validateForm()) {
+      addToast({
+        type: 'error',
+        title: 'Validation Error',
+        message: 'Please fix the errors in the form'
+      })
+      return
+    }
+
     setLoading(true)
-    setError('')
 
     try {
       // Filter out empty friend requests
       const filteredFriends = formData.friend_requests.filter(friend => friend.trim() !== '')
       
       const { error } = await createProfile({
-        full_name: formData.full_name,
+        full_name: formData.full_name.trim(),
         grade: formData.grade,
         gender: formData.gender,
         preferred_team: formData.preferred_team,
-        current_team: formData.preferred_team, // Start with preferred team
+        current_team: formData.preferred_team, // This will be overridden for admins
         friend_requests: filteredFriends,
         switches_remaining: 3,
-        is_admin: false
+        is_admin: false,
+        participate_in_teams: true
       })
 
       if (error) throw error
       
+      addToast({
+        type: 'success',
+        title: 'Welcome to Camp!',
+        message: 'Your profile has been created successfully'
+      })
+      
       // Refresh the page to trigger the app to show the Dashboard
       window.location.reload()
     } catch (error: any) {
-      setError(error.message)
+      console.error('Error creating profile:', error)
+      addToast({
+        type: 'error',
+        title: 'Error',
+        message: error.message || 'Failed to create profile. Please try again.'
+      })
     } finally {
       setLoading(false)
     }
@@ -50,6 +124,11 @@ export default function OnboardingForm() {
     const newFriendRequests = [...formData.friend_requests]
     newFriendRequests[index] = value
     setFormData({ ...formData, friend_requests: newFriendRequests })
+    
+    // Clear friend request errors when user starts typing
+    if (errors.friend_requests) {
+      setErrors({ ...errors, friend_requests: undefined })
+    }
   }
 
   return (
@@ -68,32 +147,27 @@ export default function OnboardingForm() {
         <form className="mt-8 space-y-6" onSubmit={handleSubmit}>
           <div className="space-y-4">
             {/* Full Name */}
-            <div>
-              <label htmlFor="full_name" className="block text-sm font-medium text-gray-700">
-                Full Name
-              </label>
-              <div className="mt-1 relative">
-                <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                  <User className="h-5 w-5 text-gray-400" />
-                </div>
-                <input
-                  id="full_name"
-                  type="text"
-                  value={formData.full_name}
-                  onChange={(e) => setFormData({ ...formData, full_name: e.target.value })}
-                  required
-                  className="appearance-none block w-full pl-10 pr-3 py-2 border border-gray-300 rounded-md placeholder-gray-400 focus:outline-none focus:ring-orange-500 focus:border-orange-500 sm:text-sm"
-                  placeholder="Enter your full name"
-                />
-              </div>
-            </div>
+            <Input
+              label="Full Name"
+              icon={<User />}
+              value={formData.full_name}
+              onChange={(e) => {
+                setFormData({ ...formData, full_name: e.target.value })
+                if (errors.full_name) {
+                  setErrors({ ...errors, full_name: undefined })
+                }
+              }}
+              error={errors.full_name}
+              placeholder="Enter your full name"
+              required
+            />
 
             {/* Grade */}
             <div>
-              <label htmlFor="grade" className="block text-sm font-medium text-gray-700">
+              <label htmlFor="grade" className="block text-sm font-medium text-gray-700 mb-1">
                 Grade
               </label>
-              <div className="mt-1 relative">
+              <div className="relative">
                 <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
                   <GraduationCap className="h-5 w-5 text-gray-400" />
                 </div>
@@ -101,7 +175,7 @@ export default function OnboardingForm() {
                   id="grade"
                   value={formData.grade}
                   onChange={(e) => setFormData({ ...formData, grade: Number(e.target.value) })}
-                  className="appearance-none block w-full pl-10 pr-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-orange-500 focus:border-orange-500 sm:text-sm"
+                  className="appearance-none block w-full pl-10 pr-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-orange-500 focus:border-orange-500 sm:text-sm"
                 >
                   <option value={7}>1st Preparatory (7)</option>
                   <option value={8}>2nd Preparatory (8)</option>
@@ -115,10 +189,10 @@ export default function OnboardingForm() {
 
             {/* Gender */}
             <div>
-              <label className="block text-sm font-medium text-gray-700">
+              <label className="block text-sm font-medium text-gray-700 mb-2">
                 Gender
               </label>
-              <div className="mt-2 space-y-2">
+              <div className="space-y-2">
                 {[
                   { value: 'male', label: 'Male' },
                   { value: 'female', label: 'Female' }
@@ -140,10 +214,10 @@ export default function OnboardingForm() {
 
             {/* Preferred Team */}
             <div>
-              <label className="block text-sm font-medium text-gray-700">
+              <label className="block text-sm font-medium text-gray-700 mb-2">
                 Preferred Team
               </label>
-              <div className="mt-2 grid grid-cols-2 gap-2">
+              <div className="grid grid-cols-2 gap-2">
                 {Object.entries(TEAMS).map(([key, team]) => (
                   <label key={key} className="flex items-center">
                     <input
@@ -164,7 +238,7 @@ export default function OnboardingForm() {
 
             {/* Friend Requests */}
             <div>
-              <label className="block text-sm font-medium text-gray-700">
+              <label className="block text-sm font-medium text-gray-700 mb-2">
                 Friend Requests (Optional)
               </label>
               <p className="text-xs text-gray-500 mb-2">
@@ -180,37 +254,26 @@ export default function OnboardingForm() {
                       type="text"
                       value={friend}
                       onChange={(e) => handleFriendRequestChange(index, e.target.value)}
-                      className="appearance-none block w-full pl-10 pr-3 py-2 border border-gray-300 rounded-md placeholder-gray-400 focus:outline-none focus:ring-orange-500 focus:border-orange-500 sm:text-sm"
+                      className="appearance-none block w-full pl-10 pr-3 py-2 border border-gray-300 rounded-md placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-orange-500 focus:border-orange-500 sm:text-sm"
                       placeholder={`Friend ${index + 1} name`}
                     />
                   </div>
                 ))}
               </div>
-            </div>
-          </div>
-
-          {error && (
-            <div className="rounded-md bg-red-50 p-4">
-              <div className="text-sm text-red-700">{error}</div>
-            </div>
-          )}
-
-          <div>
-            <button
-              type="submit"
-              disabled={loading}
-              className="group relative w-full flex justify-center py-2 px-4 border border-transparent text-sm font-medium rounded-md text-white bg-orange-600 hover:bg-orange-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-orange-500 disabled:opacity-50 disabled:cursor-not-allowed"
-            >
-              {loading ? (
-                <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-white"></div>
-              ) : (
-                <>
-                  <Save className="h-5 w-5 mr-2" />
-                  Join Camp
-                </>
+              {errors.friend_requests && (
+                <p className="mt-1 text-sm text-red-600">{errors.friend_requests}</p>
               )}
-            </button>
+            </div>
           </div>
+
+          <Button
+            type="submit"
+            loading={loading}
+            icon={<Save />}
+            className="w-full"
+          >
+            Join Camp
+          </Button>
         </form>
       </div>
     </div>

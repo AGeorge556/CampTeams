@@ -49,12 +49,28 @@ export default function SportsSelection() {
       icon: '🪑',
       color: 'bg-blue-500',
       participants: 0
+    },
+    {
+      id: 'big-game',
+      name: 'Big Game',
+      description: 'Large-scale team games and outdoor activities',
+      icon: '🎯',
+      color: 'bg-purple-500',
+      participants: 0
+    },
+    {
+      id: 'pool-time',
+      name: 'Pool Time',
+      description: 'Swimming activities and water games',
+      icon: '🏊',
+      color: 'bg-cyan-500',
+      participants: 0
     }
   ]
 
   useEffect(() => {
     loadSportsData()
-  }, [])
+  }, [profile])
 
   const loadSportsData = async () => {
     try {
@@ -115,12 +131,14 @@ export default function SportsSelection() {
 
         setUserSelections(prev => prev.filter(id => id !== sportId))
       } else {
-        // Add selection
+        // Add selection using upsert to handle duplicates
         const { error } = await supabase
           .from('user_sport_selections')
-          .insert({
+          .upsert({
             user_id: profile.id,
             sport_id: sportId
+          }, {
+            onConflict: 'user_id,sport_id'
           })
 
         if (error) throw error
@@ -218,13 +236,12 @@ export default function SportsSelection() {
         <ul className="text-sm text-blue-800 space-y-1">
           <li>• Click on any sport to join or leave</li>
           <li>• You can participate in multiple sports</li>
-          <li>• Your selections will be used for team assignments</li>
           <li>• Changes are saved automatically</li>
         </ul>
       </div>
 
       {/* Sports Grid */}
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
         {sports.map(sport => getSportCard(sport))}
       </div>
 

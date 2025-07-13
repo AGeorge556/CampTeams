@@ -1,5 +1,5 @@
 import React, { useState } from 'react'
-import { Users, Shield, BarChart3, Sun, Star, Flame, Trees, Mountain } from 'lucide-react'
+import { Users, Shield, BarChart3, Sun, Star, Flame, Trees, Mountain, UserPlus } from 'lucide-react'
 import { useProfile } from '../hooks/useProfile'
 import { useTeamBalance } from '../hooks/useTeamBalance'
 import { TEAMS, TeamColor, supabase } from '../lib/supabase'
@@ -7,12 +7,15 @@ import AdminPanel from './AdminPanel'
 import PlayerLists from './PlayerLists'
 import CountdownTimer from './CountdownTimer'
 import { getGradeDisplayWithNumber } from '../lib/utils'
+import { useToast } from './Toast'
 
 export default function Dashboard() {
   const { profile, updateProfile } = useProfile()
   const { teamBalance } = useTeamBalance()
+  const { addToast } = useToast()
   const [loading, setLoading] = useState(false)
   const [showAdmin, setShowAdmin] = useState(false)
+  const [optInLoading, setOptInLoading] = useState(false)
 
   const handleSwitchTeam = async (newTeam: TeamColor) => {
     if (!profile || loading) return
@@ -49,13 +52,55 @@ export default function Dashboard() {
     }
   }
 
-
+  const handleOptInToTeams = async () => {
+    if (!profile || optInLoading) return
+    
+    setOptInLoading(true)
+    try {
+      // Find the team with the least players for balanced assignment
+      const teamCounts = teamBalance.reduce((acc, team) => {
+        acc[team.team] = team.total_count
+        return acc
+      }, {} as Record<string, number>)
+      
+      const leastPopulatedTeam = Object.entries(teamCounts)
+        .sort(([,a], [,b]) => a - b)[0][0] as TeamColor
+      
+      const { error } = await updateProfile({
+        participate_in_teams: true,
+        current_team: leastPopulatedTeam
+      })
+      
+      if (error) throw error
+      
+      addToast({
+        type: 'success',
+        title: 'Welcome to Teams!',
+        message: `You have been assigned to the ${TEAMS[leastPopulatedTeam].name} team. You can now switch teams like other participants.`
+      })
+      
+      // Refresh the page to update all components
+      setTimeout(() => {
+        window.location.reload()
+      }, 1000)
+    } catch (error: any) {
+      console.error('Error opting in to teams:', error)
+      addToast({
+        type: 'error',
+        title: 'Error',
+        message: 'Failed to opt in to teams. Please try again.'
+      })
+    } finally {
+      setOptInLoading(false)
+    }
+  }
 
   if (!profile) {
     return <div>Loading...</div>
   }
 
   const currentTeam = profile.current_team ? TEAMS[profile.current_team] : null
+  const isAdminNotParticipating = profile.is_admin && !profile.participate_in_teams
 
   return (
     <div className="space-y-8">
@@ -80,6 +125,34 @@ export default function Dashboard() {
             </button>
           )}
         </div>
+        
+        {/* Admin Opt-in Section */}
+        {isAdminNotParticipating && (
+          <div className="mb-6 p-4 bg-blue-50 border border-blue-200 rounded-lg">
+            <div className="flex items-center justify-between">
+              <div>
+                <h3 className="text-lg font-semibold text-blue-900 mb-1">Join Team Activities</h3>
+                <p className="text-blue-700 text-sm">
+                  As an admin, you're not currently participating in team activities. 
+                  Click below to join a team and participate in camp activities with the participants.
+                </p>
+              </div>
+              <button
+                onClick={handleOptInToTeams}
+                disabled={optInLoading}
+                className="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 disabled:opacity-50 disabled:cursor-not-allowed"
+              >
+                {optInLoading ? (
+                  <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white mr-2"></div>
+                ) : (
+                  <UserPlus className="h-4 w-4 mr-2" />
+                )}
+                Join Teams
+              </button>
+            </div>
+          </div>
+        )}
+        
         {currentTeam && (
           <div className="mb-4">
             <h3 className="text-lg font-semibold text-gray-900 mb-2">Current Team</h3>

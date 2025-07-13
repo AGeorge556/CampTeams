@@ -19,6 +19,7 @@ export type Database = {
           friend_requests: string[]
           switches_remaining: number
           is_admin: boolean
+          participate_in_teams: boolean
           created_at: string
           updated_at: string
         }
@@ -32,6 +33,7 @@ export type Database = {
           friend_requests?: string[]
           switches_remaining?: number
           is_admin?: boolean
+          participate_in_teams?: boolean
           created_at?: string
           updated_at?: string
         }
@@ -45,6 +47,7 @@ export type Database = {
           friend_requests?: string[]
           switches_remaining?: number
           is_admin?: boolean
+          participate_in_teams?: boolean
           created_at?: string
           updated_at?: string
         }

@@ -3,11 +3,15 @@ import { Users, User, GraduationCap, ArrowRight, AlertTriangle } from 'lucide-re
 import { TEAMS, TeamColor, supabase } from '../lib/supabase'
 import { usePlayers } from '../hooks/usePlayers'
 import { useProfile } from '../hooks/useProfile'
+import { useToast } from './Toast'
 import { getGradeDisplayWithNumber, MAX_PLAYERS_PER_GRADE, GRADES } from '../lib/utils'
+import Button from './ui/Button'
+import LoadingSpinner from './LoadingSpinner'
 
 export default function PlayerLists() {
   const { players, loading } = usePlayers()
   const { profile, updateProfile } = useProfile()
+  const { addToast } = useToast()
   const [switching, setSwitching] = React.useState<string | null>(null)
 
   const handleSwitchTeam = async (newTeam: TeamColor) => {
@@ -20,7 +24,11 @@ export default function PlayerLists() {
       const playersInSameGrade = targetTeamPlayers.filter(p => p.grade === profile.grade)
       
       if (playersInSameGrade.length >= MAX_PLAYERS_PER_GRADE) {
-        alert(`Cannot switch to ${TEAMS[newTeam].name} team. Maximum of ${MAX_PLAYERS_PER_GRADE} players per grade (${getGradeDisplayWithNumber(profile.grade)}) has been reached.`)
+        addToast({
+          type: 'error',
+          title: 'Cannot Switch Teams',
+          message: `Cannot switch to ${TEAMS[newTeam].name} team. Maximum of ${MAX_PLAYERS_PER_GRADE} players per grade (${getGradeDisplayWithNumber(profile.grade)}) has been reached.`
+        })
         return
       }
 
@@ -36,7 +44,11 @@ export default function PlayerLists() {
       }
 
       if (!canSwitch) {
-        alert('Team switch not allowed. You may have no switches remaining, teams are locked, or the team is full.')
+        addToast({
+          type: 'error',
+          title: 'Cannot Switch Teams',
+          message: 'Team switch not allowed. You may have no switches remaining, teams are locked, or the team is full.'
+        })
         return
       }
 
@@ -63,6 +75,12 @@ export default function PlayerLists() {
         throw updateError
       }
 
+      addToast({
+        type: 'success',
+        title: 'Team Switch Successful',
+        message: `You have successfully joined the ${TEAMS[newTeam].name} team!`
+      })
+
       // Refresh the page to ensure all components update properly
       setTimeout(() => {
         window.location.reload()
@@ -70,7 +88,11 @@ export default function PlayerLists() {
 
     } catch (error: any) {
       console.error('Error switching team:', error)
-      alert('Error switching team: ' + error.message)
+      addToast({
+        type: 'error',
+        title: 'Error',
+        message: error.message || 'Failed to switch teams. Please try again.'
+      })
     } finally {
       setSwitching(null)
     }
@@ -79,9 +101,7 @@ export default function PlayerLists() {
   if (loading) {
     return (
       <div className="bg-white rounded-lg shadow-sm p-6">
-        <div className="flex items-center justify-center">
-          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-orange-500"></div>
-        </div>
+        <LoadingSpinner text="Loading team rosters..." />
       </div>
     )
   }
@@ -120,21 +140,17 @@ export default function PlayerLists() {
                       </div>
                     )}
                   </div>
-                  {profile && profile.current_team !== teamKey && profile.switches_remaining > 0 && (
-                    <button
+                  {profile && profile.current_team !== teamKey && profile.switches_remaining > 0 && profile.participate_in_teams && (
+                    <Button
                       onClick={() => handleSwitchTeam(teamKey as TeamColor)}
-                      disabled={switching === teamKey}
-                      className="inline-flex items-center px-3 py-1 bg-white bg-opacity-20 hover:bg-opacity-30 rounded-md text-sm font-medium transition-colors disabled:opacity-50"
+                      loading={switching === teamKey}
+                      icon={<ArrowRight />}
+                      variant="ghost"
+                      size="sm"
+                      className="bg-white bg-opacity-20 hover:bg-opacity-30 text-white border-white"
                     >
-                      {switching === teamKey ? (
-                        <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white"></div>
-                      ) : (
-                        <>
-                          <ArrowRight className="h-4 w-4 mr-1" />
-                          Join Team
-                        </>
-                      )}
-                    </button>
+                      Join Team
+                    </Button>
                   )}
                 </div>
               </div>
@@ -157,9 +173,9 @@ export default function PlayerLists() {
                           <div className="font-medium text-gray-900 truncate">
                             {player.full_name}
                           </div>
-                                                     <div className="flex items-center text-sm text-gray-600 mt-1">
-                             <GraduationCap className="h-3 w-3 mr-1" />
-                             <span>{getGradeDisplayWithNumber(player.grade)}</span>
+                          <div className="flex items-center text-sm text-gray-600 mt-1">
+                            <GraduationCap className="h-3 w-3 mr-1" />
+                            <span>{getGradeDisplayWithNumber(player.grade)}</span>
                             <span className="mx-2">•</span>
                             <span className={`px-2 py-0.5 rounded-full text-xs font-medium ${
                               player.gender === 'male' 
