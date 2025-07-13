@@ -19,7 +19,7 @@ export default function Navigation({ currentPage, onPageChange }: NavigationProp
 
   const navigationItems = [
     { id: 'dashboard', name: 'Dashboard', icon: Users },
-    { id: 'schedule', name: 'Schedule', icon: Calendar },
+    ...(profile?.is_admin ? [{ id: 'schedule', name: 'Schedule', icon: Calendar }] : []),
     { id: 'sports', name: 'Sports', icon: Trophy }
   ]
 

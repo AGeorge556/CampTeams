@@ -358,7 +358,7 @@ export default function AdminPanel() {
             </table>
           </div>
         </div>
-      ) : (
+      ) : activeTab === 'sports' ? (
         <div>
           <div className="flex items-center justify-between mb-4">
             <h3 className="font-semibold text-gray-900">Sport Selections</h3>
@@ -412,7 +412,7 @@ export default function AdminPanel() {
             ))}
           </div>
         </div>
-      )}
+      ) : null}
     </div>
   )
 }

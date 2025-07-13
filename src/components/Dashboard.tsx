@@ -6,6 +6,7 @@ import { TEAMS, TeamColor, supabase } from '../lib/supabase'
 import AdminPanel from './AdminPanel'
 import PlayerLists from './PlayerLists'
 import CountdownTimer from './CountdownTimer'
+
 import { getGradeDisplayWithNumber } from '../lib/utils'
 import { useToast } from './Toast'
 
@@ -352,7 +353,7 @@ export default function Dashboard() {
             </button>
           )}
         </div>
-        
+
         {/* Admin Opt-in Section */}
         {isAdminNotParticipating && (
           <div className="mb-6 p-4 bg-blue-50 border border-blue-200 rounded-lg">
@@ -390,11 +391,11 @@ export default function Dashboard() {
           </div>
         )}
         <div className="mb-4">
-                      <div className="flex items-center justify-between">
-              <span className="text-sm font-medium text-gray-700">
-                Team switches remaining: {profile.switches_remaining}
-              </span>
-            </div>
+          <div className="flex items-center justify-between">
+            <span className="text-sm font-medium text-gray-700">
+              Team switches remaining: {profile.switches_remaining}
+            </span>
+          </div>
           <div className="w-full bg-gray-200 rounded-full h-2 mt-2">
             <div 
               className="bg-orange-600 h-2 rounded-full transition-all duration-300"
@@ -501,6 +502,8 @@ export default function Dashboard() {
 
             {/* Player Lists */}
             <PlayerLists />
+
+
 
       {/* Team Balance Overview */}
       <div className="bg-white rounded-lg shadow-sm p-6">
