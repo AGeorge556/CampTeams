@@ -34,6 +34,21 @@ export default function PlayerLists() {
         return
       }
 
+      // Check gender balance for the target team
+      const maleCount = targetTeamPlayers.filter(p => p.gender === 'male').length
+      const femaleCount = targetTeamPlayers.filter(p => p.gender === 'female').length
+      const newMaleCount = profile.gender === 'male' ? maleCount + 1 : maleCount
+      const newFemaleCount = profile.gender === 'female' ? femaleCount + 1 : femaleCount
+      
+      if (Math.abs(newMaleCount - newFemaleCount) > 2) {
+        addToast({
+          type: 'error',
+          title: t('cannotSwitchTeams'),
+          message: t('genderBalanceLimitReached')
+        })
+        return
+      }
+
       // Check if switch is allowed
       const { data: canSwitch, error: validateError } = await supabase
         .rpc('can_switch_team', {
@@ -208,12 +223,34 @@ export default function PlayerLists() {
               {/* Team Summary */}
               {teamPlayers.length > 0 && (
                 <div className="text-xs text-gray-500 space-y-1">
-                  <div className="flex justify-between">
+                  <div className="flex justify-between items-center">
                     <span>{t('genderBalance')}</span>
-                    <span>
-                      {teamPlayers.filter(p => p.gender === 'male').length}M / 
-                      {teamPlayers.filter(p => p.gender === 'female').length}F
-                    </span>
+                    <div className="flex items-center">
+                      <span>
+                        {teamPlayers.filter(p => p.gender === 'male').length}M / 
+                        {teamPlayers.filter(p => p.gender === 'female').length}F
+                      </span>
+                      {(() => {
+                        const maleCount = teamPlayers.filter(p => p.gender === 'male').length
+                        const femaleCount = teamPlayers.filter(p => p.gender === 'female').length
+                        const genderDiff = Math.abs(maleCount - femaleCount)
+                        if (genderDiff > 2) {
+                          return (
+                            <span className="ml-2 text-red-500 text-xs flex items-center">
+                              <AlertTriangle className="h-3 w-3 mr-1" />
+                              {t('genderUnbalanced')}
+                            </span>
+                          )
+                        } else if (genderDiff === 0) {
+                          return (
+                            <span className="ml-2 text-green-500 text-xs flex items-center">
+                              ✓ {t('genderBalanced')}
+                            </span>
+                          )
+                        }
+                        return null
+                      })()}
+                    </div>
                   </div>
                   <div className="flex justify-between">
                     <span>{t('gradeRange')}</span>

@@ -145,6 +145,8 @@ export interface Translations {
   joinTeam: string
   noPlayersAssigned: string
   genderBalance: string
+  genderBalanced: string
+  genderUnbalanced: string
   gradeRange: string
   avgGrade: string
   gradeDistribution: string
@@ -155,6 +157,7 @@ export interface Translations {
   successfullyJoinedTeam: string
   cannotSwitchTeams: string
   teamSwitchNotAllowed: string
+  genderBalanceLimitReached: string
   failedToSwitchTeams: string
 
   // Bible Verse References
@@ -342,6 +345,8 @@ export const translations: Record<Language, Translations> = {
     joinTeam: 'Join Team',
     noPlayersAssigned: 'No players assigned',
     genderBalance: 'Gender Balance:',
+    genderBalanced: 'Balanced',
+    genderUnbalanced: 'Unbalanced',
     gradeRange: 'Grade Range:',
     avgGrade: 'Avg Grade:',
     gradeDistribution: 'Grade Distribution:',
@@ -352,6 +357,7 @@ export const translations: Record<Language, Translations> = {
     successfullyJoinedTeam: 'You have successfully joined the',
     cannotSwitchTeams: 'Cannot Switch Teams',
     teamSwitchNotAllowed: 'Team switch not allowed. You may have no switches remaining, teams are locked, or the team is full.',
+    genderBalanceLimitReached: 'Gender balance limit reached. Teams must maintain equal gender distribution.',
     failedToSwitchTeams: 'Failed to switch teams. Please try again.',
 
     // Bible Verse References
@@ -537,6 +543,8 @@ export const translations: Record<Language, Translations> = {
     joinTeam: 'انضم للفريق',
     noPlayersAssigned: 'لا يوجد لاعبين مسجلين',
     genderBalance: 'توازن الجنس:',
+    genderBalanced: 'متوازن',
+    genderUnbalanced: 'غير متوازن',
     gradeRange: 'نطاق الصف:',
     avgGrade: 'متوسط الصف:',
     gradeDistribution: 'توزيع الصفوف:',
@@ -547,6 +555,7 @@ export const translations: Record<Language, Translations> = {
     successfullyJoinedTeam: 'لقد انضممت بنجاح لفريق',
     cannotSwitchTeams: 'لا يمكن تبديل الفرق',
     teamSwitchNotAllowed: 'لا يُسمح بتبديل الفريق. قد لا يكون لديك تبديلات متبقية، أو الفرق مقفلة، أو الفريق ممتلئ.',
+    genderBalanceLimitReached: 'تم الوصول للحد الأقصى لتوازن الجنس. يجب أن تحافظ الفرق على توزيع متساوٍ للجنس.',
     failedToSwitchTeams: 'فشل في تبديل الفرق. يرجى المحاولة مرة أخرى.',
 
     // Bible Verse References
