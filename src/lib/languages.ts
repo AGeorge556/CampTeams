@@ -256,7 +256,7 @@ export const translations: Record<Language, Translations> = {
     attendanceHistory: 'Attendance History',
 
     // Schedule
-    campSchedule: 'Camp Schedule',
+    campSchedule: 'Conference Schedule',
     sessionDetails: 'Session Details',
     startTime: 'Start Time',
     endTime: 'End Time',
@@ -328,12 +328,12 @@ export const translations: Record<Language, Translations> = {
 
     // Bible Verses and Countdown
     dailyInspirationTitle: 'Daily Inspiration',
-    countdownToCamp: 'Countdown to Camp',
+    countdownToCamp: 'Countdown to Conference',
     daysRemaining: 'days',
     hoursRemaining: 'hours',
     minutesRemaining: 'minutes',
     secondsRemaining: 'seconds',
-    campStartsIn: 'Camp starts in',
+    campStartsIn: 'Conference starts in',
 
     // Team Rosters and Player Lists
     teamRosters: 'Team Rosters',
@@ -451,7 +451,7 @@ export const translations: Record<Language, Translations> = {
     attendanceHistory: 'سجل الحضور',
 
     // Schedule
-    campSchedule: 'جدول المعسكر',
+    campSchedule: 'جدول المؤتمر',
     sessionDetails: 'تفاصيل الجلسة',
     startTime: 'وقت البداية',
     endTime: 'وقت النهاية',
@@ -523,12 +523,12 @@ export const translations: Record<Language, Translations> = {
 
     // Bible Verses and Countdown
     dailyInspirationTitle: 'الإلهام اليومي',
-    countdownToCamp: 'العد التنازلي للمعسكر',
+    countdownToCamp: 'العد التنازلي للمؤتمر',
     daysRemaining: 'أيام',
     hoursRemaining: 'ساعات',
     minutesRemaining: 'دقائق',
     secondsRemaining: 'ثواني',
-    campStartsIn: 'يبدأ المعسكر في',
+    campStartsIn: 'يبدأ المؤتمر في',
 
     // Team Rosters and Player Lists
     teamRosters: 'قوائم الفرق',
