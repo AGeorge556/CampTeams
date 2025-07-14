@@ -41,7 +41,7 @@ function App() {
                   case 'sports':
                     return <SportsSelection />
                   default:
-                    return <Dashboard />
+                    return <Dashboard onPageChange={setCurrentPage} />
                 }
               })()}
     </Layout>

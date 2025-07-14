@@ -28,7 +28,11 @@ interface QuickAction {
   available: boolean
 }
 
-export default function Dashboard() {
+interface DashboardProps {
+  onPageChange?: (page: string) => void
+}
+
+export default function Dashboard({ onPageChange }: DashboardProps) {
   const { profile, updateProfile } = useProfile()
   const { teamBalance } = useTeamBalance()
   const { addToast } = useToast()
@@ -49,7 +53,7 @@ export default function Dashboard() {
       title: t('sportsSelection'),
       description: t('chooseSportsToParticipate'),
       icon: Trophy,
-      action: () => window.location.href = '#sports',
+      action: () => onPageChange?.('sports'),
       color: 'bg-blue-500 hover:bg-blue-600',
       available: true
     },
@@ -58,28 +62,19 @@ export default function Dashboard() {
       title: t('schedule'),
       description: t('campSchedule'),
       icon: Calendar,
-      action: () => window.location.href = '#schedule',
+      action: () => onPageChange?.('schedule'),
       color: 'bg-green-500 hover:bg-green-600',
       available: profile?.is_admin || false
     },
-    {
-      id: 'teams',
-      title: t('teams'),
-      description: t('teamAssignment'),
-      icon: Users,
-      action: () => window.location.href = '#teams',
-      color: 'bg-purple-500 hover:bg-purple-600',
-      available: true
-    },
-    {
-      id: 'settings',
-      title: t('settings'),
-      description: 'Manage your preferences',
-      icon: Settings,
-      action: () => addToast({ type: 'info', title: 'Settings', message: 'Settings panel coming soon!' }),
-      color: 'bg-gray-500 hover:bg-gray-600',
-      available: true
-    }
+    // {
+    //   id: 'settings',
+    //   title: t('settings'),
+    //   description: 'Manage your preferences',
+    //   icon: Settings,
+    //   action: () => addToast({ type: 'info', title: 'Settings', message: 'Settings panel coming soon!' }),
+    //   color: 'bg-gray-500 hover:bg-gray-600',
+    //   available: true
+    // }
   ]
 
   // Motivational Bible verses
