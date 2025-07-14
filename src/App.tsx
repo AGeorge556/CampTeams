@@ -12,6 +12,8 @@ import LandingPage from './components/LandingPage'
 import ErrorBoundary from './components/ErrorBoundary'
 import { ToastProvider } from './components/Toast'
 import LoadingSpinner from './components/LoadingSpinner'
+import { LanguageProvider } from './contexts/LanguageContext'
+import LanguageNotification from './components/LanguageNotification'
 
 function App() {
   const { user, loading: authLoading } = useAuth()
@@ -20,6 +22,7 @@ function App() {
 
   return (
     <ErrorBoundary>
+      <LanguageProvider>
       <ToastProvider>
         {authLoading || profileLoading ? (
           <LoadingSpinner fullScreen text="Loading..." />
@@ -42,9 +45,11 @@ function App() {
                 }
               })()}
     </Layout>
+              <LanguageNotification />
           </div>
         )}
       </ToastProvider>
+      </LanguageProvider>
     </ErrorBoundary>
   )
 }

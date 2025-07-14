@@ -1,11 +1,13 @@
 import React, { useState, useEffect, useRef } from 'react'
-import { Users, Shield, BarChart3, Sun, Star, Flame, Trees, Mountain, UserPlus, Download, RefreshCw } from 'lucide-react'
+import { Users, Shield, BarChart3, Sun, Star, Flame, Trees, Mountain, UserPlus, Download, RefreshCw, Calendar, Trophy, Settings, Bell, Activity } from 'lucide-react'
 import { useProfile } from '../hooks/useProfile'
 import { useTeamBalance } from '../hooks/useTeamBalance'
 import { TEAMS, TeamColor, supabase } from '../lib/supabase'
 import AdminPanel from './AdminPanel'
 import PlayerLists from './PlayerLists'
 import CountdownTimer from './CountdownTimer'
+import { useLanguage } from '../contexts/LanguageContext'
+import { Skeleton, SkeletonCard } from './LoadingSpinner'
 
 import { getGradeDisplayWithNumber } from '../lib/utils'
 import { useToast } from './Toast'
@@ -16,70 +18,121 @@ interface BibleVerse {
   translation: string
 }
 
+interface QuickAction {
+  id: string
+  title: string
+  description: string
+  icon: React.ComponentType<any>
+  action: () => void
+  color: string
+  available: boolean
+}
+
 export default function Dashboard() {
   const { profile, updateProfile } = useProfile()
   const { teamBalance } = useTeamBalance()
   const { addToast } = useToast()
+  const { t } = useLanguage()
   const [loading, setLoading] = useState(false)
-  const [showAdmin, setShowAdmin] = useState(false)
   const [optInLoading, setOptInLoading] = useState(false)
   const [currentVerse, setCurrentVerse] = useState<BibleVerse | null>(null)
   const [backgroundImage, setBackgroundImage] = useState<string>('')
   const [generatingVerse, setGeneratingVerse] = useState(false)
   const [downloading, setDownloading] = useState(false)
+  const [showQuickActions, setShowQuickActions] = useState(false)
   const verseRef = useRef<HTMLDivElement>(null)
+
+  // Quick Actions
+  const quickActions: QuickAction[] = [
+    {
+      id: 'sports',
+      title: t('sportsSelection'),
+      description: t('chooseSportsToParticipate'),
+      icon: Trophy,
+      action: () => window.location.href = '#sports',
+      color: 'bg-blue-500 hover:bg-blue-600',
+      available: true
+    },
+    {
+      id: 'schedule',
+      title: t('schedule'),
+      description: t('campSchedule'),
+      icon: Calendar,
+      action: () => window.location.href = '#schedule',
+      color: 'bg-green-500 hover:bg-green-600',
+      available: profile?.is_admin || false
+    },
+    {
+      id: 'teams',
+      title: t('teams'),
+      description: t('teamAssignment'),
+      icon: Users,
+      action: () => window.location.href = '#teams',
+      color: 'bg-purple-500 hover:bg-purple-600',
+      available: true
+    },
+    {
+      id: 'settings',
+      title: t('settings'),
+      description: 'Manage your preferences',
+      icon: Settings,
+      action: () => addToast({ type: 'info', title: 'Settings', message: 'Settings panel coming soon!' }),
+      color: 'bg-gray-500 hover:bg-gray-600',
+      available: true
+    }
+  ]
 
   // Motivational Bible verses
   const motivationalVerses: BibleVerse[] = [
     {
-      verse: "I can do all things through Christ who strengthens me.",
-      reference: "Philippians 4:13",
-      translation: "NKJV"
+      verse: t('philippiansVerse'),
+      reference: t('philippians'),
+      translation: t('niv')
     },
     {
-      verse: "For I know the plans I have for you, declares the Lord, plans to prosper you and not to harm you, plans to give you hope and a future.",
-      reference: "Jeremiah 29:11",
-      translation: "NIV"
+      verse: t('jeremiahVerse'),
+      reference: t('jeremiah'),
+      translation: t('niv')
     },
     {
-      verse: "Be strong and courageous. Do not be afraid; do not be discouraged, for the Lord your God will be with you wherever you go.",
-      reference: "Joshua 1:9",
-      translation: "NIV"
+      verse: t('joshuaVerse'),
+      reference: t('joshua'),
+      translation: t('niv')
     },
     {
-      verse: "Trust in the Lord with all your heart and lean not on your own understanding; in all your ways submit to him, and he will make your paths straight.",
-      reference: "Proverbs 3:5-6",
-      translation: "NIV"
+      verse: t('proverbsVerse'),
+      reference: t('proverbs'),
+      translation: t('niv')
     },
     {
-      verse: "The Lord is my strength and my shield; my heart trusts in him, and he helps me.",
-      reference: "Psalm 28:7",
-      translation: "NIV"
+      verse: t('psalmsVerse'),
+      reference: t('psalms'),
+      translation: t('niv')
     },
     {
-      verse: "But those who hope in the Lord will renew their strength. They will soar on wings like eagles; they will run and not grow weary, they will walk and not be faint.",
-      reference: "Isaiah 40:31",
-      translation: "NIV"
+      verse: t('isaiahVerse'),
+      reference: t('isaiah'),
+      translation: t('niv')
     },
     {
-      verse: "Come to me, all you who are weary and burdened, and I will give you rest.",
-      reference: "Matthew 11:28",
-      translation: "NIV"
+      verse: t('matthewVerse'),
+      reference: t('matthew'),
+      translation: t('niv')
     },
     {
-      verse: "Let us not become weary in doing good, for at the proper time we will reap a harvest if we do not give up.",
-      reference: "Galatians 6:9",
-      translation: "NIV"
+      verse: t('galatiansVerse'),
+      reference: t('galatians'),
+      translation: t('niv')
     },
     {
-      verse: "The Lord is my shepherd, I lack nothing. He makes me lie down in green pastures, he leads me beside quiet waters, he refreshes my soul.",
-      reference: "Psalm 23:1-3",
-      translation: "NIV"
+      verse: t('psalms23Verse'),
+      reference: t('psalms') + ' 23:1-3',
+      translation: t('niv')
     },
     {
-      verse: "And we know that in all things God works for the good of those who love him, who have been called according to his purpose.",
-      reference: "Romans 8:28",
-      translation: "NIV"
+      verse: t('romansVerse'),
+      reference: t('romans'),
+      translation: t('niv')
     }
   ]
 
@@ -116,6 +169,13 @@ export default function Dashboard() {
       }
     }
   }, [])
+
+  // Regenerate verse when language changes
+  useEffect(() => {
+    if (currentVerse) {
+      generateRandomVerse()
+    }
+  }, [t]) // This will trigger when the translation function changes (language changes)
 
   const generateRandomVerse = () => {
     setGeneratingVerse(true)
@@ -227,7 +287,7 @@ export default function Dashboard() {
            addToast({
              type: 'success',
              title: 'Download Complete',
-             message: 'Your Bible verse image has been downloaded!'
+             message: t('bibleVerseDownloaded')
            })
          }
        }, 'image/png', 0.95)
@@ -246,71 +306,56 @@ export default function Dashboard() {
   }
 
   const handleSwitchTeam = async (newTeam: TeamColor) => {
-    if (!profile || loading) return
+    if (!profile) return
+
     setLoading(true)
     try {
-      const { data: canSwitch, error: validateError } = await supabase
-        .rpc('can_switch_team', {
-          user_id: profile.id,
-          new_team: newTeam
-        })
-      if (validateError) throw validateError
-      if (!canSwitch) {
-        alert('Team switch not allowed. You may have no switches remaining, teams are locked, or the team is full.')
-        return
-      }
-      const { error: switchError } = await supabase
-        .from('team_switches')
-        .insert({
-          user_id: profile.id,
-          from_team: profile.current_team,
-          to_team: newTeam
-        })
-      if (switchError) throw switchError
-      const { error: updateError } = await updateProfile({
-        current_team: newTeam,
-        switches_remaining: profile.switches_remaining - 1
+      const { error } = await supabase.rpc('switch_team', {
+        user_id: profile.id,
+        new_team: newTeam
       })
-      if (updateError) throw updateError
-    } catch (error) {
-      console.error('Error switching team:', (error as any))
-      alert('Error switching team: ' + (error as any).message)
+
+      if (error) throw error
+
+      addToast({
+        type: 'success',
+        title: t('teamSwitchSuccessful'),
+        message: `${t('successfullyJoinedTeam')} ${TEAMS[newTeam].name} team!`
+      })
+
+      // Refresh the page to update the UI
+      window.location.reload()
+    } catch (error: any) {
+      console.error('Error switching team:', error)
+      addToast({
+        type: 'error',
+        title: t('cannotSwitchTeams'),
+        message: t('teamSwitchNotAllowed')
+      })
     } finally {
       setLoading(false)
     }
   }
 
   const handleOptInToTeams = async () => {
-    if (!profile || optInLoading) return
-    
+    if (!profile) return
+
     setOptInLoading(true)
     try {
-      // Find the team with the least players for balanced assignment
-      const teamCounts = teamBalance.reduce((acc, team) => {
-        acc[team.team] = team.total_count
-        return acc
-      }, {} as Record<string, number>)
-      
-      const leastPopulatedTeam = Object.entries(teamCounts)
-        .sort(([,a], [,b]) => a - b)[0][0] as TeamColor
-      
       const { error } = await updateProfile({
-        participate_in_teams: true,
-        current_team: leastPopulatedTeam
+        participate_in_teams: true
       })
-      
+
       if (error) throw error
-      
+
       addToast({
         type: 'success',
         title: 'Welcome to Teams!',
-        message: `You have been assigned to the ${TEAMS[leastPopulatedTeam].name} team. You can now switch teams like other participants.`
+        message: 'You can now participate in team activities and switch teams.'
       })
-      
-      // Refresh the page to update all components
-      setTimeout(() => {
-        window.location.reload()
-      }, 1000)
+
+      // Refresh the page to update the UI
+      window.location.reload()
     } catch (error: any) {
       console.error('Error opting in to teams:', error)
       addToast({
@@ -324,7 +369,13 @@ export default function Dashboard() {
   }
 
   if (!profile) {
-    return <div>Loading...</div>
+    return (
+      <div className="space-y-8">
+        <SkeletonCard />
+        <SkeletonCard />
+        <SkeletonCard />
+      </div>
+    )
   }
 
   const currentTeam = profile.current_team ? TEAMS[profile.current_team] : null
@@ -337,21 +388,44 @@ export default function Dashboard() {
         <div className="flex items-center justify-between mb-4">
           <div>
             <h2 className="text-2xl font-bold text-gray-900">
-              Welcome back, {profile.full_name}!
+              {t('welcomeMessageWithName').replace('{name}', profile.full_name.split(' ')[0])}
             </h2>
             <p className="text-gray-600">
-              {getGradeDisplayWithNumber(profile.grade)} • {profile.gender === 'male' ? 'Male' : 'Female'}
+              {getGradeDisplayWithNumber(profile.grade)} • {profile.gender === 'male' ? t('male') : t('female')}
             </p>
           </div>
-          {profile.is_admin && (
-            <button
-              onClick={() => setShowAdmin(!showAdmin)}
-              className="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md text-white bg-purple-600 hover:bg-purple-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-purple-500"
-            >
-              <Shield className="h-4 w-4 mr-2" />
-              {showAdmin ? 'Hide Admin' : 'Show Admin'}
-            </button>
-          )}
+        </div>
+
+        {/* Quick Actions */}
+        <div className="mb-6">
+          <h3 className="text-lg font-semibold text-gray-900 mb-4 flex items-center">
+            <Activity className="h-5 w-5 mr-2" />
+            {t('quickActions')}
+          </h3>
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
+            {quickActions.filter(action => action.available).map((action) => {
+              const Icon = action.icon
+              return (
+                <button
+                  key={action.id}
+                  onClick={action.action}
+                  className={`
+                    ${action.color}
+                    text-white p-4 rounded-lg transition-all duration-200
+                    transform hover:scale-105 active:scale-95
+                    flex flex-col items-center justify-center space-y-2
+                    shadow-md hover:shadow-lg
+                  `}
+                >
+                  <Icon className="h-6 w-6" />
+                  <div className="text-center">
+                    <div className="font-medium text-sm">{action.title}</div>
+                    <div className="text-xs opacity-90">{action.description}</div>
+                  </div>
+                </button>
+              )
+            })}
+          </div>
         </div>
 
         {/* Admin Opt-in Section */}
@@ -359,10 +433,9 @@ export default function Dashboard() {
           <div className="mb-6 p-4 bg-blue-50 border border-blue-200 rounded-lg">
             <div className="flex items-center justify-between">
               <div>
-                <h3 className="text-lg font-semibold text-blue-900 mb-1">Join Team Activities</h3>
+                <h3 className="text-lg font-semibold text-blue-900 mb-1">{t('teamAssignment')}</h3>
                 <p className="text-blue-700 text-sm">
-                  As an admin, you're not currently participating in team activities. 
-                  Click below to join a team and participate in camp activities with the participants.
+                  {t('teamMembers')}
                 </p>
               </div>
               <button
@@ -375,7 +448,7 @@ export default function Dashboard() {
                 ) : (
                   <UserPlus className="h-4 w-4 mr-2" />
                 )}
-                Join Teams
+                {t('teams')}
               </button>
             </div>
           </div>
@@ -383,7 +456,7 @@ export default function Dashboard() {
         
         {currentTeam && (
           <div className="mb-4">
-            <h3 className="text-lg font-semibold text-gray-900 mb-2">Current Team</h3>
+            <h3 className="text-lg font-semibold text-gray-900 mb-2">{t('teamColor')}</h3>
             <div className={`inline-flex items-center px-4 py-2 rounded-lg ${currentTeam.lightColor} ${currentTeam.textColor}`}>
               <Users className="h-5 w-5 mr-2" />
               <span className="font-medium">{currentTeam.name} Team</span>
@@ -393,7 +466,7 @@ export default function Dashboard() {
         <div className="mb-4">
           <div className="flex items-center justify-between">
             <span className="text-sm font-medium text-gray-700">
-              Team switches remaining: {profile.switches_remaining}
+              {t('teamSwitchesRemaining')}: {profile.switches_remaining}
             </span>
           </div>
           <div className="w-full bg-gray-200 rounded-full h-2 mt-2">
@@ -405,7 +478,7 @@ export default function Dashboard() {
         </div>
         {profile.friend_requests.length > 0 && (
           <div>
-            <h3 className="text-lg font-semibold text-gray-900 mb-2">Friend Requests</h3>
+            <h3 className="text-lg font-semibold text-gray-900 mb-2">{t('friendRequests')}</h3>
             <div className="flex flex-wrap gap-2">
               {profile.friend_requests.map((friend, index) => (
                 <span key={index} className="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-gray-100 text-gray-800">
@@ -421,8 +494,8 @@ export default function Dashboard() {
       <div className="bg-white rounded-lg shadow-sm p-6">
         <div className="flex items-center justify-between mb-6">
           <div>
-            <h3 className="text-xl font-bold text-gray-900">Daily Inspiration</h3>
-            <p className="text-gray-600">A motivational Bible verse to start your day</p>
+            <h3 className="text-xl font-bold text-gray-900">{t('dailyInspiration')}</h3>
+            <p className="text-gray-600">{t('motivationalBibleVerse')}</p>
           </div>
           <div className="flex space-x-2">
             {profile.is_admin && (
@@ -436,7 +509,7 @@ export default function Dashboard() {
                 ) : (
                   <RefreshCw className="h-4 w-4 mr-2" />
                 )}
-                New Verse
+                {t('newVerse')}
               </button>
             )}
             <button
@@ -449,7 +522,7 @@ export default function Dashboard() {
               ) : (
                 <Download className="h-4 w-4 mr-2" />
               )}
-              Download
+              {t('download')}
             </button>
           </div>
         </div>
@@ -500,16 +573,14 @@ export default function Dashboard() {
         </div>
       </div>
 
-            {/* Player Lists */}
-            <PlayerLists />
-
-
+      {/* Player Lists */}
+      <PlayerLists />
 
       {/* Team Balance Overview */}
       <div className="bg-white rounded-lg shadow-sm p-6">
         <h3 className="text-lg font-semibold text-gray-900 mb-4 flex items-center">
           <BarChart3 className="h-5 w-5 mr-2" />
-          Team Balance Overview
+          {t('teamBalanceOverview')}
         </h3>
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
           {teamBalance.map((team) => (
@@ -526,10 +597,8 @@ export default function Dashboard() {
         </div>
       </div>
 
-
-
       {/* Admin Panel */}
-      {profile.is_admin && showAdmin && (
+      {profile.is_admin && (
         <AdminPanel />
       )}
     </div>

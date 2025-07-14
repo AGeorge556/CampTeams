@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react'
 import { Trophy, CheckCircle, XCircle, Save } from 'lucide-react'
 import { supabase } from '../lib/supabase'
 import { useProfile } from '../hooks/useProfile'
+import { useLanguage } from '../contexts/LanguageContext'
 
 interface Sport {
   id: string
@@ -20,6 +21,7 @@ interface UserSportSelection {
 
 export default function SportsSelection() {
   const { profile } = useProfile()
+  const { t } = useLanguage()
   const [sports, setSports] = useState<Sport[]>([])
   const [userSelections, setUserSelections] = useState<string[]>([])
   const [loading, setLoading] = useState(true)
@@ -28,40 +30,40 @@ export default function SportsSelection() {
   const availableSports: Sport[] = [
     {
       id: 'soccer',
-      name: 'Soccer',
-      description: 'Team football matches on the sports field',
+      name: t('soccer'),
+      description: t('soccerDescription'),
       icon: '⚽',
       color: 'bg-green-500',
       participants: 0
     },
     {
       id: 'dodgeball',
-      name: 'Dodgeball',
-      description: 'Fast-paced team dodgeball games in the gym',
+      name: t('dodgeball'),
+      description: t('dodgeballDescription'),
       icon: '🏐',
       color: 'bg-red-500',
       participants: 0
     },
     {
       id: 'chairball',
-      name: 'Chairball',
-      description: 'Unique chair-based ball game for all skill levels',
+      name: t('chairball'),
+      description: t('chairballDescription'),
       icon: '🪑',
       color: 'bg-blue-500',
       participants: 0
     },
     {
       id: 'big-game',
-      name: 'Big Game',
-      description: 'Large-scale team games and outdoor activities',
+      name: t('bigGame'),
+      description: t('bigGameDescription'),
       icon: '🎯',
       color: 'bg-purple-500',
       participants: 0
     },
     {
       id: 'pool-time',
-      name: 'Pool Time',
-      description: 'Swimming activities and water games',
+      name: t('poolTime'),
+      description: t('poolTimeDescription'),
       icon: '🏊',
       color: 'bg-cyan-500',
       participants: 0
@@ -182,7 +184,7 @@ export default function SportsSelection() {
               <span className="text-2xl">{sport.icon}</span>
               <div>
                 <h3 className="font-bold text-lg">{sport.name}</h3>
-                <p className="text-sm opacity-90">{sport.participants} participants</p>
+                <p className="text-sm opacity-90">{sport.participants} {t('participants')}</p>
               </div>
             </div>
           </div>
@@ -197,7 +199,7 @@ export default function SportsSelection() {
             <span className={`text-sm font-medium ${
               isSelected ? 'text-green-600' : 'text-gray-500'
             }`}>
-              {isSelected ? 'You\'re participating!' : 'Click to join'}
+              {isSelected ? t('youreParticipating') : t('clickToJoin')}
             </span>
             
             {saving && isSelected && (
@@ -224,19 +226,19 @@ export default function SportsSelection() {
         <div className="flex items-center space-x-3">
           <Trophy className="h-8 w-8 text-orange-500" />
           <div>
-            <h1 className="text-2xl font-bold text-gray-900">Sports Selection</h1>
-            <p className="text-gray-600">Choose which sports you want to participate in</p>
+            <h1 className="text-2xl font-bold text-gray-900">{t('sportsSelection')}</h1>
+            <p className="text-gray-600">{t('chooseSportsToParticipate')}</p>
           </div>
         </div>
       </div>
 
       {/* Instructions */}
       <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
-        <h3 className="font-semibold text-blue-900 mb-2">How it works:</h3>
+        <h3 className="font-semibold text-blue-900 mb-2">{t('howItWorks')}</h3>
         <ul className="text-sm text-blue-800 space-y-1">
-          <li>• Click on any sport to join or leave</li>
-          <li>• You can participate in multiple sports</li>
-          <li>• Changes are saved automatically</li>
+          <li>• {t('clickToJoinOrLeave')}</li>
+          <li>• {t('participateInMultipleSports')}</li>
+          <li>• {t('changesSavedAutomatically')}</li>
         </ul>
       </div>
 
@@ -248,7 +250,7 @@ export default function SportsSelection() {
       {/* Summary */}
       {userSelections.length > 0 && (
         <div className="bg-white rounded-lg shadow-sm p-6">
-          <h3 className="text-lg font-semibold text-gray-900 mb-4">Your Sports</h3>
+          <h3 className="text-lg font-semibold text-gray-900 mb-4">{t('yourSports')}</h3>
           <div className="flex flex-wrap gap-2">
             {userSelections.map(sportId => {
               const sport = sports.find(s => s.id === sportId)
@@ -263,7 +265,7 @@ export default function SportsSelection() {
             })}
           </div>
           <p className="text-sm text-gray-600 mt-3">
-            You're participating in {userSelections.length} sport{userSelections.length !== 1 ? 's' : ''}
+            {t('participatingInSports')} {userSelections.length} {userSelections.length !== 1 ? t('teams') : t('teams')}
           </p>
         </div>
       )}
@@ -272,8 +274,8 @@ export default function SportsSelection() {
       {userSelections.length === 0 && (
         <div className="bg-gray-50 rounded-lg p-8 text-center">
           <Trophy className="h-12 w-12 text-gray-400 mx-auto mb-4" />
-          <h3 className="text-lg font-medium text-gray-900 mb-2">No sports selected yet</h3>
-          <p className="text-gray-600">Click on any sport above to start participating!</p>
+          <h3 className="text-lg font-medium text-gray-900 mb-2">{t('noSportsSelectedYet')}</h3>
+          <p className="text-gray-600">{t('clickOnAnySportToStart')}</p>
         </div>
       )}
     </div>

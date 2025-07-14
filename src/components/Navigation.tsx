@@ -2,6 +2,8 @@ import React, { useState } from 'react'
 import { Menu, X, Users, Calendar, Trophy, LogOut } from 'lucide-react'
 import { useAuth } from '../hooks/useAuth'
 import { useProfile } from '../hooks/useProfile'
+import { useLanguage } from '../contexts/LanguageContext'
+import LanguageSwitcher from './LanguageSwitcher'
 
 interface NavigationProps {
   currentPage: string
@@ -11,6 +13,7 @@ interface NavigationProps {
 export default function Navigation({ currentPage, onPageChange }: NavigationProps) {
   const { signOut } = useAuth()
   const { profile } = useProfile()
+  const { t } = useLanguage()
   const [isMenuOpen, setIsMenuOpen] = useState(false)
 
   const handleSignOut = async () => {
@@ -18,9 +21,9 @@ export default function Navigation({ currentPage, onPageChange }: NavigationProp
   }
 
   const navigationItems = [
-    { id: 'dashboard', name: 'Dashboard', icon: Users },
-    ...(profile?.is_admin ? [{ id: 'schedule', name: 'Schedule', icon: Calendar }] : []),
-    { id: 'sports', name: 'Sports', icon: Trophy }
+    { id: 'dashboard', name: t('dashboard'), icon: Users },
+    ...(profile?.is_admin ? [{ id: 'schedule', name: t('schedule'), icon: Calendar }] : []),
+    { id: 'sports', name: t('teams'), icon: Trophy }
   ]
 
   const handlePageChange = (page: string) => {
@@ -63,9 +66,12 @@ export default function Navigation({ currentPage, onPageChange }: NavigationProp
 
           {/* User Info and Actions */}
           <div className="flex items-center space-x-4">
+            {/* Language Switcher */}
+            <LanguageSwitcher />
+            
             {profile?.is_admin && (
               <span className="hidden md:inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-purple-100 text-purple-800">
-                Admin
+                {t('admin')}
               </span>
             )}
             
@@ -75,7 +81,7 @@ export default function Navigation({ currentPage, onPageChange }: NavigationProp
               className="hidden md:inline-flex items-center px-3 py-2 border border-transparent text-sm leading-4 font-medium rounded-md text-gray-500 bg-white hover:text-gray-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-orange-500"
             >
               <LogOut className="h-4 w-4 mr-2" />
-              Sign Out
+              {t('logout')}
             </button>
 
             {/* Mobile menu button */}
@@ -121,7 +127,7 @@ export default function Navigation({ currentPage, onPageChange }: NavigationProp
               className="flex items-center space-x-3 w-full px-3 py-2 rounded-md text-base font-medium text-gray-500 hover:text-gray-700 hover:bg-gray-50 transition-colors"
             >
               <LogOut className="h-5 w-5" />
-              <span>Sign Out</span>
+              <span>{t('logout')}</span>
             </button>
           </div>
         </div>

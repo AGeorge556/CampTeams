@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react'
 import { Calendar } from 'lucide-react'
+import { useLanguage } from '../contexts/LanguageContext'
 
 interface CountdownTime {
   days: number
@@ -14,6 +15,7 @@ interface CountdownTimerProps {
 }
 
 export default function CountdownTimer({ targetDate, compact = false }: CountdownTimerProps) {
+  const { t } = useLanguage()
   const [countdown, setCountdown] = useState<CountdownTime>({ days: 0, hours: 0, minutes: 0, seconds: 0 })
 
   useEffect(() => {
@@ -45,24 +47,24 @@ export default function CountdownTimer({ targetDate, compact = false }: Countdow
         <div className="flex items-center justify-between">
           <div className="flex items-center space-x-2">
             <Calendar className="h-4 w-4 text-orange-500" />
-            <span className="text-sm font-medium text-gray-700">Camp starts in</span>
+            <span className="text-sm font-medium text-gray-700">{t('campStartsIn')}</span>
           </div>
           <div className="flex items-center space-x-3">
             <div className="text-center">
               <div className="text-lg font-bold text-orange-600">{countdown.days}</div>
-              <div className="text-xs text-gray-500">Days</div>
+              <div className="text-xs text-gray-500">{t('daysRemaining')}</div>
             </div>
             <div className="text-center">
               <div className="text-lg font-bold text-orange-600">{countdown.hours}</div>
-              <div className="text-xs text-gray-500">Hours</div>
+              <div className="text-xs text-gray-500">{t('hoursRemaining')}</div>
             </div>
             <div className="text-center">
               <div className="text-lg font-bold text-orange-600">{countdown.minutes}</div>
-              <div className="text-xs text-gray-500">Min</div>
+              <div className="text-xs text-gray-500">{t('minutesRemaining')}</div>
             </div>
             <div className="text-center">
               <div className="text-lg font-bold text-orange-600">{countdown.seconds}</div>
-              <div className="text-xs text-gray-500">Sec</div>
+              <div className="text-xs text-gray-500">{t('secondsRemaining')}</div>
             </div>
           </div>
         </div>
@@ -74,25 +76,25 @@ export default function CountdownTimer({ targetDate, compact = false }: Countdow
     <div className="bg-gradient-to-r from-orange-50 to-yellow-50 rounded-lg p-6 border border-orange-100">
       <div className="flex items-center justify-center mb-4">
         <Calendar className="h-5 w-5 text-orange-500 mr-2" />
-        <h3 className="text-lg font-semibold text-gray-900">Camp Starts In</h3>
+        <h3 className="text-lg font-semibold text-gray-900">{t('countdownToCamp')}</h3>
       </div>
       
       <div className="grid grid-cols-4 gap-3">
         <div className="bg-white rounded-lg p-3 shadow-sm border border-orange-100">
           <div className="text-2xl font-bold text-orange-600">{countdown.days}</div>
-          <div className="text-xs text-gray-600">Days</div>
+          <div className="text-xs text-gray-600">{t('daysRemaining')}</div>
         </div>
         <div className="bg-white rounded-lg p-3 shadow-sm border border-orange-100">
           <div className="text-2xl font-bold text-orange-600">{countdown.hours}</div>
-          <div className="text-xs text-gray-600">Hours</div>
+          <div className="text-xs text-gray-600">{t('hoursRemaining')}</div>
         </div>
         <div className="bg-white rounded-lg p-3 shadow-sm border border-orange-100">
           <div className="text-2xl font-bold text-orange-600">{countdown.minutes}</div>
-          <div className="text-xs text-gray-600">Minutes</div>
+          <div className="text-xs text-gray-600">{t('minutesRemaining')}</div>
         </div>
         <div className="bg-white rounded-lg p-3 shadow-sm border border-orange-100">
           <div className="text-2xl font-bold text-orange-600">{countdown.seconds}</div>
-          <div className="text-xs text-gray-600">Seconds</div>
+          <div className="text-xs text-gray-600">{t('secondsRemaining')}</div>
         </div>
       </div>
       

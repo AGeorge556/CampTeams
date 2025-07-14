@@ -4,20 +4,28 @@ import { supabase } from '../lib/supabase'
 import { useProfile } from '../hooks/useProfile'
 import { useToast } from './Toast'
 import { ScheduleItem, SessionWithSchedule, SessionType, SESSION_TYPE_LABELS, SESSION_TYPE_COLORS } from '../lib/types'
+import { useLanguage } from '../contexts/LanguageContext'
 
 export default function ScheduleSessionManager() {
   const { profile } = useProfile()
   const { addToast } = useToast()
+  const { t } = useLanguage()
   const [scheduleItems, setScheduleItems] = useState<ScheduleItem[]>([])
   const [sessions, setSessions] = useState<SessionWithSchedule[]>([])
   const [loading, setLoading] = useState(false)
   const [selectedDay, setSelectedDay] = useState<number>(1)
   const [creatingSessions, setCreatingSessions] = useState(false)
+  const [selectedScheduleIds, setSelectedScheduleIds] = useState<string[]>([])
 
   useEffect(() => {
     loadScheduleItems()
     loadSessions()
   }, [])
+
+  // Reset selection when day changes
+  useEffect(() => {
+    setSelectedScheduleIds([])
+  }, [selectedDay, scheduleItems])
 
   const loadScheduleItems = async () => {
     try {
@@ -84,26 +92,8 @@ export default function ScheduleSessionManager() {
 
     setCreatingSessions(true)
     try {
-      // Try to use the database function first
-      const { error: dbFunctionError } = await supabase
-        .rpc('create_sessions_for_day', { day_number: day })
-
-      if (!dbFunctionError) {
-        // Database function worked
-        addToast({
-          type: 'success',
-          title: 'Sessions Created',
-          message: `Successfully created sessions for Day ${day} using database function`
-        })
-        loadSessions()
-        return
-      }
-
-      // Fallback to client-side implementation
-      console.log('Database function not available, using client-side implementation')
-      
       // Get schedule items for the selected day
-      const { data: scheduleItems, error: scheduleError } = await supabase
+      const { data: allScheduleItems, error: scheduleError } = await supabase
         .from('camp_schedule')
         .select('*')
         .eq('day', day)
@@ -111,17 +101,20 @@ export default function ScheduleSessionManager() {
 
       if (scheduleError) throw scheduleError
 
-      if (!scheduleItems || scheduleItems.length === 0) {
+      // Filter to only selected schedule items
+      const filteredItems = (allScheduleItems || []).filter(item => selectedScheduleIds.includes(item.id))
+
+      if (!filteredItems || filteredItems.length === 0) {
         addToast({
           type: 'warning',
-          title: 'No Schedule Items',
-          message: `No schedule items found for Day ${day}`
+          title: t('warning'),
+          message: t('noSportsSelectedYet') // Reuse translation for 'No items selected'
         })
         return
       }
 
-      // Create sessions for each schedule item
-      const sessionPromises = scheduleItems.map(async (item) => {
+      // Create sessions for each selected schedule item
+      const sessionPromises = filteredItems.map(async (item) => {
         // Check if session already exists
         const { data: existingSession } = await supabase
           .from('camp_sessions')
@@ -178,8 +171,8 @@ export default function ScheduleSessionManager() {
 
       addToast({
         type: 'success',
-        title: 'Sessions Created',
-        message: `Successfully created ${createdSessions.length} sessions for Day ${day} using client-side implementation`
+        title: t('success'),
+        message: t('successWithExclamation', { count: createdSessions.length })
       })
 
       loadSessions()
@@ -187,8 +180,8 @@ export default function ScheduleSessionManager() {
       console.error('Error creating sessions:', error)
       addToast({
         type: 'error',
-        title: 'Error',
-        message: 'Failed to create sessions'
+        title: t('error'),
+        message: t('errorWithRetry')
       })
     } finally {
       setCreatingSessions(false)
@@ -259,35 +252,40 @@ export default function ScheduleSessionManager() {
       </div>
 
       {/* Day Selection */}
-      <div className="bg-white rounded-lg shadow-sm p-6">
-        <div className="flex items-center justify-between mb-4">
-          <h4 className="text-lg font-medium text-gray-900">Select Day</h4>
-          <button
-            onClick={() => createSessionsForDay(selectedDay)}
-            disabled={creatingSessions}
-            className="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md text-white bg-orange-600 hover:bg-orange-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-orange-500 disabled:opacity-50"
-          >
-            {creatingSessions ? (
-              <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white mr-2"></div>
-            ) : (
-              <Plus className="h-4 w-4 mr-2" />
-            )}
-            Create Sessions for Day {selectedDay}
-          </button>
+      <div className="bg-white rounded-lg shadow-sm p-4 md:p-6">
+        <div className="flex flex-col md:flex-row md:items-center md:justify-between mb-4 space-y-4 md:space-y-0">
+          <h4 className="text-lg font-medium text-gray-900">{t('schedule')}</h4>
+          <div className="flex justify-center md:justify-end">
+            <button
+              onClick={() => createSessionsForDay(selectedDay)}
+              disabled={creatingSessions}
+              className="inline-flex items-center px-4 py-3 md:px-4 md:py-2 border border-transparent text-sm font-medium rounded-md text-white bg-orange-600 hover:bg-orange-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-orange-500 disabled:opacity-50 transition-colors duration-200"
+            >
+              {creatingSessions ? (
+                <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white mr-2"></div>
+              ) : (
+                <Plus className="h-4 w-4 mr-2" />
+              )}
+              {/* Fallback to literal if translation key does not exist */}
+              {t('schedule') + ': '}
+              {`Create Sessions for Day ${selectedDay}`}
+            </button>
+          </div>
         </div>
         
-        <div className="grid grid-cols-4 gap-2">
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-2">
           {[1, 2, 3, 4].map((day) => (
             <button
               key={day}
               onClick={() => setSelectedDay(day)}
-              className={`px-4 py-2 rounded-md text-sm font-medium ${
+              className={`px-4 py-3 md:py-2 rounded-md text-sm font-medium transition-colors duration-200 ${
                 selectedDay === day
                   ? 'bg-orange-100 text-orange-700 border border-orange-300'
                   : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
               }`}
             >
-              Day {day}
+              {/* Fallback to literal if translation key does not exist */}
+              {'Day'} {day}
             </button>
           ))}
         </div>
@@ -295,50 +293,65 @@ export default function ScheduleSessionManager() {
 
       {/* Schedule Items for Selected Day */}
       <div className="bg-white rounded-lg shadow-sm">
-        <div className="px-6 py-4 border-b border-gray-200">
-          <h4 className="text-lg font-medium text-gray-900">Day {selectedDay} Schedule</h4>
+        <div className="px-4 md:px-6 py-4 border-b border-gray-200">
+          <h4 className="text-lg font-medium text-gray-900">{t('schedule')} - { /* fallback to literal for 'Day' */ }{'Day'} {selectedDay}</h4>
+          <p className="text-sm text-gray-600">{t('chooseSportsToParticipate')}</p>
         </div>
         <div className="divide-y divide-gray-200">
           {getScheduleItemsForDay(selectedDay).map((item) => {
+            const checked = selectedScheduleIds.includes(item.id)
             const existingSession = sessions.find(s => s.schedule_id === item.id)
             const sessionType = getSessionTypeFromActivity(item.activity)
 
             return (
-              <div key={item.id} className="p-6">
-                <div className="flex items-center justify-between">
-                  <div className="flex-1">
-                    <div className="flex items-center space-x-3">
-                      <h5 className="text-lg font-medium text-gray-900">{item.activity}</h5>
-                      <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${SESSION_TYPE_COLORS[sessionType]}`}>
+              <div key={item.id} className="p-4 md:p-6">
+                <div className="flex flex-col md:flex-row md:items-center md:justify-between space-y-4 md:space-y-0">
+                  <div className="flex-1 min-w-0">
+                    <div className="flex flex-col sm:flex-row sm:items-center space-y-2 sm:space-y-0 sm:space-x-3">
+                      <input
+                        type="checkbox"
+                        checked={checked}
+                        onChange={e => {
+                          setSelectedScheduleIds(ids =>
+                            e.target.checked
+                              ? [...ids, item.id]
+                              : ids.filter(id => id !== item.id)
+                          )
+                        }}
+                        className="h-5 w-5 text-orange-600 border-gray-300 rounded focus:ring-orange-500"
+                        aria-label={`Select ${item.activity}`}
+                      />
+                      <h5 className="text-lg font-medium text-gray-900 truncate">{item.activity}</h5>
+                      <span className={`inline-flex items-center px-2 py-1 rounded-full text-xs font-medium ${SESSION_TYPE_COLORS[sessionType]}`}>
                         {SESSION_TYPE_LABELS[sessionType]}
                       </span>
                       {existingSession && (
-                        <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${
+                        <span className={`inline-flex items-center px-2 py-1 rounded-full text-xs font-medium ${
                           existingSession.is_active ? 'bg-green-100 text-green-800' : 'bg-gray-100 text-gray-800'
                         }`}>
                           {existingSession.is_active ? 'Active' : 'Inactive'}
                         </span>
                       )}
                     </div>
-                    <div className="flex items-center space-x-4 mt-2 text-sm text-gray-500">
-                      <div className="flex items-center">
+                    <div className="flex flex-col sm:flex-row sm:items-center space-y-1 sm:space-y-0 sm:space-x-4 mt-2 text-sm text-gray-500">
+                      <div className="flex items-center justify-start">
                         <Clock className="h-4 w-4 mr-1" />
                         {formatTime(item.time)}
                       </div>
-                      <div className="flex items-center">
+                      <div className="flex items-center justify-start">
                         <MapPin className="h-4 w-4 mr-1" />
-                        {item.location}
+                        <span className="truncate">{item.location}</span>
                       </div>
                     </div>
                     {item.description && (
-                      <p className="text-sm text-gray-600 mt-1">{item.description}</p>
+                      <p className="text-sm text-gray-600 mt-2 line-clamp-2">{item.description}</p>
                     )}
                   </div>
-                  <div className="flex items-center space-x-2">
+                  <div className="flex items-center justify-start md:justify-end space-x-2">
                     {existingSession ? (
                       <button
                         onClick={() => toggleSessionActive(existingSession.id, existingSession.is_active)}
-                        className={`inline-flex items-center px-3 py-2 border border-gray-300 shadow-sm text-sm font-medium rounded-md ${
+                        className={`inline-flex items-center px-4 py-2 md:px-3 md:py-2 border border-gray-300 shadow-sm text-sm font-medium rounded-md transition-colors duration-200 ${
                           existingSession.is_active
                             ? 'text-red-700 bg-white hover:bg-red-50 border-red-300'
                             : 'text-green-700 bg-white hover:bg-green-50 border-green-300'
@@ -347,17 +360,17 @@ export default function ScheduleSessionManager() {
                         {existingSession.is_active ? (
                           <>
                             <Pause className="h-4 w-4 mr-2" />
-                            Deactivate
+                            {'Deactivate'}
                           </>
                         ) : (
                           <>
                             <Play className="h-4 w-4 mr-2" />
-                            Activate
+                            {'Activate'}
                           </>
                         )}
                       </button>
                     ) : (
-                      <span className="text-sm text-gray-400">No session created</span>
+                      <span className="text-sm text-gray-400 px-2 py-1">No session created</span>
                     )}
                   </div>
                 </div>
@@ -369,44 +382,44 @@ export default function ScheduleSessionManager() {
 
       {/* Active Sessions Overview */}
       <div className="bg-white rounded-lg shadow-sm">
-        <div className="px-6 py-4 border-b border-gray-200">
+        <div className="px-4 md:px-6 py-4 border-b border-gray-200">
           <h4 className="text-lg font-medium text-gray-900">Active Sessions</h4>
         </div>
         <div className="divide-y divide-gray-200">
           {sessions.filter(s => s.is_active).length === 0 ? (
-            <div className="p-6 text-center text-gray-500">No active sessions</div>
+            <div className="p-4 md:p-6 text-center text-gray-500">No active sessions</div>
           ) : (
             sessions
               .filter(s => s.is_active)
               .sort((a, b) => new Date(a.start_time).getTime() - new Date(b.start_time).getTime())
               .map((session) => (
-                <div key={session.id} className="p-6">
-                  <div className="flex items-center justify-between">
-                    <div className="flex-1">
-                      <div className="flex items-center space-x-3">
-                        <h5 className="text-lg font-medium text-gray-900">{session.name}</h5>
-                        <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${SESSION_TYPE_COLORS[session.session_type as SessionType]}`}>
+                <div key={session.id} className="p-4 md:p-6">
+                  <div className="flex flex-col md:flex-row md:items-center md:justify-between space-y-2 md:space-y-0">
+                    <div className="flex-1 min-w-0">
+                      <div className="flex flex-col sm:flex-row sm:items-center space-y-2 sm:space-y-0 sm:space-x-3">
+                        <h5 className="text-lg font-medium text-gray-900 truncate">{session.name}</h5>
+                        <span className={`inline-flex items-center px-2 py-1 rounded-full text-xs font-medium ${SESSION_TYPE_COLORS[session.session_type as SessionType]}`}>
                           {SESSION_TYPE_LABELS[session.session_type as SessionType]}
                         </span>
                         {session.schedule_day && (
-                          <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-100 text-blue-800">
-                            Day {session.schedule_day}
+                          <span className="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-blue-100 text-blue-800">
+                            {'Day ' + session.schedule_day}
                           </span>
                         )}
                       </div>
-                      <div className="flex items-center space-x-4 mt-2 text-sm text-gray-500">
-                        <div className="flex items-center">
+                      <div className="flex flex-col sm:flex-row sm:items-center space-y-1 sm:space-y-0 sm:space-x-4 mt-2 text-sm text-gray-500">
+                        <div className="flex items-center justify-start">
                           <Calendar className="h-4 w-4 mr-1" />
                           {new Date(session.start_time).toLocaleDateString()}
                         </div>
-                        <div className="flex items-center">
+                        <div className="flex items-center justify-start">
                           <Clock className="h-4 w-4 mr-1" />
                           {new Date(session.start_time).toLocaleTimeString()} - {new Date(session.end_time).toLocaleTimeString()}
                         </div>
                         {session.schedule_location && (
-                          <div className="flex items-center">
+                          <div className="flex items-center justify-start">
                             <MapPin className="h-4 w-4 mr-1" />
-                            {session.schedule_location}
+                            <span className="truncate">{session.schedule_location}</span>
                           </div>
                         )}
                       </div>
