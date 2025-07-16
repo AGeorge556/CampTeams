@@ -1,7 +1,9 @@
-import React, { useState } from 'react'
-import { Calendar, Clock, Users, Settings, BarChart3, Edit, Plus, Menu, X } from 'lucide-react'
+import React, { useState, useEffect } from 'react'
+import { Calendar, Clock, Users, Settings, BarChart3, Edit, Plus, Menu, X, Eye, EyeOff } from 'lucide-react'
 import { useProfile } from '../hooks/useProfile'
 import { useLanguage } from '../contexts/LanguageContext'
+import { useToast } from './Toast'
+import { supabase } from '../lib/supabase'
 import SessionManager from './SessionManager'
 import AttendanceReports from './AttendanceReports'
 import ScheduleFinalizer from './ScheduleFinalizer'
@@ -11,11 +13,72 @@ import ScheduleEditor from './ScheduleEditor'
 export default function Schedule() {
   const { profile } = useProfile()
   const { t } = useLanguage()
+  const { addToast } = useToast()
   const [activeTab, setActiveTab] = useState<'sessions' | 'reports' | 'schedule' | 'finalize' | 'editor'>('sessions')
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
+  const [scheduleVisible, setScheduleVisible] = useState(true)
+  const [loading, setLoading] = useState(false)
 
+  useEffect(() => {
+    loadScheduleVisibility()
+  }, [])
+
+  const loadScheduleVisibility = async () => {
+    try {
+      const { data, error } = await supabase
+        .rpc('get_schedule_visibility')
+
+      if (error) throw error
+      setScheduleVisible(data || true)
+    } catch (error) {
+      console.error('Error loading schedule visibility:', error)
+    }
+  }
+
+  const toggleScheduleVisibility = async () => {
+    if (!profile?.is_admin) return
+
+    setLoading(true)
+    try {
+      const { error } = await supabase
+        .rpc('toggle_schedule_visibility')
+
+      if (error) throw error
+
+      await loadScheduleVisibility()
+      
+      addToast({
+        type: 'success',
+        title: t('success'),
+        message: scheduleVisible ? t('hideSchedule') : t('showSchedule')
+      })
+    } catch (error) {
+      console.error('Error toggling schedule visibility:', error)
+      addToast({
+        type: 'error',
+        title: t('error'),
+        message: 'Failed to update schedule visibility'
+      })
+    } finally {
+      setLoading(false)
+    }
+  }
+
+  // For non-admin users, show a message if schedule is hidden
   if (!profile?.is_admin) {
-    return null
+    return (
+      <div className="space-y-4 md:space-y-6">
+        <div className="bg-white rounded-lg shadow-sm p-8 text-center">
+          <Calendar className="h-16 w-16 text-gray-400 mx-auto mb-4" />
+          <h2 className="text-xl md:text-2xl font-bold text-gray-900 mb-2">
+            {t('schedule')}
+          </h2>
+          <p className="text-gray-600 text-lg">
+            {t('scheduleMakingInProgress')}
+          </p>
+        </div>
+      </div>
+    )
   }
 
   const tabs = [
@@ -63,17 +126,34 @@ export default function Schedule() {
               <p className="text-sm md:text-base text-gray-600">Manage camp schedule, sessions, and attendance</p>
             </div>
           </div>
-          {/* Mobile menu button */}
-          <button
-            onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-            className="md:hidden inline-flex items-center justify-center p-2 rounded-md text-gray-400 hover:text-gray-500 hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-inset focus:ring-blue-500"
-          >
-            {mobileMenuOpen ? (
-              <X className="h-6 w-6" />
-            ) : (
-              <Menu className="h-6 w-6" />
-            )}
-          </button>
+          <div className="flex items-center space-x-2">
+            {/* Schedule Visibility Toggle */}
+            <button
+              onClick={toggleScheduleVisibility}
+              disabled={loading}
+              className="inline-flex items-center px-3 py-2 border border-transparent text-sm font-medium rounded-md text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 disabled:opacity-50 transition-colors duration-200"
+            >
+              {loading ? (
+                <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white mr-2"></div>
+              ) : scheduleVisible ? (
+                <EyeOff className="h-4 w-4 mr-2" />
+              ) : (
+                <Eye className="h-4 w-4 mr-2" />
+              )}
+              {scheduleVisible ? t('hideSchedule') : t('showSchedule')}
+            </button>
+            {/* Mobile menu button */}
+            <button
+              onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
+              className="md:hidden inline-flex items-center justify-center p-2 rounded-md text-gray-400 hover:text-gray-500 hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-inset focus:ring-blue-500"
+            >
+              {mobileMenuOpen ? (
+                <X className="h-6 w-6" />
+              ) : (
+                <Menu className="h-6 w-6" />
+              )}
+            </button>
+          </div>
         </div>
       </div>
 

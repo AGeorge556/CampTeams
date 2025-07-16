@@ -80,6 +80,10 @@ export interface Translations {
   sessionManagement: string
   reports: string
   settings: string
+  hideSchedule: string
+  showSchedule: string
+  scheduleVisibility: string
+  scheduleMakingInProgress: string
 
   // Fun Messages
   awesome: string
@@ -280,6 +284,10 @@ export const translations: Record<Language, Translations> = {
     sessionManagement: 'Session Management',
     reports: 'Reports',
     settings: 'Settings',
+    hideSchedule: 'Hide Schedule',
+    showSchedule: 'Show Schedule',
+    scheduleVisibility: 'Schedule Visibility',
+    scheduleMakingInProgress: 'Schedule making in progress...',
 
     // Fun Messages
     awesome: 'Awesome!',
@@ -478,6 +486,10 @@ export const translations: Record<Language, Translations> = {
     sessionManagement: 'إدارة الجلسات',
     reports: 'التقارير',
     settings: 'الإعدادات',
+    hideSchedule: 'إخفاء الجدول',
+    showSchedule: 'إظهار الجدول',
+    scheduleVisibility: 'رؤية الجدول',
+    scheduleMakingInProgress: 'جاري إعداد الجدول...',
 
     // Fun Messages
     awesome: 'رائع!',
