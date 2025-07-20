@@ -1,9 +1,9 @@
-import React, { useState, useEffect } from 'react'
-import { Menu, X, Users, Calendar, Trophy, LogOut } from 'lucide-react'
+import React, { useState } from 'react'
+import { Menu, X, Users, Calendar, Trophy, LogOut, Zap } from 'lucide-react'
 import { useAuth } from '../hooks/useAuth'
 import { useProfile } from '../hooks/useProfile'
 import { useLanguage } from '../contexts/LanguageContext'
-import { supabase } from '../lib/supabase'
+import { useScheduleVisibility } from '../hooks/useScheduleVisibility'
 import LanguageSwitcher from './LanguageSwitcher'
 
 interface NavigationProps {
@@ -15,24 +15,8 @@ export default function Navigation({ currentPage, onPageChange }: NavigationProp
   const { signOut } = useAuth()
   const { profile } = useProfile()
   const { t } = useLanguage()
+  const { scheduleVisible } = useScheduleVisibility()
   const [isMenuOpen, setIsMenuOpen] = useState(false)
-  const [scheduleVisible, setScheduleVisible] = useState(true)
-
-  useEffect(() => {
-    loadScheduleVisibility()
-  }, [])
-
-  const loadScheduleVisibility = async () => {
-    try {
-      const { data, error } = await supabase
-        .rpc('get_schedule_visibility')
-
-      if (error) throw error
-      setScheduleVisible(data || true)
-    } catch (error) {
-      console.error('Error loading schedule visibility:', error)
-    }
-  }
 
   const handleSignOut = async () => {
     await signOut()
@@ -41,7 +25,8 @@ export default function Navigation({ currentPage, onPageChange }: NavigationProp
   const navigationItems = [
     { id: 'dashboard', name: t('dashboard'), icon: Users },
     ...(profile?.is_admin || scheduleVisible ? [{ id: 'schedule', name: t('schedule'), icon: Calendar }] : []),
-    { id: 'sports', name: t('teams'), icon: Trophy }
+    { id: 'sports', name: t('teams'), icon: Trophy },
+    { id: 'oil-extraction', name: 'Oil Extraction', icon: Zap }
   ]
 
   const handlePageChange = (page: string) => {

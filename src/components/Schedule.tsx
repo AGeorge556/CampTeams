@@ -1,9 +1,9 @@
-import React, { useState, useEffect } from 'react'
+import React, { useState } from 'react'
 import { Calendar, Clock, Users, Settings, BarChart3, Edit, Plus, Menu, X, Eye, EyeOff } from 'lucide-react'
 import { useProfile } from '../hooks/useProfile'
 import { useLanguage } from '../contexts/LanguageContext'
 import { useToast } from './Toast'
-import { supabase } from '../lib/supabase'
+import { useScheduleVisibility } from '../hooks/useScheduleVisibility'
 import SessionManager from './SessionManager'
 import AttendanceReports from './AttendanceReports'
 import ScheduleFinalizer from './ScheduleFinalizer'
@@ -14,53 +14,26 @@ export default function Schedule() {
   const { profile } = useProfile()
   const { t } = useLanguage()
   const { addToast } = useToast()
+  const { scheduleVisible, loading, toggleScheduleVisibility } = useScheduleVisibility()
   const [activeTab, setActiveTab] = useState<'sessions' | 'reports' | 'schedule' | 'finalize' | 'editor'>('sessions')
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
-  const [scheduleVisible, setScheduleVisible] = useState(true)
-  const [loading, setLoading] = useState(false)
 
-  useEffect(() => {
-    loadScheduleVisibility()
-  }, [])
-
-  const loadScheduleVisibility = async () => {
-    try {
-      const { data, error } = await supabase
-        .rpc('get_schedule_visibility')
-
-      if (error) throw error
-      setScheduleVisible(data || true)
-    } catch (error) {
-      console.error('Error loading schedule visibility:', error)
-    }
-  }
-
-  const toggleScheduleVisibility = async () => {
+  const handleToggleScheduleVisibility = async () => {
     if (!profile?.is_admin) return
 
-    setLoading(true)
     try {
-      const { error } = await supabase
-        .rpc('toggle_schedule_visibility')
-
-      if (error) throw error
-
-      await loadScheduleVisibility()
-      
+      await toggleScheduleVisibility()
       addToast({
         type: 'success',
         title: t('success'),
         message: scheduleVisible ? t('hideSchedule') : t('showSchedule')
       })
     } catch (error) {
-      console.error('Error toggling schedule visibility:', error)
       addToast({
         type: 'error',
         title: t('error'),
         message: 'Failed to update schedule visibility'
       })
-    } finally {
-      setLoading(false)
     }
   }
 
@@ -129,18 +102,19 @@ export default function Schedule() {
           <div className="flex items-center space-x-2">
             {/* Schedule Visibility Toggle */}
             <button
-              onClick={toggleScheduleVisibility}
+              onClick={handleToggleScheduleVisibility}
               disabled={loading}
-              className="inline-flex items-center px-3 py-2 border border-transparent text-sm font-medium rounded-md text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 disabled:opacity-50 transition-colors duration-200"
+              className="inline-flex items-center px-3 py-2 sm:px-4 sm:py-2.5 border border-transparent text-xs sm:text-sm font-medium rounded-lg text-white bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 disabled:opacity-50 transition-all duration-200 shadow-sm hover:shadow-md min-h-[44px]"
             >
               {loading ? (
-                <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white mr-2"></div>
+                <div className="animate-spin rounded-full h-3 w-3 sm:h-4 sm:w-4 border-b-2 border-white mr-1.5 sm:mr-2"></div>
               ) : scheduleVisible ? (
-                <EyeOff className="h-4 w-4 mr-2" />
+                <EyeOff className="h-3 w-3 sm:h-4 sm:w-4 mr-1.5 sm:mr-2" />
               ) : (
-                <Eye className="h-4 w-4 mr-2" />
+                <Eye className="h-3 w-3 sm:h-4 sm:w-4 mr-1.5 sm:mr-2" />
               )}
-              {scheduleVisible ? t('hideSchedule') : t('showSchedule')}
+              <span className="hidden sm:inline">{scheduleVisible ? t('hideSchedule') : t('showSchedule')}</span>
+              <span className="sm:hidden">{scheduleVisible ? 'Hide' : 'Show'}</span>
             </button>
             {/* Mobile menu button */}
             <button

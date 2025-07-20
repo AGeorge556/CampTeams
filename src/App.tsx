@@ -6,6 +6,11 @@ import OnboardingForm from './components/OnboardingForm'
 import Dashboard from './components/Dashboard'
 import Schedule from './components/Schedule'
 import SportsSelection from './components/SportsSelection'
+import OilExtractionGame from './components/OilExtractionGame'
+import AdminCoinManagement from './components/oil-extraction/AdminCoinManagement'
+import TeamExcavation from './components/oil-extraction/TeamExcavation'
+import OilShop from './components/oil-extraction/OilShop'
+import EconomyDashboard from './components/oil-extraction/EconomyDashboard'
 import Layout from './components/Layout'
 import Navigation from './components/Navigation'
 import LandingPage from './components/LandingPage'
@@ -40,6 +45,16 @@ function App() {
                     return <Schedule />
                   case 'sports':
                     return <SportsSelection />
+                  case 'oil-extraction':
+                    return <OilExtractionGame onPageChange={setCurrentPage} />
+                  case 'oil-extraction-admin':
+                    return <AdminCoinManagement onPageChange={setCurrentPage} />
+                  case 'oil-extraction-team':
+                    return <TeamExcavation onPageChange={setCurrentPage} />
+                          case 'oil-extraction-shop':
+          return <OilShop onPageChange={setCurrentPage} />
+        case 'oil-extraction-economy':
+          return <EconomyDashboard onPageChange={setCurrentPage} />
                   default:
                     return <Dashboard onPageChange={setCurrentPage} />
                 }
