@@ -1,5 +1,5 @@
 import React, { useState } from 'react'
-import { User, GraduationCap, Users, Heart, Save } from 'lucide-react'
+import { User, GraduationCap, Users, Save } from 'lucide-react'
 import { useProfile } from '../hooks/useProfile'
 import { useToast } from './Toast'
 import { TEAMS, TeamColor } from '../lib/supabase'
@@ -11,12 +11,10 @@ interface FormData {
   grade: number
   gender: 'male' | 'female'
   preferred_team: TeamColor
-  friend_requests: string[]
 }
 
 interface FormErrors {
   full_name?: string
-  friend_requests?: string
 }
 
 export default function OnboardingForm() {
@@ -26,8 +24,7 @@ export default function OnboardingForm() {
     full_name: '',
     grade: 7,
     gender: 'male',
-    preferred_team: 'red',
-    friend_requests: ['', '', '']
+    preferred_team: 'red'
   })
   const [errors, setErrors] = useState<FormErrors>({})
   const [loading, setLoading] = useState(false)
@@ -44,25 +41,7 @@ export default function OnboardingForm() {
       newErrors.full_name = 'Full name must be less than 50 characters'
     }
 
-    // Validate friend requests
-    const validFriends = formData.friend_requests.filter(friend => friend.trim() !== '')
-    if (validFriends.length > 0) {
-      const uniqueFriends = new Set(validFriends.map(f => f.trim().toLowerCase()))
-      if (uniqueFriends.size !== validFriends.length) {
-        newErrors.friend_requests = 'Friend names must be unique'
-      }
-      
-      for (const friend of validFriends) {
-        if (friend.trim().length < 2) {
-          newErrors.friend_requests = 'Friend names must be at least 2 characters'
-          break
-        }
-        if (friend.trim().toLowerCase() === formData.full_name.trim().toLowerCase()) {
-          newErrors.friend_requests = 'You cannot add yourself as a friend'
-          break
-        }
-      }
-    }
+
 
     setErrors(newErrors)
     return Object.keys(newErrors).length === 0
@@ -83,19 +62,17 @@ export default function OnboardingForm() {
     setLoading(true)
 
     try {
-      // Filter out empty friend requests
-      const filteredFriends = formData.friend_requests.filter(friend => friend.trim() !== '')
-      
       const { error } = await createProfile({
         full_name: formData.full_name.trim(),
         grade: formData.grade,
         gender: formData.gender,
         preferred_team: formData.preferred_team,
         current_team: formData.preferred_team, // This will be overridden for admins
-        friend_requests: filteredFriends,
+        friend_requests: [], // Empty array since we removed the UI
         switches_remaining: 3,
         is_admin: false,
-        participate_in_teams: true
+        participate_in_teams: true,
+        role: 'team_leader'
       })
 
       if (error) throw error
@@ -120,16 +97,7 @@ export default function OnboardingForm() {
     }
   }
 
-  const handleFriendRequestChange = (index: number, value: string) => {
-    const newFriendRequests = [...formData.friend_requests]
-    newFriendRequests[index] = value
-    setFormData({ ...formData, friend_requests: newFriendRequests })
-    
-    // Clear friend request errors when user starts typing
-    if (errors.friend_requests) {
-      setErrors({ ...errors, friend_requests: undefined })
-    }
-  }
+
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-orange-50 to-yellow-50 px-4 sm:px-6 lg:px-8">
@@ -236,34 +204,7 @@ export default function OnboardingForm() {
               </div>
             </div>
 
-            {/* Friend Requests */}
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">
-                Friend Requests (Optional)
-              </label>
-              <p className="text-xs text-gray-500 mb-2">
-                Enter up to 3 friends' names you'd like to be on the same team with
-              </p>
-              <div className="space-y-2">
-                {formData.friend_requests.map((friend, index) => (
-                  <div key={index} className="relative">
-                    <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                      <Heart className="h-4 w-4 text-gray-400" />
-                    </div>
-                    <input
-                      type="text"
-                      value={friend}
-                      onChange={(e) => handleFriendRequestChange(index, e.target.value)}
-                      className="appearance-none block w-full pl-10 pr-3 py-2 border border-gray-300 rounded-md placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-orange-500 focus:border-orange-500 sm:text-sm"
-                      placeholder={`Friend ${index + 1} name`}
-                    />
-                  </div>
-                ))}
-              </div>
-              {errors.friend_requests && (
-                <p className="mt-1 text-sm text-red-600">{errors.friend_requests}</p>
-              )}
-            </div>
+
           </div>
 
           <Button
