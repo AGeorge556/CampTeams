@@ -397,7 +397,7 @@ export default function Dashboard({ onPageChange }: DashboardProps) {
             <Activity className="h-5 w-5 mr-2" />
             {t('quickActions')}
           </h3>
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
+          <div className="flex flex-wrap justify-center gap-3">
             {quickActions.filter(action => action.available).map((action) => {
               const Icon = action.icon
               return (
@@ -406,13 +406,13 @@ export default function Dashboard({ onPageChange }: DashboardProps) {
                   onClick={action.action}
                   className={`
                     ${action.color}
-                    text-white p-4 rounded-lg transition-all duration-200
+                    w-48 min-h-[120px] text-white p-4 rounded-lg transition-all duration-200
                     transform hover:scale-105 active:scale-95
                     flex flex-col items-center justify-center space-y-2
                     shadow-md hover:shadow-lg
                   `}
                 >
-                  <Icon className="h-6 w-6" />
+                  <Icon className="h-4 w-4" />
                   <div className="text-center">
                     <div className="font-medium text-sm">{action.title}</div>
                     <div className="text-xs opacity-90">{action.description}</div>
