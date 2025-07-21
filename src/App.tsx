@@ -1,7 +1,8 @@
-import React, { useState } from 'react'
+import React, { useState, useEffect } from 'react'
 import { useAuth } from './hooks/useAuth'
 import { useProfile } from './hooks/useProfile'
 import { useRulesAcceptance } from './hooks/useRulesAcceptance'
+import { useOilExtractionVisibility } from './hooks/useOilExtractionVisibility'
 import Auth from './components/Auth'
 import OnboardingForm from './components/OnboardingForm'
 import RulesAgreement from './components/RulesAgreement'
@@ -61,6 +62,14 @@ function AppContent({
   setCurrentPage: (page: string) => void
 }) {
   const { hasAccepted, loading: rulesLoading } = useRulesAcceptance()
+  const { oilExtractionVisible } = useOilExtractionVisibility()
+
+  // Redirect to dashboard if user is on oil extraction page but it's hidden and they're not admin
+  useEffect(() => {
+    if (currentPage.startsWith('oil-extraction') && !oilExtractionVisible && !profile?.is_admin) {
+      setCurrentPage('dashboard')
+    }
+  }, [currentPage, oilExtractionVisible, profile?.is_admin, setCurrentPage])
 
   if (authLoading || profileLoading || rulesLoading) {
     return <LoadingSpinner fullScreen text="Loading..." />

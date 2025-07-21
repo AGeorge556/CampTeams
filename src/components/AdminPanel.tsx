@@ -1,7 +1,9 @@
 import React, { useState, useEffect } from 'react'
-import { Shield, Users, Settings, Calendar, Download, UserX, UserCheck, Trophy } from 'lucide-react'
+import { Shield, Users, Settings, Calendar, Download, UserX, UserCheck, Trophy, Zap } from 'lucide-react'
 import { supabase, Profile, TEAMS, TeamColor } from '../lib/supabase'
 import { useTeamBalance } from '../hooks/useTeamBalance'
+import { useOilExtractionVisibility } from '../hooks/useOilExtractionVisibility'
+import { useLanguage } from '../contexts/LanguageContext'
 import { getGradeDisplayWithNumber } from '../lib/utils'
 
 interface SportSelection {
@@ -12,6 +14,8 @@ interface SportSelection {
 
 export default function AdminPanel() {
   const { teamBalance } = useTeamBalance()
+  const { oilExtractionVisible, toggleOilExtractionVisibility, loading: oilVisibilityLoading } = useOilExtractionVisibility()
+  const { t } = useLanguage()
   const [profiles, setProfiles] = useState<Profile[]>([])
   const [campSettings, setCampSettings] = useState<any>(null)
   const [sportSelections, setSportSelections] = useState<SportSelection[]>([])
@@ -241,7 +245,7 @@ export default function AdminPanel() {
             {campSettings?.teams_locked ? 'Unlock Teams' : 'Lock Teams'}
           </button>
         </div>
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+        <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
           <div className="bg-gray-50 rounded-lg p-4">
             <h4 className="font-medium text-gray-900">Teams Status</h4>
             <p className="text-sm text-gray-600">
@@ -261,6 +265,37 @@ export default function AdminPanel() {
             <h4 className="font-medium text-gray-900">Max Team Size</h4>
             <p className="text-sm text-gray-600">{campSettings?.max_team_size || 50}</p>
           </div>
+          <div className="bg-gray-50 rounded-lg p-4">
+            <h4 className="font-medium text-gray-900">{t('oilExtractionVisibility')}</h4>
+            <p className="text-sm text-gray-600">
+              {oilExtractionVisible ? t('oilExtractionVisible') : t('oilExtractionHidden')}
+            </p>
+          </div>
+        </div>
+        
+        {/* Oil Extraction Visibility Toggle */}
+        <div className="mt-4 flex items-center justify-between p-4 bg-orange-50 border border-orange-200 rounded-lg">
+          <div className="flex items-center">
+            <Zap className="h-5 w-5 text-orange-600 mr-3" />
+            <div>
+              <h4 className="font-medium text-gray-900">{t('oilExtractionVisibility')}</h4>
+              <p className="text-sm text-gray-600">
+                {oilExtractionVisible ? t('oilExtractionVisible') : t('oilExtractionHidden')}
+              </p>
+            </div>
+          </div>
+          <button
+            onClick={toggleOilExtractionVisibility}
+            disabled={oilVisibilityLoading}
+            className="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md text-white bg-orange-600 hover:bg-orange-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-orange-500 disabled:opacity-50"
+          >
+            {oilVisibilityLoading ? (
+              <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white mr-2"></div>
+            ) : (
+              <Zap className="h-4 w-4 mr-2" />
+            )}
+            {oilExtractionVisible ? t('hideOilExtraction') : t('showOilExtraction')}
+          </button>
         </div>
       </div>
 

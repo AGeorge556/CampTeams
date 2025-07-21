@@ -122,6 +122,11 @@ export interface Translations {
   showSchedule: string
   scheduleVisibility: string
   scheduleMakingInProgress: string
+  oilExtractionVisibility: string
+  hideOilExtraction: string
+  showOilExtraction: string
+  oilExtractionHidden: string
+  oilExtractionVisible: string
 
   // Fun Messages
   awesome: string
@@ -363,6 +368,11 @@ export const translations: Record<Language, Translations> = {
     showSchedule: 'Show Schedule',
     scheduleVisibility: 'Schedule Visibility',
     scheduleMakingInProgress: 'Schedule making in progress...',
+    oilExtractionVisibility: 'Oil Extraction Visibility',
+    hideOilExtraction: 'Hide Oil Extraction',
+    showOilExtraction: 'Show Oil Extraction',
+    oilExtractionHidden: 'Oil extraction tab is hidden from campers',
+    oilExtractionVisible: 'Oil extraction tab is visible to campers',
 
     // Fun Messages
     awesome: 'Awesome!',
@@ -603,6 +613,11 @@ export const translations: Record<Language, Translations> = {
     showSchedule: 'إظهار البرنامج',
     scheduleVisibility: 'رؤية البرنامج',
     scheduleMakingInProgress: 'جاري إعداد البرنامج...',
+    oilExtractionVisibility: 'رؤية استخراج النفط',
+    hideOilExtraction: 'إخفاء استخراج النفط',
+    showOilExtraction: 'إظهار استخراج النفط',
+    oilExtractionHidden: 'تبويب استخراج النفط مخفي من المشاركين',
+    oilExtractionVisible: 'تبويب استخراج النفط مرئي للمشاركين',
 
     // Fun Messages
     awesome: 'جامد!',

@@ -82,6 +82,7 @@ export type Database = {
           teams_locked: boolean
           lock_date: string | null
           max_team_size: number
+          oil_extraction_visible: boolean
           created_at: string
           updated_at: string
         }
@@ -90,6 +91,7 @@ export type Database = {
           teams_locked?: boolean
           lock_date?: string | null
           max_team_size?: number
+          oil_extraction_visible?: boolean
           created_at?: string
           updated_at?: string
         }
@@ -98,6 +100,7 @@ export type Database = {
           teams_locked?: boolean
           lock_date?: string | null
           max_team_size?: number
+          oil_extraction_visible?: boolean
           created_at?: string
           updated_at?: string
         }

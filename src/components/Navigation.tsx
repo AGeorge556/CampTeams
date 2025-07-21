@@ -4,6 +4,7 @@ import { useAuth } from '../hooks/useAuth'
 import { useProfile } from '../hooks/useProfile'
 import { useLanguage } from '../contexts/LanguageContext'
 import { useScheduleVisibility } from '../hooks/useScheduleVisibility'
+import { useOilExtractionVisibility } from '../hooks/useOilExtractionVisibility'
 import LanguageSwitcher from './LanguageSwitcher'
 
 interface NavigationProps {
@@ -16,6 +17,7 @@ export default function Navigation({ currentPage, onPageChange }: NavigationProp
   const { profile } = useProfile()
   const { t } = useLanguage()
   const { scheduleVisible } = useScheduleVisibility()
+  const { oilExtractionVisible } = useOilExtractionVisibility()
   const [isMenuOpen, setIsMenuOpen] = useState(false)
 
   const handleSignOut = async () => {
@@ -26,7 +28,7 @@ export default function Navigation({ currentPage, onPageChange }: NavigationProp
     { id: 'dashboard', name: t('dashboard'), icon: Users },
     ...(profile?.is_admin || scheduleVisible ? [{ id: 'schedule', name: t('schedule'), icon: Calendar }] : []),
     { id: 'sports', name: t('teams'), icon: Trophy },
-    { id: 'oil-extraction', name: 'Oil Extraction', icon: Zap }
+    ...(profile?.is_admin || oilExtractionVisible ? [{ id: 'oil-extraction', name: 'Oil Extraction', icon: Zap }] : [])
   ]
 
   const handlePageChange = (page: string) => {
