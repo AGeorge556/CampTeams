@@ -79,6 +79,44 @@ export interface Translations {
   userManagement: string
   sessionManagement: string
   reports: string
+
+  // Rules & Agreement
+  rulesAndAgreement: string
+  aboutPlatform: string
+  teamSwitchingConcept: string
+  teamSwitchingLimitations: string
+  teamBalanceLimits: string
+  generalCampRules: string
+  respectForOthers: string
+  teamworkAndFairPlay: string
+  additionalGuidelines: string
+  agreeToRules: string
+  continueToCamp: string
+  agreementRequired: string
+  mustAgreeToRules: string
+  readAndAgreeToRules: string
+  platformDescription: string
+  teamSwitchingDescription: string
+  teamSwitchingDeadlineDescription: string
+  teamBalanceDescription: string
+  respectRule1: string
+  respectRule2: string
+  respectRule3: string
+  respectRule4: string
+  respectRule5: string
+  teamworkRule1: string
+  teamworkRule2: string
+  teamworkRule3: string
+  teamworkRule4: string
+  teamworkRule5: string
+  additionalRule1: string
+  additionalRule2: string
+  additionalRule3: string
+  additionalRule4: string
+  additionalRule5: string
+  additionalRule6: string
+  agreementDescription: string
+
   settings: string
   hideSchedule: string
   showSchedule: string
@@ -99,7 +137,7 @@ export interface Translations {
   male: string
   female: string
   teamSwitchesRemaining: string
-  friendRequests: string
+
   dailyInspiration: string
   motivationalBibleVerse: string
   newVerse: string
@@ -283,6 +321,43 @@ export const translations: Record<Language, Translations> = {
     userManagement: 'User Management',
     sessionManagement: 'Session Management',
     reports: 'Reports',
+
+    // Rules & Agreement
+    rulesAndAgreement: 'Camp Rules & Agreement',
+    aboutPlatform: 'About This Platform',
+    teamSwitchingConcept: 'Team Switching Concept',
+    teamSwitchingLimitations: 'Team Switching Deadline',
+    teamBalanceLimits: 'Team Balance Limits',
+    generalCampRules: 'General Camp Rules',
+    respectForOthers: 'Respect for Others',
+    teamworkAndFairPlay: 'Teamwork & Fair Play',
+    additionalGuidelines: 'Additional Guidelines',
+    agreeToRules: 'I have read and agree to follow the camp rules',
+    continueToCamp: 'Continue to Camp',
+    agreementRequired: 'Agreement Required',
+    mustAgreeToRules: 'You must read and agree to the camp rules before you can continue to the platform.',
+    readAndAgreeToRules: 'Please read and agree to the following rules before joining the camp',
+    platformDescription: 'Welcome to CampTeams - our summer camp team management platform! This website is designed to help organize and manage team assignments for our summer camp activities.',
+    teamSwitchingDescription: 'We understand that friendships and preferences may change during camp. That\'s why we allow each camper to switch teams up to 3 times during the camp session. This flexibility helps ensure everyone can enjoy their camp experience with their preferred group.',
+    teamSwitchingDeadlineDescription: 'You have 3 team switches available until one week before camp starts. After that, teams will be finalized and no switching will be allowed. This ensures proper planning and team stability for the camp experience.',
+    teamBalanceDescription: 'To maintain fair and balanced teams, we have specific limits in place: maximum 4 players per grade per team, and we strive to maintain equal gender distribution across all teams. These limits help ensure everyone has a great experience and teams remain competitive and inclusive.',
+    respectRule1: 'Treat all campers and staff with kindness and respect',
+    respectRule2: 'Use appropriate language and behavior at all times',
+    respectRule3: 'Respect personal space and boundaries',
+    respectRule4: 'Listen when others are speaking',
+    respectRule5: 'Be inclusive and welcoming to everyone',
+    teamworkRule1: 'Work together as a team during all activities',
+    teamworkRule2: 'Follow the rules of all games and competitions',
+    teamworkRule3: 'Accept wins and losses with good sportsmanship',
+    teamworkRule4: 'Support and encourage your teammates',
+    teamworkRule5: 'Participate actively in team activities',
+    additionalRule1: 'Follow all safety instructions and camp procedures',
+    additionalRule2: 'Keep your personal belongings organized and secure',
+    additionalRule3: 'Report any concerns or issues to camp staff immediately',
+    additionalRule4: 'Be on time for all scheduled activities and meals',
+    additionalRule5: 'Help keep camp facilities clean and tidy',
+    additionalRule6: 'Use technology responsibly and follow camp device policies',
+    agreementDescription: 'By checking this box, I acknowledge that I have read, understood, and agree to follow all the camp rules and guidelines outlined above. I understand that failure to follow these rules may result in appropriate consequences as determined by camp staff.',
     settings: 'Settings',
     hideSchedule: 'Hide Schedule',
     showSchedule: 'Show Schedule',
@@ -303,7 +378,7 @@ export const translations: Record<Language, Translations> = {
     male: 'Male',
     female: 'Female',
     teamSwitchesRemaining: 'Team switches remaining',
-    friendRequests: 'Friend Requests',
+
     dailyInspiration: 'Daily Inspiration',
     motivationalBibleVerse: 'A motivational Bible verse to start your day',
     newVerse: 'New Verse',
@@ -417,13 +492,13 @@ export const translations: Record<Language, Translations> = {
   },
   ar: {
     // Navigation
-    dashboard: 'لوحة التحكم',
+    dashboard: 'اللوحة الرئيسية',
     attendance: 'الحضور',
-    schedule: 'الجدول',
-    teams: 'الرياضات',
+    schedule: 'البرنامج',
+    teams: 'الرياضة',
     admin: 'الإدارة',
-    profile: 'الملف الشخصي',
-    logout: 'تسجيل الخروج',
+    profile: 'البروفايل',
+    logout: 'تسجيل خروج',
 
     // Common Actions
     save: 'حفظ',
@@ -433,33 +508,33 @@ export const translations: Record<Language, Translations> = {
     create: 'إنشاء',
     update: 'تحديث',
     loading: 'جاري التحميل...',
-    error: 'عذراً! حدث خطأ ما',
-    success: 'ممتاز! تم الأمر بنجاح',
-    warning: 'تنبيه! انتبه للتفاصيل',
+    error: 'عذراً! في مشكلة حصلت',
+    success: 'ممتاز! تم بنجاح',
+    warning: 'تنبيه! خلي بالك',
 
     // Auth
-    login: 'تسجيل الدخول',
-    signup: 'إنشاء حساب',
-    email: 'البريد الإلكتروني',
-    password: 'كلمة المرور',
-    forgotPassword: 'نسيت كلمة المرور؟',
-    welcomeBack: 'أهلاً وسهلاً بك يا صديقي!',
-    createAccount: 'إنشاء حساب',
+    login: 'دخول',
+    signup: 'حساب جديد',
+    email: 'الإيميل',
+    password: 'الباسورد',
+    forgotPassword: 'نسيت الباسورد؟',
+    welcomeBack: 'أهلاً وسهلاً يا حبيبي!',
+    createAccount: 'حساب جديد',
 
     // Dashboard
-    welcomeMessage: 'أهلاً وسهلاً يا بطل! جاهز ليوم رائع؟',
-    welcomeMessageWithName: 'أهلاً وسهلاً يا {name}! جاهز ليوم رائع؟',
-    todaySessions: 'جلسات اليوم الرائعة',
+    welcomeMessage: 'أهلاً وسهلاً يا بطل! جاهز ليوم حلو؟',
+    welcomeMessageWithName: 'أهلاً وسهلاً يا {name}! جاهز ليوم حلو؟',
+    todaySessions: 'فعاليات النهاردة',
     myAttendance: 'حضوري',
     teamStatus: 'حالة الفريق',
-    quickActions: 'إجراءات سريعة',
+    quickActions: 'أعمال سريعة',
 
     // Attendance
-    checkIn: 'تسجيل الحضور',
-    checkOut: 'تسجيل الانصراف',
+    checkIn: 'تسجيل حضور',
+    checkOut: 'تسجيل انصراف',
     attendanceStatus: 'حالة الحضور',
     present: 'حاضر',
-    absent: 'غائب',
+    absent: 'غايب',
     late: 'متأخر',
     excused: 'معذور',
     attendanceHistory: 'سجل الحضور',
@@ -469,7 +544,7 @@ export const translations: Record<Language, Translations> = {
     sessionDetails: 'تفاصيل الجلسة',
     startTime: 'وقت البداية',
     endTime: 'وقت النهاية',
-    location: 'الموقع',
+    location: 'المكان',
     activity: 'النشاط',
     description: 'الوصف',
 
@@ -482,30 +557,68 @@ export const translations: Record<Language, Translations> = {
 
     // Admin
     adminPanel: 'لوحة الإدارة',
-    userManagement: 'إدارة المستخدمين',
+    userManagement: 'إدارة الناس',
     sessionManagement: 'إدارة الجلسات',
     reports: 'التقارير',
+
+    // Rules & Agreement
+    rulesAndAgreement: 'قواعد المؤتمر والاتفاقية',
+    aboutPlatform: 'عن البرنامج ده',
+    teamSwitchingConcept: 'فكرة تبديل الفرق',
+    teamSwitchingLimitations: 'آخر موعد لتبديل الفرق',
+    teamBalanceLimits: 'حدود توازن الفرق',
+    generalCampRules: 'قواعد المؤتمر العامة',
+    respectForOthers: 'احترام الناس',
+    teamworkAndFairPlay: 'العمل الجماعي واللعب العادل',
+    additionalGuidelines: 'إرشادات إضافية',
+    agreeToRules: 'قرأت وموافق على قواعد المؤتمر',
+    continueToCamp: 'كمل للمؤتمر',
+    agreementRequired: 'الاتفاقية مطلوبة',
+    mustAgreeToRules: 'لازم تقرأ وتوافق على قواعد المؤتمر قبل ما تكمل للمؤتمر.',
+    readAndAgreeToRules: 'اقرأ ووافق على القواعد دي قبل ما تنضم للمؤتمر',
+    platformDescription: 'أهلاً وسهلاً في كامبتيمز - منصة إدارة فرق المؤتمر الصيفي! البرنامج ده مصمم لتنظيم وإدارة تعيينات الفرق لأنشطة المؤتمر الصيفي.',
+    teamSwitchingDescription: 'فاهمين إن الصداقات والتفضيلات ممكن تتغير خلال المؤتمر. عشان كده بنسمح لكل مشارك يبدل الفرق لحد 3 مرات خلال فترة المؤتمر. المرونة دي بتساعد إن الكل يستمتع بتجربة المؤتمر مع المجموعة المفضلة.',
+    teamSwitchingDeadlineDescription: 'عندك 3 تبديلات فرق متاحة لحد أسبوع قبل ما المؤتمر يبدأ. بعد كده الفرق هتتثبت ومش هيبقى في تبديل. ده بيضمن التخطيط السليم واستقرار الفرق لتجربة المؤتمر.',
+    teamBalanceDescription: 'للمحافظة على فرق عادلة ومتوازنة، عندنا حدود محددة: أقصى 4 لاعبين لكل صف في كل فريق، وبنحاول نحافظ على توزيع متساوي للجنس في كل الفرق. الحدود دي بتساعد إن الكل ياخد تجربة حلوة والفرق تفضل تنافسية وشاملة.',
+    respectRule1: 'عامل كل المشاركين والقادة باللطف والاحترام',
+    respectRule2: 'استخدم لغة وسلوك مناسب في كل الأوقات',
+    respectRule3: 'احترم المساحة الشخصية والحدود',
+    respectRule4: 'اسمع لما حد تاني بيتكلم',
+    respectRule5: 'كن شامل ومرحب بالكل',
+    teamworkRule1: 'اعمل مع الفريق في كل الأنشطة',
+    teamworkRule2: 'اتبع قواعد كل الألعاب والمسابقات',
+    teamworkRule3: 'تقبل الفوز والخسارة بروح رياضية',
+    teamworkRule4: 'ساند وشجع زمايلك في الفريق',
+    teamworkRule5: 'شارك بنشاط في أنشطة الفريق',
+    additionalRule1: 'اتبع كل تعليمات الأمان وإجراءات المؤتمر',
+    additionalRule2: 'حافظ على ممتلكاتك الشخصية منظمة وآمنة',
+    additionalRule3: 'بلغ عن أي مخاوف أو مشاكل لقادة المؤتمر فوراً',
+    additionalRule4: 'كون في الموعد لكل الأنشطة والوجبات المجدولة',
+    additionalRule5: 'ساعد في الحفاظ على مرافق المؤتمر نظيفة ومنظمة',
+    additionalRule6: 'استخدم التكنولوجيا بمسؤولية واتبع سياسات الأجهزة',
+    agreementDescription: 'بالتأكيد على الصندوق ده، أنا أقر وأفهم وأوافق على اتباع كل قواعد وإرشادات المؤتمر المذكورة أعلاه. أفهم إن عدم اتباع هذه القواعد قد يؤدي إلى عواقب مناسبة حسب تقدير قادة المؤتمر.',
+
     settings: 'الإعدادات',
-    hideSchedule: 'إخفاء الجدول',
-    showSchedule: 'إظهار الجدول',
-    scheduleVisibility: 'رؤية الجدول',
-    scheduleMakingInProgress: 'جاري إعداد الجدول...',
+    hideSchedule: 'إخفاء البرنامج',
+    showSchedule: 'إظهار البرنامج',
+    scheduleVisibility: 'رؤية البرنامج',
+    scheduleMakingInProgress: 'جاري إعداد البرنامج...',
 
     // Fun Messages
-    awesome: 'رائع!',
-    greatJob: 'عمل ممتاز!',
-    keepItUp: 'استمر!',
-    youRock: 'أنت رائع!',
+    awesome: 'جامد!',
+    greatJob: 'عمل حلو!',
+    keepItUp: 'كمل!',
+    youRock: 'أنت جامد!',
     amazing: 'مذهل!',
     fantastic: 'فانتاستيك!',
     brilliant: 'ذكي جداً!',
     outstanding: 'متفوق!',
 
     // Dashboard Specific
-    male: 'ذكر',
-    female: 'أنثى',
+    male: 'ولد',
+    female: 'بنت',
     teamSwitchesRemaining: 'تبديلات الفريق المتبقية',
-    friendRequests: 'طلبات الأصدقاء',
+
     dailyInspiration: 'الإلهام اليومي',
     motivationalBibleVerse: 'آية من الكتاب المقدس لتحفيز يومك',
     newVerse: 'آية جديدة',
@@ -513,29 +626,29 @@ export const translations: Record<Language, Translations> = {
     teamBalanceOverview: 'نظرة عامة على توازن الفرق',
 
     // Sports Selection
-    sportsSelection: 'اختيار الرياضات',
-    chooseSportsToParticipate: 'اختر الرياضات التي تريد المشاركة فيها',
-    howItWorks: 'كيف يعمل:',
-    clickToJoinOrLeave: 'انقر على أي رياضة للانضمام أو المغادرة',
-    participateInMultipleSports: 'يمكنك المشاركة في رياضات متعددة',
-    changesSavedAutomatically: 'يتم حفظ التغييرات تلقائياً',
+    sportsSelection: 'اختيار الرياضة',
+    chooseSportsToParticipate: 'اختر الرياضة اللي عايز تلعبها',
+    howItWorks: 'كيفية العمل:',
+    clickToJoinOrLeave: 'اضغط على أي رياضة للانضمام أو المغادرة',
+    participateInMultipleSports: 'تقدر تلعب رياضات كتير',
+    changesSavedAutomatically: 'التغييرات بتتسجل تلقائياً',
     participants: 'مشاركين',
-    youreParticipating: 'أنت تشارك!',
-    clickToJoin: 'انقر للانضمام',
-    yourSports: 'رياضاتك',
-    participatingInSports: 'أنت تشارك في',
-    noSportsSelectedYet: 'لم يتم اختيار رياضات بعد',
-    clickOnAnySportToStart: 'انقر على أي رياضة أعلاه للبدء في المشاركة!',
+    youreParticipating: 'أنت مشارك!',
+    clickToJoin: 'اضغط للانضمام',
+    yourSports: 'رياضتك',
+    participatingInSports: 'أنت مشارك في',
+    noSportsSelectedYet: 'مفيش رياضة مختارة لسه',
+    clickOnAnySportToStart: 'اضغط على أي رياضة فوق للبدء في المشاركة!',
 
     // Sport Names and Descriptions
     soccer: 'كرة القدم',
-    soccerDescription: 'مباريات كرة القدم الجماعية في الملعب الرياضي',
+    soccerDescription: 'مباريات كرة القدم الجماعية في الملعب',
     dodgeball: 'كرة الطائرة',
-    dodgeballDescription: 'ألعاب كرة الطائرة السريعة في الصالة الرياضية',
+    dodgeballDescription: 'ألعاب كرة الطائرة السريعة في الجيم',
     chairball: 'كرة الكرسي',
-    chairballDescription: 'لعبة كرة فريدة قائمة على الكراسي لجميع المستويات',
+    chairballDescription: 'لعبة كرة فريدة بالكراسي لجميع المستويات',
     bigGame: 'اللعبة الكبيرة',
-    bigGameDescription: 'ألعاب جماعية واسعة النطاق وأنشطة خارجية',
+    bigGameDescription: 'ألعاب جماعية كبيرة وأنشطة برة',
     poolTime: 'وقت السباحة',
     poolTimeDescription: 'أنشطة السباحة والألعاب المائية',
 
@@ -546,14 +659,14 @@ export const translations: Record<Language, Translations> = {
     hoursRemaining: 'ساعات',
     minutesRemaining: 'دقائق',
     secondsRemaining: 'ثواني',
-    campStartsIn: 'يبدأ المؤتمر في',
+    campStartsIn: 'المؤتمر هيبدأ في',
 
     // Team Rosters and Player Lists
     teamRosters: 'قوائم الفرق',
     players: 'لاعبين',
-    yourCurrentTeam: 'فريقك الحالي',
+    yourCurrentTeam: 'فريقك دلوقتي',
     joinTeam: 'انضم للفريق',
-    noPlayersAssigned: 'لا يوجد لاعبين مسجلين',
+    noPlayersAssigned: 'مفيش لاعبين مسجلين',
     genderBalance: 'توازن الجنس:',
     genderBalanced: 'متوازن',
     genderUnbalanced: 'غير متوازن',
@@ -564,11 +677,11 @@ export const translations: Record<Language, Translations> = {
     switchesRemaining: 'تبديلات متبقية',
     loadingTeamRosters: 'جاري تحميل قوائم الفرق...',
     teamSwitchSuccessful: 'تم تبديل الفريق بنجاح',
-    successfullyJoinedTeam: 'لقد انضممت بنجاح لفريق',
-    cannotSwitchTeams: 'لا يمكن تبديل الفرق',
-    teamSwitchNotAllowed: 'لا يُسمح بتبديل الفريق. قد لا يكون لديك تبديلات متبقية، أو الفرق مقفلة، أو الفريق ممتلئ.',
-    genderBalanceLimitReached: 'تم الوصول للحد الأقصى لتوازن الجنس. يجب أن تحافظ الفرق على توزيع متساوٍ للجنس.',
-    failedToSwitchTeams: 'فشل في تبديل الفرق. يرجى المحاولة مرة أخرى.',
+    successfullyJoinedTeam: 'انضممت بنجاح لفريق',
+    cannotSwitchTeams: 'مش تقدر تبدل الفرق',
+    teamSwitchNotAllowed: 'مش مسموح تبديل الفريق. ممكن ميكونش عندك تبديلات متبقية، أو الفرق مقفلة، أو الفريق ممتلئ.',
+    genderBalanceLimitReached: 'تم الوصول للحد الأقصى لتوازن الجنس. الفرق لازم تحافظ على توزيع متساوي للجنس.',
+    failedToSwitchTeams: 'فشل في تبديل الفرق. حاول تاني.',
 
     // Bible Verse References
     philippians: 'فيلبي 4: 13',
@@ -583,7 +696,7 @@ export const translations: Record<Language, Translations> = {
     niv: 'ترجمة الحياة الجديدة',
     esv: 'الترجمة الإنجليزية القياسية',
     nasb: 'الترجمة الأمريكية القياسية الجديدة',
-    bibleVerseDownloaded: 'تم تحميل صورة الآية الكتابية بنجاح!',
+    bibleVerseDownloaded: 'تم تحميل صورة الآية بنجاح!',
 
     // Bible Verse Text
     philippiansVerse: 'أستطيع كل شيء في المسيح الذي يقويني.',
@@ -600,11 +713,11 @@ export const translations: Record<Language, Translations> = {
     // Enhanced UI Messages
     welcomeBackMale: 'أهلاً وسهلاً يا بطل! جاهز للعب؟',
     welcomeBackFemale: 'أهلاً وسهلاً يا نجمة! جاهزة للتألق؟',
-    welcomeBackAdmin: 'أهلاً وسهلاً يا مدير! كل شيء تحت السيطرة؟',
-    morningGreeting: 'صباح الخير! جاهز ليوم رائع؟',
-    afternoonGreeting: 'مساء الخير! كيف حال يومك؟',
-    eveningGreeting: 'مساء الخير! نختتم يوماً رائعاً؟',
-    teamSwitchSuccessMale: 'رائع! انضممت بنجاح للفريق يا بطل!',
+    welcomeBackAdmin: 'أهلاً وسهلاً يا مدير! كل حاجة تحت السيطرة؟',
+    morningGreeting: 'صباح الخير! جاهز ليوم حلو؟',
+    afternoonGreeting: 'مساء الخير! إزاي يومك؟',
+    eveningGreeting: 'مساء الخير! نختتم يوم حلو؟',
+    teamSwitchSuccessMale: 'جامد! انضممت بنجاح للفريق يا بطل!',
     teamSwitchSuccessFemale: 'فانتاستيك! انضممت بنجاح للفريق يا نجمة!',
     participantsCount: '{count} مشارك',
     participantsCountOne: 'مشارك واحد',
@@ -613,9 +726,9 @@ export const translations: Record<Language, Translations> = {
     switchesRemainingCountOne: 'تبديل واحد متبقي',
     switchesRemainingCountMany: '{count} تبديلات متبقية',
     loadingWithDots: 'جاري التحميل...',
-    errorWithRetry: 'عذراً! حدث خطأ ما. يرجى المحاولة مرة أخرى.',
-    successWithExclamation: 'نجح! تم الأمر بنجاح!',
-    warningWithAttention: 'تنبيه! يرجى مراجعة التفاصيل.'
+    errorWithRetry: 'عذراً! في مشكلة حصلت. حاول تاني.',
+    successWithExclamation: 'نجح! تم بنجاح!',
+    warningWithAttention: 'تنبيه! راجع التفاصيل.'
   }
 }
 

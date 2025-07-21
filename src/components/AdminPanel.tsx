@@ -147,9 +147,9 @@ export default function AdminPanel() {
 
   const exportRoster = () => {
     const csvContent = "data:text/csv;charset=utf-8," + 
-      "Name,Grade,Gender,Team,Switches Remaining,Friend Requests,Join Date\n" +
+      "Name,Grade,Gender,Team,Switches Remaining,Join Date\n" +
       profiles.map(p => 
-        `"${p.full_name}",${p.grade},${p.gender},${p.current_team || 'Unassigned'},${p.switches_remaining},"${p.friend_requests.join('; ')}",${new Date(p.created_at).toLocaleDateString()}`
+        `"${p.full_name}",${p.grade},${p.gender},${p.current_team || 'Unassigned'},${p.switches_remaining},${new Date(p.created_at).toLocaleDateString()}`
       ).join("\n")
     
     const encodedUri = encodeURI(csvContent)

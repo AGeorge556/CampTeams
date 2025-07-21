@@ -9,7 +9,7 @@ A modern web application for managing summer camp team assignments, built with R
 - **Team Management**: 4-color team system (Red, Blue, Green, Yellow)
 - **Grade-based Limits**: Maximum 4 players per grade per team
 - **Team Switching**: Users can switch teams up to 3 times
-- **Friend Requests**: Users can request to be with specific friends
+
 - **Real-time Updates**: Live team roster updates using Supabase subscriptions
 
 ### Admin Features

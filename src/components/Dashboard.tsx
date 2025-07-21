@@ -471,18 +471,7 @@ export default function Dashboard({ onPageChange }: DashboardProps) {
             ></div>
           </div>
         </div>
-        {profile.friend_requests.length > 0 && (
-          <div>
-            <h3 className="text-lg font-semibold text-gray-900 mb-2">{t('friendRequests')}</h3>
-            <div className="flex flex-wrap gap-2">
-              {profile.friend_requests.map((friend, index) => (
-                <span key={index} className="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-gray-100 text-gray-800">
-                  {friend}
-                </span>
-              ))}
-            </div>
-          </div>
-        )}
+
       </div>
 
       {/* Motivational Bible Verse Section */}

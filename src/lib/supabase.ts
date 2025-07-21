@@ -16,7 +16,7 @@ export type Database = {
           gender: 'male' | 'female'
           preferred_team: 'red' | 'blue' | 'green' | 'yellow'
           current_team: 'red' | 'blue' | 'green' | 'yellow' | null
-          friend_requests: string[]
+
           switches_remaining: number
           is_admin: boolean
           participate_in_teams: boolean
@@ -31,7 +31,6 @@ export type Database = {
           gender: 'male' | 'female'
           preferred_team: 'red' | 'blue' | 'green' | 'yellow'
           current_team?: 'red' | 'blue' | 'green' | 'yellow' | null
-          friend_requests?: string[]
           switches_remaining?: number
           is_admin?: boolean
           participate_in_teams?: boolean
@@ -46,7 +45,6 @@ export type Database = {
           gender?: 'male' | 'female'
           preferred_team?: 'red' | 'blue' | 'green' | 'yellow'
           current_team?: 'red' | 'blue' | 'green' | 'yellow' | null
-          friend_requests?: string[]
           switches_remaining?: number
           is_admin?: boolean
           participate_in_teams?: boolean
@@ -362,6 +360,26 @@ export type Database = {
           purchased_at?: string
         }
       }
+      rules_acceptance: {
+        Row: {
+          id: string
+          user_id: string
+          accepted_at: string
+          created_at: string
+        }
+        Insert: {
+          id?: string
+          user_id: string
+          accepted_at?: string
+          created_at?: string
+        }
+        Update: {
+          id?: string
+          user_id?: string
+          accepted_at?: string
+          created_at?: string
+        }
+      }
     }
     Functions: {
       get_team_wallet_with_transactions: {
@@ -567,6 +585,18 @@ export type Database = {
           message: string
         }
       }
+      has_accepted_rules: {
+        Args: {
+          user_id_param: string
+        }
+        Returns: boolean
+      }
+      accept_rules: {
+        Args: {
+          user_id_param: string
+        }
+        Returns: boolean
+      }
       initialize_team_wallets: {
         Args: Record<string, never>
         Returns: undefined
@@ -602,6 +632,7 @@ export type OilInventory = Database['public']['Tables']['oil_inventory']['Row']
 export type OilSale = Database['public']['Tables']['oil_sales']['Row']
 export type OilHint = Database['public']['Tables']['oil_hints']['Row']
 export type HintPurchase = Database['public']['Tables']['hint_purchases']['Row']
+export type RulesAcceptance = Database['public']['Tables']['rules_acceptance']['Row']
 
 export const TEAMS = {
   red: { name: 'Red', color: 'bg-red-500', lightColor: 'bg-red-100', textColor: 'text-red-600' },

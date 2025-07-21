@@ -68,7 +68,6 @@ export default function OnboardingForm() {
         gender: formData.gender,
         preferred_team: formData.preferred_team,
         current_team: formData.preferred_team, // This will be overridden for admins
-        friend_requests: [], // Empty array since we removed the UI
         switches_remaining: 3,
         is_admin: false,
         participate_in_teams: true,

@@ -7,7 +7,7 @@ export const CAMP_START_DATE = '2025-08-28T00:00:00'
 export const MAX_TEAM_SIZE = 50
 export const MAX_SWITCHES_PER_USER = 3
 export const MAX_PLAYERS_PER_GRADE = 4
-export const MAX_FRIEND_REQUESTS = 3
+
 
 // Grade Configuration
 export const GRADES = [7, 8, 9, 10, 11, 12] as const
