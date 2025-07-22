@@ -1,5 +1,5 @@
 import React from 'react'
-import { Users, User, GraduationCap, ArrowRight, AlertTriangle } from 'lucide-react'
+import { Users, User, GraduationCap, ArrowRight, AlertTriangle, Shield } from 'lucide-react'
 import { TEAMS, TeamColor, supabase } from '../lib/supabase'
 import { usePlayers } from '../hooks/usePlayers'
 import { useProfile } from '../hooks/useProfile'
@@ -22,7 +22,7 @@ export default function PlayerLists() {
     setSwitching(newTeam)
     try {
       // Check grade limits for the target team
-      const targetTeamPlayers = players[newTeam] || []
+      const targetTeamPlayers = (players[newTeam] || []).filter(p => p.participate_in_teams)
       const playersInSameGrade = targetTeamPlayers.filter(p => p.grade === profile.grade)
       
       if (playersInSameGrade.length >= MAX_PLAYERS_PER_GRADE) {
@@ -132,23 +132,16 @@ export default function PlayerLists() {
       
       <div className="grid grid-cols-1 lg:grid-cols-4 gap-6">
         {Object.entries(TEAMS).map(([teamKey, teamConfig]) => {
-          const teamPlayers = players[teamKey as TeamColor] || []
-          const sortedPlayers = [...teamPlayers].sort((a, b) => {
-            // Sort by grade first, then by name
-            if (a.grade !== b.grade) {
-              return a.grade - b.grade
-            }
-            return a.full_name.localeCompare(b.full_name)
-          })
-
+          const teamPlayers = (players[teamKey] || [])
+          const nonAdminPlayers = teamPlayers.filter(p => p.participate_in_teams)
+          const adminPlayers = teamPlayers.filter(p => !p.participate_in_teams)
           return (
-            <div key={teamKey} className="space-y-4">
-              {/* Team Header */}
+            <div key={teamKey} className="mb-8">
               <div className={`${teamConfig.color} rounded-lg p-4 text-white`}>
                 <div className="flex items-center justify-between">
                   <div>
                     <h4 className="font-bold text-lg">{teamConfig.name} Team</h4>
-                    <span className="text-sm opacity-90">{teamPlayers.length} {t('players')}</span>
+                    <span className="text-sm opacity-90">{nonAdminPlayers.length} {t('players')}</span>
                     {profile && profile.current_team === teamKey && (
                       <div className="mt-1">
                         <span className="inline-flex items-center px-2 py-1 bg-white bg-opacity-20 rounded-full text-xs font-medium">
@@ -173,126 +166,42 @@ export default function PlayerLists() {
               </div>
 
               {/* Player List */}
-              <div className="space-y-2">
-                {sortedPlayers.length === 0 ? (
-                  <div className="text-center py-8 text-gray-500">
-                    <User className="h-8 w-8 mx-auto mb-2 opacity-50" />
-                    <p className="text-sm">{t('noPlayersAssigned')}</p>
-                  </div>
-                ) : (
-                  sortedPlayers.map((player) => (
-                    <div
-                      key={player.id}
-                      className="bg-gray-50 rounded-lg p-3 border border-gray-200 hover:border-gray-300 transition-colors"
-                    >
-                      <div className="flex items-center justify-between">
-                        <div className="flex-1">
-                          <div className="font-medium text-gray-900 truncate">
-                            {player.full_name}
-                          </div>
-                          <div className="flex items-center text-sm text-gray-600 mt-1">
-                            <GraduationCap className="h-3 w-3 mr-1" />
-                            <span>{getGradeDisplayWithNumber(player.grade)}</span>
-                            <span className="mx-2">•</span>
-                            <span className={`px-2 py-0.5 rounded-full text-xs font-medium ${
-                              player.gender === 'male' 
-                                ? 'bg-blue-100 text-blue-800' 
-                                : 'bg-pink-100 text-pink-800'
-                            }`}>
-                              {player.gender === 'male' ? 'Male' : 'Female'}
-                            </span>
-                          </div>
-                        </div>
-                        
-                        {/* Switches remaining indicator */}
-                        <div className="ml-2">
-                          <div className={`w-2 h-2 rounded-full ${
-                            player.switches_remaining > 0 
-                              ? 'bg-green-400' 
-                              : 'bg-gray-300'
-                          }`} 
-                          title={`${player.switches_remaining} ${t('switchesRemaining')}`}
-                          />
-                        </div>
-                      </div>
-                    </div>
-                  ))
-                )}
-              </div>
-
-              {/* Team Summary */}
-              {teamPlayers.length > 0 && (
-                <div className="text-xs text-gray-500 space-y-1">
-                  <div className="flex justify-between items-center">
-                    <span>{t('genderBalance')}</span>
-                    <div className="flex items-center">
-                      <span>
-                        {teamPlayers.filter(p => p.gender === 'male').length}M / 
-                        {teamPlayers.filter(p => p.gender === 'female').length}F
+              <div className="bg-white rounded-b-lg p-4 border-t-0 border shadow-sm">
+                <div className="flex flex-wrap gap-2">
+                  {nonAdminPlayers.map((p) => {
+                    const roles: { label: string; color: string; icon: React.ReactNode }[] = []
+                    if (p.is_admin) roles.push({ label: 'Admin', color: 'bg-purple-100 text-purple-800 border border-purple-300', icon: <Shield className="h-3 w-3 mr-1 text-purple-500" /> })
+                    if (p.role === 'shop_owner') roles.push({ label: 'Shop Owner', color: 'bg-yellow-100 text-yellow-800 border border-yellow-300', icon: <User className="h-3 w-3 mr-1 text-yellow-500" /> })
+                    if (p.role === 'team_leader') roles.push({ label: 'Team Leader', color: 'bg-blue-100 text-blue-800 border border-blue-300', icon: <User className="h-3 w-3 mr-1 text-blue-500" /> })
+                    if (!p.is_admin && p.role !== 'shop_owner' && p.role !== 'team_leader') roles.push({ label: 'Camper', color: 'bg-green-100 text-green-800 border border-green-300', icon: <User className="h-3 w-3 mr-1 text-green-500" /> })
+                    return (
+                      <span key={p.id} className="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-gray-100 text-gray-800 mr-2">
+                        <User className="h-4 w-4 mr-1 text-orange-500" />
+                        {p.full_name} {!p.is_admin && <span className="ml-1 text-xs text-gray-500">({getGradeDisplayWithNumber(p.grade)}, {t(p.gender)})</span>}
+                        {roles.map((role, idx) => (
+                          <span key={idx} className={`ml-2 inline-flex items-center px-2 py-0.5 rounded-full text-xs font-bold ${role.color}`}>{role.icon}{role.label}</span>
+                        ))}
                       </span>
-                      {(() => {
-                        const maleCount = teamPlayers.filter(p => p.gender === 'male').length
-                        const femaleCount = teamPlayers.filter(p => p.gender === 'female').length
-                        const genderDiff = Math.abs(maleCount - femaleCount)
-                        if (genderDiff > 2) {
-                          return (
-                            <span className="ml-2 text-red-500 text-xs flex items-center">
-                              <AlertTriangle className="h-3 w-3 mr-1" />
-                              {t('genderUnbalanced')}
-                            </span>
-                          )
-                        } else if (genderDiff === 0) {
-                          return (
-                            <span className="ml-2 text-green-500 text-xs flex items-center">
-                              ✓ {t('genderBalanced')}
-                            </span>
-                          )
-                        }
-                        return null
-                      })()}
-                    </div>
-                  </div>
-                  <div className="flex justify-between">
-                    <span>{t('gradeRange')}</span>
-                    <span>
-                      {Math.min(...teamPlayers.map(p => p.grade))} - {Math.max(...teamPlayers.map(p => p.grade))}
-                    </span>
-                  </div>
-                  <div className="flex justify-between">
-                    <span>{t('avgGrade')}</span>
-                    <span>
-                      {(teamPlayers.reduce((sum, p) => sum + p.grade, 0) / teamPlayers.length).toFixed(1)}
-                    </span>
-                  </div>
-                  
-                  {/* Grade Distribution */}
-                  <div className="mt-2 pt-2 border-t border-gray-200">
-                    <div className="text-xs font-medium mb-1">{t('gradeDistribution')}</div>
-                    <div className="grid grid-cols-6 gap-1">
-                      {GRADES.map(grade => {
-                        const count = teamPlayers.filter(p => p.grade === grade).length
-                        const isAtLimit = count >= MAX_PLAYERS_PER_GRADE
-                        return (
-                          <div key={grade} className="text-center">
-                            <div className={`h-2 ${teamConfig.color} rounded-sm ${isAtLimit ? 'opacity-100' : 'opacity-60'}`}></div>
-                            <div className="text-xs mt-1">
-                              {grade}
-                              {isAtLimit && <span className="text-red-500">*</span>}
-                            </div>
-                            <div className="text-xs text-gray-400">{count}/{MAX_PLAYERS_PER_GRADE}</div>
-                          </div>
-                        )
-                      })}
-                    </div>
-                    {GRADES.some(grade => teamPlayers.filter(p => p.grade === grade).length >= MAX_PLAYERS_PER_GRADE) && (
-                      <div className="text-xs text-red-500 mt-1 flex items-center">
-                        <AlertTriangle className="h-3 w-3 mr-1" />
-                        {t('gradeLimitReached')}
-                      </div>
-                    )}
-                  </div>
+                    )
+                  })}
+                                     {adminPlayers.map((p) => {
+                     const roles: { label: string; color: string; icon: React.ReactNode }[] = []
+                     if (p.is_admin) roles.push({ label: 'Admin', color: 'bg-purple-100 text-purple-800 border border-purple-300', icon: <Shield className="h-3 w-3 mr-1 text-purple-500" /> })
+                     if (p.role === 'shop_owner') roles.push({ label: 'Shop Owner', color: 'bg-yellow-100 text-yellow-800 border border-yellow-300', icon: <User className="h-3 w-3 mr-1 text-yellow-500" /> })
+                     if (p.role === 'team_leader') roles.push({ label: 'Team Leader', color: 'bg-blue-100 text-blue-800 border border-blue-300', icon: <User className="h-3 w-3 mr-1 text-blue-500" /> })
+                     if (!p.is_admin && p.role !== 'shop_owner' && p.role !== 'team_leader') roles.push({ label: 'Camper', color: 'bg-green-100 text-green-800 border border-green-300', icon: <User className="h-3 w-3 mr-1 text-green-500" /> })
+                     return (
+                       <span key={p.id} className="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-purple-100 text-purple-800 border border-purple-300 mr-2">
+                         <Shield className="h-4 w-4 mr-1 text-purple-500" />
+                         {p.full_name}
+                         {roles.map((role, idx) => (
+                           <span key={idx} className={`ml-2 inline-flex items-center px-2 py-0.5 rounded-full text-xs font-bold ${role.color}`}>{role.icon}{role.label}</span>
+                         ))}
+                       </span>
+                     )
+                   })}
                 </div>
-              )}
+              </div>
             </div>
           )
         })}
