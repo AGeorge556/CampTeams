@@ -1,8 +1,9 @@
 import React, { useState, useEffect } from 'react'
-import { Shield, Users, Settings, Calendar, Download, UserX, UserCheck, Trophy, Zap } from 'lucide-react'
+import { Shield, Users, Settings, Calendar, Download, UserX, UserCheck, Trophy, Zap, Camera } from 'lucide-react'
 import { supabase, Profile, TEAMS, TeamColor } from '../lib/supabase'
 import { useTeamBalance } from '../hooks/useTeamBalance'
 import { useOilExtractionVisibility } from '../hooks/useOilExtractionVisibility'
+import { useGalleryVisibility } from '../hooks/useGalleryVisibility'
 import { useLanguage } from '../contexts/LanguageContext'
 import { getGradeDisplayWithNumber } from '../lib/utils'
 
@@ -15,6 +16,7 @@ interface SportSelection {
 export default function AdminPanel() {
   const { teamBalance } = useTeamBalance()
   const { oilExtractionVisible, toggleOilExtractionVisibility, loading: oilVisibilityLoading } = useOilExtractionVisibility()
+  const { galleryVisible, toggleGalleryVisibility, loading: galleryVisibilityLoading } = useGalleryVisibility()
   const { t } = useLanguage()
   const [profiles, setProfiles] = useState<Profile[]>([])
   const [campSettings, setCampSettings] = useState<any>(null)
@@ -271,6 +273,12 @@ export default function AdminPanel() {
               {oilExtractionVisible ? t('oilExtractionVisible') : t('oilExtractionHidden')}
             </p>
           </div>
+          <div className="bg-gray-50 rounded-lg p-4">
+            <h4 className="font-medium text-gray-900">{t('galleryVisibility')}</h4>
+            <p className="text-sm text-gray-600">
+              {galleryVisible ? t('galleryVisible') : t('galleryHidden')}
+            </p>
+          </div>
         </div>
         
         {/* Oil Extraction Visibility Toggle */}
@@ -295,6 +303,31 @@ export default function AdminPanel() {
               <Zap className="h-4 w-4 mr-2" />
             )}
             {oilExtractionVisible ? t('hideOilExtraction') : t('showOilExtraction')}
+          </button>
+        </div>
+
+        {/* Gallery Visibility Toggle */}
+        <div className="mt-4 flex items-center justify-between p-4 bg-purple-50 border border-purple-200 rounded-lg">
+          <div className="flex items-center">
+            <Camera className="h-5 w-5 text-purple-600 mr-3" />
+            <div>
+              <h4 className="font-medium text-gray-900">{t('galleryVisibility')}</h4>
+              <p className="text-sm text-gray-600">
+                {galleryVisible ? t('galleryVisible') : t('galleryHidden')}
+              </p>
+            </div>
+          </div>
+          <button
+            onClick={toggleGalleryVisibility}
+            disabled={galleryVisibilityLoading}
+            className="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md text-white bg-purple-600 hover:bg-purple-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-purple-500 disabled:opacity-50"
+          >
+            {galleryVisibilityLoading ? (
+              <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white mr-2"></div>
+            ) : (
+              <Camera className="h-4 w-4 mr-2" />
+            )}
+            {galleryVisible ? t('hideGallery') : t('showGallery')}
           </button>
         </div>
       </div>

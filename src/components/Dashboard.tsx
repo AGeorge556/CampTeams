@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react'
-import { Users, Shield, BarChart3, Sun, Star, Flame, Trees, Mountain, UserPlus, Download, RefreshCw, Calendar, Trophy, Settings, Bell, Activity } from 'lucide-react'
+import { Users, Shield, BarChart3, Sun, Star, Flame, Trees, Mountain, UserPlus, Download, RefreshCw, Calendar, Trophy, Settings, Bell, Activity, Camera } from 'lucide-react'
 import { useProfile } from '../hooks/useProfile'
 import { useTeamBalance } from '../hooks/useTeamBalance'
 import { TEAMS, TeamColor, supabase } from '../lib/supabase'
@@ -64,6 +64,15 @@ export default function Dashboard({ onPageChange }: DashboardProps) {
       icon: Calendar,
       action: () => onPageChange?.('schedule'),
       color: 'bg-green-500 hover:bg-green-600',
+      available: profile?.is_admin || false
+    },
+    {
+      id: 'gallery-moderation',
+      title: t('photoModeration'),
+      description: 'Review and moderate photo submissions',
+      icon: Camera,
+      action: () => onPageChange?.('gallery-moderation'),
+      color: 'bg-purple-500 hover:bg-purple-600',
       available: profile?.is_admin || false
     },
     // {

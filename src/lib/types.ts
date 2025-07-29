@@ -320,4 +320,59 @@ export const OIL_QUALITY_VALUES: Record<OilQuality, number> = {
   epic: 175,
   legendary: 250,
   mythic: 750
+}
+
+// Gallery Types
+export type PhotoStatus = 'pending' | 'approved' | 'rejected'
+
+export interface GalleryPhoto {
+  id: string
+  user_id: string
+  team_id?: 'red' | 'blue' | 'green' | 'yellow'
+  image_url: string
+  caption?: string
+  status: PhotoStatus
+  submitted_at: string
+  reviewed_by?: string
+  reviewed_at?: string
+  created_at: string
+  updated_at: string
+}
+
+export interface GalleryPhotoWithInfo extends GalleryPhoto {
+  user_name: string
+  team_name: string
+  reviewer_name?: string
+}
+
+export interface GalleryStats {
+  total_photos: number
+  pending_photos: number
+  approved_photos: number
+  rejected_photos: number
+  total_users: number
+}
+
+export interface PhotoUpload {
+  file: File
+  caption?: string
+  preview?: string
+}
+
+export interface GalleryFilters {
+  status?: PhotoStatus
+  team?: 'red' | 'blue' | 'green' | 'yellow'
+  user?: string
+}
+
+export const PHOTO_STATUS_LABELS: Record<PhotoStatus, string> = {
+  pending: 'Pending',
+  approved: 'Approved',
+  rejected: 'Rejected'
+}
+
+export const PHOTO_STATUS_COLORS: Record<PhotoStatus, string> = {
+  pending: 'bg-yellow-100 text-yellow-800',
+  approved: 'bg-green-100 text-green-800',
+  rejected: 'bg-red-100 text-red-800'
 } 

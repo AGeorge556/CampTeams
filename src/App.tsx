@@ -3,6 +3,7 @@ import { useAuth } from './hooks/useAuth'
 import { useProfile } from './hooks/useProfile'
 import { useRulesAcceptance } from './hooks/useRulesAcceptance'
 import { useOilExtractionVisibility } from './hooks/useOilExtractionVisibility'
+import { useGalleryVisibility } from './hooks/useGalleryVisibility'
 import Auth from './components/Auth'
 import OnboardingForm from './components/OnboardingForm'
 import RulesAgreement from './components/RulesAgreement'
@@ -14,6 +15,8 @@ import AdminCoinManagement from './components/oil-extraction/AdminCoinManagement
 import TeamExcavation from './components/oil-extraction/TeamExcavation'
 import OilShop from './components/oil-extraction/OilShop'
 import EconomyDashboard from './components/oil-extraction/EconomyDashboard'
+import Gallery from './components/Gallery'
+import GalleryModeration from './components/GalleryModeration'
 import Layout from './components/Layout'
 import Navigation from './components/Navigation'
 import LandingPage from './components/LandingPage'
@@ -63,6 +66,7 @@ function AppContent({
 }) {
   const { hasAccepted, loading: rulesLoading } = useRulesAcceptance()
   const { oilExtractionVisible } = useOilExtractionVisibility()
+  const { galleryVisible } = useGalleryVisibility()
 
   // Redirect to dashboard if user is on oil extraction page but it's hidden and they're not admin
   useEffect(() => {
@@ -70,6 +74,13 @@ function AppContent({
       setCurrentPage('dashboard')
     }
   }, [currentPage, oilExtractionVisible, profile?.is_admin, setCurrentPage])
+
+  // Redirect to dashboard if user is on gallery page but it's hidden and they're not admin
+  useEffect(() => {
+    if (currentPage.startsWith('gallery') && !galleryVisible && !profile?.is_admin) {
+      setCurrentPage('dashboard')
+    }
+  }, [currentPage, galleryVisible, profile?.is_admin, setCurrentPage])
 
   if (authLoading || profileLoading || rulesLoading) {
     return <LoadingSpinner fullScreen text="Loading..." />
@@ -97,6 +108,10 @@ function AppContent({
               return <Schedule />
             case 'sports':
               return <SportsSelection />
+            case 'gallery':
+              return <Gallery />
+            case 'gallery-moderation':
+              return <GalleryModeration />
             case 'oil-extraction':
               return <OilExtractionGame onPageChange={setCurrentPage} />
             case 'oil-extraction-admin':

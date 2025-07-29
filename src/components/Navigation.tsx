@@ -1,10 +1,11 @@
 import React, { useState } from 'react'
-import { Menu, X, Users, Calendar, Trophy, LogOut, Zap } from 'lucide-react'
+import { Menu, X, Users, Calendar, Trophy, LogOut, Zap, Camera } from 'lucide-react'
 import { useAuth } from '../hooks/useAuth'
 import { useProfile } from '../hooks/useProfile'
 import { useLanguage } from '../contexts/LanguageContext'
 import { useScheduleVisibility } from '../hooks/useScheduleVisibility'
 import { useOilExtractionVisibility } from '../hooks/useOilExtractionVisibility'
+import { useGalleryVisibility } from '../hooks/useGalleryVisibility'
 import LanguageSwitcher from './LanguageSwitcher'
 
 interface NavigationProps {
@@ -18,6 +19,7 @@ export default function Navigation({ currentPage, onPageChange }: NavigationProp
   const { t } = useLanguage()
   const { scheduleVisible } = useScheduleVisibility()
   const { oilExtractionVisible } = useOilExtractionVisibility()
+  const { galleryVisible } = useGalleryVisibility()
   const [isMenuOpen, setIsMenuOpen] = useState(false)
 
   const handleSignOut = async () => {
@@ -28,6 +30,7 @@ export default function Navigation({ currentPage, onPageChange }: NavigationProp
     { id: 'dashboard', name: t('dashboard'), icon: Users },
     ...(profile?.is_admin || scheduleVisible ? [{ id: 'schedule', name: t('schedule'), icon: Calendar }] : []),
     { id: 'sports', name: t('teams'), icon: Trophy },
+    ...(profile?.is_admin || galleryVisible ? [{ id: 'gallery', name: t('gallery'), icon: Camera }] : []),
     ...(profile?.is_admin || oilExtractionVisible ? [{ id: 'oil-extraction', name: 'Oil Extraction', icon: Zap }] : [])
   ]
 

@@ -82,9 +82,10 @@ export type Database = {
           teams_locked: boolean
           lock_date: string | null
           max_team_size: number
-          oil_extraction_visible: boolean
-          created_at: string
-          updated_at: string
+                oil_extraction_visible: boolean
+      gallery_visible: boolean
+      created_at: string
+      updated_at: string
         }
         Insert: {
           id?: string
@@ -92,6 +93,7 @@ export type Database = {
           lock_date?: string | null
           max_team_size?: number
           oil_extraction_visible?: boolean
+          gallery_visible?: boolean
           created_at?: string
           updated_at?: string
         }
@@ -101,6 +103,7 @@ export type Database = {
           lock_date?: string | null
           max_team_size?: number
           oil_extraction_visible?: boolean
+          gallery_visible?: boolean
           created_at?: string
           updated_at?: string
         }
@@ -363,6 +366,47 @@ export type Database = {
           purchased_at?: string
         }
       }
+      gallery_photos: {
+        Row: {
+          id: string
+          user_id: string
+          team_id: 'red' | 'blue' | 'green' | 'yellow' | null
+          image_url: string
+          caption: string | null
+          status: 'pending' | 'approved' | 'rejected'
+          submitted_at: string
+          reviewed_by: string | null
+          reviewed_at: string | null
+          created_at: string
+          updated_at: string
+        }
+        Insert: {
+          id?: string
+          user_id: string
+          team_id?: 'red' | 'blue' | 'green' | 'yellow' | null
+          image_url: string
+          caption?: string | null
+          status?: 'pending' | 'approved' | 'rejected'
+          submitted_at?: string
+          reviewed_by?: string | null
+          reviewed_at?: string | null
+          created_at?: string
+          updated_at?: string
+        }
+        Update: {
+          id?: string
+          user_id?: string
+          team_id?: 'red' | 'blue' | 'green' | 'yellow' | null
+          image_url?: string
+          caption?: string | null
+          status?: 'pending' | 'approved' | 'rejected'
+          submitted_at?: string
+          reviewed_by?: string | null
+          reviewed_at?: string | null
+          created_at?: string
+          updated_at?: string
+        }
+      }
       rules_acceptance: {
         Row: {
           id: string
@@ -575,6 +619,56 @@ export type Database = {
           created_at: string
         }[]
       }
+      check_daily_upload_limit: {
+        Args: {
+          user_id_param: string
+        }
+        Returns: boolean
+      }
+      approve_photo: {
+        Args: {
+          photo_id_param: string
+          admin_id_param: string
+        }
+        Returns: boolean
+      }
+      reject_photo: {
+        Args: {
+          photo_id_param: string
+          admin_id_param: string
+        }
+        Returns: boolean
+      }
+      get_gallery_stats: {
+        Args: Record<string, never>
+        Returns: {
+          total_photos: number
+          pending_photos: number
+          approved_photos: number
+          rejected_photos: number
+          total_users: number
+        }[]
+      }
+      get_gallery_photos_with_info: {
+        Args: {
+          status_filter?: string
+        }
+        Returns: {
+          id: string
+          user_id: string
+          team_id: string
+          image_url: string
+          caption: string
+          status: string
+          submitted_at: string
+          reviewed_by: string
+          reviewed_at: string
+          created_at: string
+          user_name: string
+          team_name: string
+          reviewer_name: string
+        }[]
+      }
       create_hint: {
         Args: {
           hint_text_param: string
@@ -598,6 +692,14 @@ export type Database = {
         Args: {
           user_id_param: string
         }
+        Returns: boolean
+      }
+      toggle_gallery_visibility: {
+        Args: Record<string, never>
+        Returns: undefined
+      }
+      get_gallery_visibility: {
+        Args: Record<string, never>
         Returns: boolean
       }
       initialize_team_wallets: {

@@ -127,6 +127,11 @@ export interface Translations {
   showOilExtraction: string
   oilExtractionHidden: string
   oilExtractionVisible: string
+  galleryVisibility: string
+  hideGallery: string
+  showGallery: string
+  galleryHidden: string
+  galleryVisible: string
 
   // Fun Messages
   awesome: string
@@ -253,6 +258,64 @@ export interface Translations {
   errorWithRetry: string
   successWithExclamation: string
   warningWithAttention: string
+
+  // Gallery
+  gallery: string
+  uploadPhotos: string
+  mySubmissions: string
+  publicGallery: string
+  photoModeration: string
+  uploadPhoto: string
+  selectPhotos: string
+  addCaption: string
+  submitPhotos: string
+  photoUploaded: string
+  photoApproved: string
+  photoRejected: string
+  photoDeleted: string
+  pendingApproval: string
+  approvedPhotos: string
+  rejectedPhotos: string
+  allPhotos: string
+  approvePhoto: string
+  rejectPhoto: string
+  deletePhoto: string
+  downloadPhoto: string
+  noPhotosYet: string
+  noPhotosFound: string
+  uploadLimitReached: string
+  fileTooLarge: string
+  invalidFileType: string
+  uploadSuccess: string
+  uploadError: string
+  moderationSuccess: string
+  moderationError: string
+  photoDetails: string
+  uploadedBy: string
+  submittedOn: string
+  reviewedBy: string
+  reviewedOn: string
+  filterByStatus: string
+  filterByTeam: string
+  filterByUser: string
+  clearFilters: string
+  galleryStats: string
+  totalPhotos: string
+  pendingCount: string
+  approvedCount: string
+  rejectedCount: string
+  totalUsers: string
+  dailyUploadLimit: string
+  uploadsRemaining: string
+  photoPreview: string
+  closePreview: string
+  nextPhoto: string
+  previousPhoto: string
+  confirmDelete: string
+  deletePhotoConfirm: string
+  deletePhotoWarning: string
+  cancelDelete: string
+  confirmDeletePhoto: string
 }
 
 export const translations: Record<Language, Translations> = {
@@ -373,6 +436,11 @@ export const translations: Record<Language, Translations> = {
     showOilExtraction: 'Show Oil Extraction',
     oilExtractionHidden: 'Oil extraction tab is hidden from campers',
     oilExtractionVisible: 'Oil extraction tab is visible to campers',
+    galleryVisibility: 'Gallery Visibility',
+    hideGallery: 'Hide Gallery',
+    showGallery: 'Show Gallery',
+    galleryHidden: 'Gallery tab is hidden from campers',
+    galleryVisible: 'Gallery tab is visible to campers',
 
     // Fun Messages
     awesome: 'Awesome!',
@@ -498,7 +566,65 @@ export const translations: Record<Language, Translations> = {
     loadingWithDots: 'Loading...',
     errorWithRetry: 'Oops! Something went wrong. Please try again.',
     successWithExclamation: 'Success! That worked perfectly!',
-    warningWithAttention: 'Attention! Please check the details.'
+    warningWithAttention: 'Attention! Please check the details.',
+
+    // Gallery
+    gallery: 'Gallery',
+    uploadPhotos: 'Upload Photos',
+    mySubmissions: 'My Submissions',
+    publicGallery: 'Public Gallery',
+    photoModeration: 'Photo Moderation',
+    uploadPhoto: 'Upload Photo',
+    selectPhotos: 'Select Photos',
+    addCaption: 'Add Caption (Optional)',
+    submitPhotos: 'Submit Photos',
+    photoUploaded: 'Photo uploaded successfully!',
+    photoApproved: 'Photo approved successfully!',
+    photoRejected: 'Photo rejected successfully!',
+    photoDeleted: 'Photo deleted successfully!',
+    pendingApproval: 'Pending Approval',
+    approvedPhotos: 'Approved Photos',
+    rejectedPhotos: 'Rejected Photos',
+    allPhotos: 'All Photos',
+    approvePhoto: 'Approve Photo',
+    rejectPhoto: 'Reject Photo',
+    deletePhoto: 'Delete Photo',
+    downloadPhoto: 'Download Photo',
+    noPhotosYet: 'No photos uploaded yet',
+    noPhotosFound: 'No photos found',
+    uploadLimitReached: 'Daily upload limit reached (10 photos per day)',
+    fileTooLarge: 'File size must be less than 5MB',
+    invalidFileType: 'Only image files are allowed (JPEG, PNG, GIF, WebP)',
+    uploadSuccess: 'Photos uploaded successfully!',
+    uploadError: 'Failed to upload photos',
+    moderationSuccess: 'Photo moderated successfully!',
+    moderationError: 'Failed to moderate photo',
+    photoDetails: 'Photo Details',
+    uploadedBy: 'Uploaded by',
+    submittedOn: 'Submitted on',
+    reviewedBy: 'Reviewed by',
+    reviewedOn: 'Reviewed on',
+    filterByStatus: 'Filter by Status',
+    filterByTeam: 'Filter by Team',
+    filterByUser: 'Filter by User',
+    clearFilters: 'Clear Filters',
+    galleryStats: 'Gallery Statistics',
+    totalPhotos: 'Total Photos',
+    pendingCount: 'Pending',
+    approvedCount: 'Approved',
+    rejectedCount: 'Rejected',
+    totalUsers: 'Total Users',
+    dailyUploadLimit: 'Daily Upload Limit',
+    uploadsRemaining: 'uploads remaining',
+    photoPreview: 'Photo Preview',
+    closePreview: 'Close Preview',
+    nextPhoto: 'Next Photo',
+    previousPhoto: 'Previous Photo',
+    confirmDelete: 'Confirm Delete',
+    deletePhotoConfirm: 'Are you sure you want to delete this photo?',
+    deletePhotoWarning: 'This action cannot be undone.',
+    cancelDelete: 'Cancel',
+    confirmDeletePhoto: 'Delete Photo'
   },
   ar: {
     // Navigation
@@ -618,6 +744,11 @@ export const translations: Record<Language, Translations> = {
     showOilExtraction: 'إظهار استخراج النفط',
     oilExtractionHidden: 'تبويب استخراج النفط مخفي من المشاركين',
     oilExtractionVisible: 'تبويب استخراج النفط مرئي للمشاركين',
+    galleryVisibility: 'رؤية المعرض',
+    hideGallery: 'إخفاء المعرض',
+    showGallery: 'إظهار المعرض',
+    galleryHidden: 'تبويب المعرض مخفي من المشاركين',
+    galleryVisible: 'تبويب المعرض مرئي للمشاركين',
 
     // Fun Messages
     awesome: 'جامد!',
@@ -743,7 +874,65 @@ export const translations: Record<Language, Translations> = {
     loadingWithDots: 'جاري التحميل...',
     errorWithRetry: 'عذراً! في مشكلة حصلت. حاول تاني.',
     successWithExclamation: 'نجح! تم بنجاح!',
-    warningWithAttention: 'تنبيه! راجع التفاصيل.'
+    warningWithAttention: 'تنبيه! راجع التفاصيل.',
+
+    // Gallery
+    gallery: 'المعرض',
+    uploadPhotos: 'رفع الصور',
+    mySubmissions: 'صوري المرفوعة',
+    publicGallery: 'المعرض العام',
+    photoModeration: 'مراجعة الصور',
+    uploadPhoto: 'رفع صورة',
+    selectPhotos: 'اختر الصور',
+    addCaption: 'أضف وصف (اختياري)',
+    submitPhotos: 'إرسال الصور',
+    photoUploaded: 'تم رفع الصورة بنجاح!',
+    photoApproved: 'تمت الموافقة على الصورة!',
+    photoRejected: 'تم رفض الصورة!',
+    photoDeleted: 'تم حذف الصورة!',
+    pendingApproval: 'في انتظار الموافقة',
+    approvedPhotos: 'الصور المعتمدة',
+    rejectedPhotos: 'الصور المرفوضة',
+    allPhotos: 'كل الصور',
+    approvePhoto: 'الموافقة على الصورة',
+    rejectPhoto: 'رفض الصورة',
+    deletePhoto: 'حذف الصورة',
+    downloadPhoto: 'تحميل الصورة',
+    noPhotosYet: 'لم يتم رفع صور بعد',
+    noPhotosFound: 'لم يتم العثور على صور',
+    uploadLimitReached: 'تم الوصول للحد الأقصى اليومي (10 صور في اليوم)',
+    fileTooLarge: 'حجم الملف يجب أن يكون أقل من 5 ميجابايت',
+    invalidFileType: 'يُسمح فقط بملفات الصور (JPEG, PNG, GIF, WebP)',
+    uploadSuccess: 'تم رفع الصور بنجاح!',
+    uploadError: 'فشل في رفع الصور',
+    moderationSuccess: 'تمت مراجعة الصورة بنجاح!',
+    moderationError: 'فشل في مراجعة الصورة',
+    photoDetails: 'تفاصيل الصورة',
+    uploadedBy: 'رفع بواسطة',
+    submittedOn: 'تم الإرسال في',
+    reviewedBy: 'راجع بواسطة',
+    reviewedOn: 'تمت المراجعة في',
+    filterByStatus: 'تصفية حسب الحالة',
+    filterByTeam: 'تصفية حسب الفريق',
+    filterByUser: 'تصفية حسب المستخدم',
+    clearFilters: 'مسح التصفية',
+    galleryStats: 'إحصائيات المعرض',
+    totalPhotos: 'إجمالي الصور',
+    pendingCount: 'في الانتظار',
+    approvedCount: 'معتمد',
+    rejectedCount: 'مرفوض',
+    totalUsers: 'إجمالي المستخدمين',
+    dailyUploadLimit: 'الحد الأقصى اليومي للرفع',
+    uploadsRemaining: 'رفع متبقي',
+    photoPreview: 'معاينة الصورة',
+    closePreview: 'إغلاق المعاينة',
+    nextPhoto: 'الصورة التالية',
+    previousPhoto: 'الصورة السابقة',
+    confirmDelete: 'تأكيد الحذف',
+    deletePhotoConfirm: 'هل أنت متأكد من حذف هذه الصورة؟',
+    deletePhotoWarning: 'لا يمكن التراجع عن هذا الإجراء.',
+    cancelDelete: 'إلغاء',
+    confirmDeletePhoto: 'حذف الصورة'
   }
 }
 
