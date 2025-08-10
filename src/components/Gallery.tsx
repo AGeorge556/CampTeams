@@ -269,7 +269,7 @@ export default function Gallery() {
       )}
 
       {/* My Submissions */}
-      <div className="bg-white rounded-lg shadow-sm p-6">
+      <div className="bg-white rounded-lg shadow-sm p-4 sm:p-6">
         <h2 className="text-lg font-semibold text-gray-900 mb-4">{t('mySubmissions')}</h2>
         
         {myPhotos.length === 0 ? (
@@ -278,21 +278,23 @@ export default function Gallery() {
             <p className="text-gray-600">{t('noPhotosYet')}</p>
           </div>
         ) : (
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 sm:gap-4">
             {myPhotos.map((photo) => (
-              <div key={photo.id} className="relative group">
+              <div key={photo.id} className="relative group mobile-touch-feedback">
                 <img
                   src={signedUrls[photo.id] || photo.image_url}
                   alt={photo.caption || 'Photo'}
-                  className="w-full h-48 object-cover rounded-lg cursor-pointer"
+                  className="w-full h-40 sm:h-48 object-cover rounded-lg cursor-pointer mobile-image"
                   onClick={() => setSelectedPhoto(photo)}
+                  loading="lazy"
                 />
                 
                 {/* Status Badge */}
                 <div className="absolute top-2 left-2">
                   <span className={`inline-flex items-center px-2 py-1 rounded-full text-xs font-medium ${PHOTO_STATUS_COLORS[photo.status]}`}>
                     {getStatusIcon(photo.status)}
-                    <span className="ml-1">{PHOTO_STATUS_LABELS[photo.status]}</span>
+                    <span className="ml-1 hidden sm:inline">{PHOTO_STATUS_LABELS[photo.status]}</span>
+                    <span className="ml-1 sm:hidden">{PHOTO_STATUS_LABELS[photo.status].charAt(0)}</span>
                   </span>
                 </div>
 
@@ -301,16 +303,16 @@ export default function Gallery() {
                   <div className="flex space-x-1">
                     <button
                       onClick={() => setSelectedPhoto(photo)}
-                      className="bg-blue-500 text-white rounded-full p-1"
+                      className="bg-blue-500 text-white rounded-full p-1.5 sm:p-1 touch-target"
                     >
-                      <Eye className="h-3 w-3" />
+                      <Eye className="h-3 w-3 sm:h-3 sm:w-3" />
                     </button>
                     {photo.status === 'pending' && (
                       <button
                         onClick={() => setShowDeleteConfirm(photo.id)}
-                        className="bg-red-500 text-white rounded-full p-1"
+                        className="bg-red-500 text-white rounded-full p-1.5 sm:p-1 touch-target"
                       >
-                        <Trash2 className="h-3 w-3" />
+                        <Trash2 className="h-3 w-3 sm:h-3 sm:w-3" />
                       </button>
                     )}
                   </div>
@@ -334,7 +336,7 @@ export default function Gallery() {
       </div>
 
       {/* Public Gallery */}
-      <div className="bg-white rounded-lg shadow-sm p-6">
+      <div className="bg-white rounded-lg shadow-sm p-4 sm:p-6">
         <h2 className="text-lg font-semibold text-gray-900 mb-4">{t('publicGallery')}</h2>
         
         {approvedPhotos.length === 0 ? (
@@ -343,23 +345,24 @@ export default function Gallery() {
             <p className="text-gray-600">{t('noPhotosFound')}</p>
           </div>
         ) : (
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
+          <div className="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-3 sm:gap-4">
             {approvedPhotos.map((photo) => (
-              <div key={photo.id} className="relative group">
+              <div key={photo.id} className="relative group mobile-touch-feedback">
                 <img
                   src={signedUrls[photo.id] || photo.image_url}
                   alt={photo.caption || 'Photo'}
-                  className="w-full h-48 object-cover rounded-lg cursor-pointer"
+                  className="w-full h-40 sm:h-48 object-cover rounded-lg cursor-pointer mobile-image"
                   onClick={() => setSelectedPhoto(photo)}
+                  loading="lazy"
                 />
                 
                 {/* Actions */}
                 <div className="absolute top-2 right-2 opacity-0 group-hover:opacity-100 transition-opacity">
                   <button
                     onClick={() => setSelectedPhoto(photo)}
-                    className="bg-blue-500 text-white rounded-full p-1"
+                    className="bg-blue-500 text-white rounded-full p-1.5 sm:p-1 touch-target"
                   >
-                    <Eye className="h-3 w-3" />
+                    <Eye className="h-3 w-3 sm:h-3 sm:w-3" />
                   </button>
                 </div>
 

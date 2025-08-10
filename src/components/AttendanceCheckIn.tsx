@@ -127,7 +127,7 @@ export default function AttendanceCheckIn() {
   }
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-4 sm:space-y-6">
       {/* Header */}
       <div>
         <h3 className="text-lg font-semibold text-gray-900">Attendance Check-in</h3>
@@ -136,7 +136,7 @@ export default function AttendanceCheckIn() {
 
       {/* Active Sessions */}
       <div className="bg-white rounded-lg shadow-sm">
-        <div className="px-6 py-4 border-b border-gray-200">
+        <div className="px-4 sm:px-6 py-3 sm:py-4 border-b border-gray-200">
           <h4 className="text-lg font-medium text-gray-900 flex items-center">
             <QrCode className="h-5 w-5 mr-2" />
             Active Sessions
@@ -144,22 +144,22 @@ export default function AttendanceCheckIn() {
         </div>
         <div className="divide-y divide-gray-200">
           {loading ? (
-            <div className="p-6 text-center text-gray-500">Loading sessions...</div>
+            <div className="p-4 sm:p-6 text-center text-gray-500">Loading sessions...</div>
           ) : activeSessions.length === 0 ? (
-            <div className="p-6 text-center text-gray-500">No active sessions available</div>
+            <div className="p-4 sm:p-6 text-center text-gray-500">No active sessions available</div>
           ) : (
             activeSessions.map((session) => {
               const attendanceStatus = getAttendanceStatus(session.id)
               const isActive = isSessionActive(session)
 
               return (
-                <div key={session.id} className="p-6">
-                  <div className="flex items-center justify-between">
+                <div key={session.id} className="p-4 sm:p-6">
+                  <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between space-y-3 sm:space-y-0">
                     <div className="flex-1">
-                      <div className="flex items-center space-x-3">
-                        <h5 className="text-lg font-medium text-gray-900">{session.name}</h5>
+                      <div className="flex flex-col sm:flex-row sm:items-center space-y-2 sm:space-y-0 sm:space-x-3">
+                        <h5 className="text-base sm:text-lg font-medium text-gray-900">{session.name}</h5>
                         {isActive && (
-                          <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800">
+                          <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800 w-fit">
                             Active Now
                           </span>
                         )}
@@ -167,7 +167,7 @@ export default function AttendanceCheckIn() {
                       {session.description && (
                         <p className="text-sm text-gray-600 mt-1">{session.description}</p>
                       )}
-                      <div className="flex items-center space-x-4 mt-2 text-sm text-gray-500">
+                      <div className="flex flex-col sm:flex-row sm:items-center space-y-1 sm:space-y-0 sm:space-x-4 mt-2 text-sm text-gray-500">
                         <div className="flex items-center">
                           <Clock className="h-4 w-4 mr-1" />
                           {formatDateTime(session.start_time)}
@@ -178,7 +178,7 @@ export default function AttendanceCheckIn() {
                         </div>
                       </div>
                     </div>
-                    <div className="flex items-center space-x-3">
+                    <div className="flex items-center justify-start sm:justify-end space-x-3">
                       {attendanceStatus === 'present' ? (
                         <div className="flex items-center text-green-600">
                           <CheckCircle className="h-5 w-5 mr-2" />
@@ -193,7 +193,7 @@ export default function AttendanceCheckIn() {
                         <button
                           onClick={() => handleCheckIn(session.id)}
                           disabled={checkingIn === session.id || !isActive}
-                          className="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md text-white bg-orange-600 hover:bg-orange-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-orange-500 disabled:opacity-50 disabled:cursor-not-allowed"
+                          className="inline-flex items-center px-4 py-3 border border-transparent text-sm font-medium rounded-md text-white bg-orange-600 hover:bg-orange-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-orange-500 disabled:opacity-50 disabled:cursor-not-allowed touch-target mobile-touch-feedback"
                         >
                           {checkingIn === session.id ? (
                             <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white mr-2"></div>
@@ -214,7 +214,7 @@ export default function AttendanceCheckIn() {
 
       {/* My Attendance History */}
       <div className="bg-white rounded-lg shadow-sm">
-        <div className="px-6 py-4 border-b border-gray-200">
+        <div className="px-4 sm:px-6 py-3 sm:py-4 border-b border-gray-200">
           <h4 className="text-lg font-medium text-gray-900 flex items-center">
             <Users className="h-5 w-5 mr-2" />
             My Attendance History
@@ -222,10 +222,10 @@ export default function AttendanceCheckIn() {
         </div>
         <div className="divide-y divide-gray-200">
           {myAttendance.length === 0 ? (
-            <div className="p-6 text-center text-gray-500">No attendance records yet</div>
+            <div className="p-4 sm:p-6 text-center text-gray-500">No attendance records yet</div>
           ) : (
             myAttendance.slice(0, 10).map((attendance) => (
-              <div key={attendance.id} className="p-4">
+              <div key={attendance.id} className="p-3 sm:p-4">
                 <div className="flex items-center justify-between">
                   <div>
                     <div className="flex items-center space-x-2">

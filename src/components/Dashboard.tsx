@@ -315,7 +315,7 @@ export default function Dashboard({ onPageChange }: DashboardProps) {
 
     setLoading(true)
     try {
-      const { error } = await supabase.rpc('switch_team', {
+      const { error } = await supabase.rpc('can_switch_team', {
         user_id: profile.id,
         new_team: newTeam
       })
@@ -383,7 +383,7 @@ export default function Dashboard({ onPageChange }: DashboardProps) {
     )
   }
 
-  const currentTeam = profile.current_team ? TEAMS[profile.current_team] : null
+  const currentTeam = profile.current_team && profile.current_team in TEAMS ? TEAMS[profile.current_team as TeamColor] : null
   const isAdminNotParticipating = profile.is_admin && !profile.participate_in_teams
 
   return (
@@ -407,7 +407,7 @@ export default function Dashboard({ onPageChange }: DashboardProps) {
             <Activity className="h-5 w-5 mr-2" />
             {t('quickActions')}
           </h3>
-          <div className="flex flex-wrap justify-center gap-3">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
             {quickActions.filter(action => action.available).map((action) => {
               const Icon = action.icon
               return (
@@ -416,16 +416,18 @@ export default function Dashboard({ onPageChange }: DashboardProps) {
                   onClick={action.action}
                   className={`
                     ${action.color}
-                    w-48 min-h-[120px] text-white p-4 rounded-lg transition-all duration-200
+                    w-full min-h-[120px] sm:min-h-[140px] text-white p-4 rounded-lg transition-all duration-200
                     transform hover:scale-105 active:scale-95
-                    flex flex-col items-center justify-center space-y-2
+                    flex flex-col items-center justify-center space-y-3
                     shadow-md hover:shadow-lg
+                    mobile-touch-feedback
+                    touch-target-lg
                   `}
                 >
-                  <Icon className="h-4 w-4" />
+                  <Icon className="h-6 w-6 sm:h-8 sm:w-8" />
                   <div className="text-center">
-                    <div className="font-medium text-sm">{action.title}</div>
-                    <div className="text-xs opacity-90">{action.description}</div>
+                    <div className="font-medium text-sm sm:text-base">{action.title}</div>
+                    <div className="text-xs sm:text-sm opacity-90 mt-1">{action.description}</div>
                   </div>
                 </button>
               )
@@ -471,13 +473,13 @@ export default function Dashboard({ onPageChange }: DashboardProps) {
         <div className="mb-4">
           <div className="flex items-center justify-between">
             <span className="text-sm font-medium text-gray-700">
-              {t('teamSwitchesRemaining')}: {profile.switches_remaining}
+              {t('teamSwitchesRemaining')}: {profile.switches_remaining ?? 0}
             </span>
           </div>
           <div className="w-full bg-gray-200 rounded-full h-2 mt-2">
             <div 
               className="bg-orange-600 h-2 rounded-full transition-all duration-300"
-              style={{ width: `${(profile.switches_remaining / 3) * 100}%` }}
+              style={{ width: `${((profile.switches_remaining ?? 0) / 3) * 100}%` }}
             ></div>
           </div>
         </div>
@@ -555,13 +557,13 @@ export default function Dashboard({ onPageChange }: DashboardProps) {
       </div>
 
       {/* Large, Fun Countdown Section with Summer Icons */}
-      <div className="relative p-6">
+      <div className="relative p-4 sm:p-6">
         {/* Summer Icons - background/floating */}
-        <Sun className="absolute left-4 top-2 text-orange-200 opacity-30 w-24 h-24 animate-spin-slow" />
-        <Star className="absolute right-8 top-8 text-yellow-200 opacity-30 w-16 h-16 animate-bounce" />
-        <Flame className="absolute left-1/2 -translate-x-1/2 bottom-2 text-orange-300 opacity-20 w-20 h-20" />
-        <Trees className="absolute left-8 bottom-8 text-green-200 opacity-30 w-20 h-20" />
-        <Mountain className="absolute right-4 bottom-4 text-blue-200 opacity-30 w-24 h-24" />
+        <Sun className="absolute left-2 sm:left-4 top-1 sm:top-2 text-orange-200 opacity-30 w-16 h-16 sm:w-24 sm:h-24 animate-spin-slow" />
+        <Star className="absolute right-4 sm:right-8 top-4 sm:top-8 text-yellow-200 opacity-30 w-12 h-12 sm:w-16 sm:h-16 animate-bounce" />
+        <Flame className="absolute left-1/2 -translate-x-1/2 bottom-1 sm:bottom-2 text-orange-300 opacity-20 w-16 h-16 sm:w-20 sm:h-20" />
+        <Trees className="absolute left-4 sm:left-8 bottom-4 sm:bottom-8 text-green-200 opacity-30 w-16 h-16 sm:w-20 sm:h-20" />
+        <Mountain className="absolute right-2 sm:right-4 bottom-2 sm:bottom-4 text-blue-200 opacity-30 w-20 h-20 sm:w-24 sm:h-24" />
         <div className="relative z-10 w-full">
           <CountdownTimer targetDate="2025-08-28T00:00:00" compact={false} />
         </div>
@@ -574,23 +576,27 @@ export default function Dashboard({ onPageChange }: DashboardProps) {
       <PlayerLists />
 
       {/* Team Balance Overview */}
-      <div className="bg-white rounded-lg shadow-sm p-6">
+      <div className="bg-white rounded-lg shadow-sm p-4 sm:p-6">
         <h3 className="text-lg font-semibold text-gray-900 mb-4 flex items-center">
           <BarChart3 className="h-5 w-5 mr-2" />
           {t('teamBalanceOverview')}
         </h3>
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-          {teamBalance.map((team) => (
-            <div key={team.team} className="text-center">
-              <div className={`inline-flex items-center justify-center w-16 h-16 rounded-full mb-2 ${TEAMS[team.team as TeamColor].color}`}>
-                <span className="text-white font-bold text-lg">{team.total_count}</span>
+        <div className="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+          {teamBalance.map((team) => {
+            const teamKey = team.team as TeamColor
+            const teamData = TEAMS[teamKey]
+            return (
+              <div key={team.team} className="text-center">
+                <div className={`inline-flex items-center justify-center w-12 h-12 sm:w-16 sm:h-16 rounded-full mb-2 ${teamData.color}`}>
+                  <span className="text-white font-bold text-base sm:text-lg">{team.total_count}</span>
+                </div>
+                <h4 className="font-medium text-gray-900 text-sm sm:text-base">{teamData.name}</h4>
+                <p className="text-xs sm:text-sm text-gray-600">
+                  {team.male_count}M / {team.female_count}F
+                </p>
               </div>
-              <h4 className="font-medium text-gray-900">{TEAMS[team.team as TeamColor].name}</h4>
-              <p className="text-sm text-gray-600">
-                {team.male_count}M / {team.female_count}F
-              </p>
-            </div>
-          ))}
+            )
+          })}
         </div>
       </div>
 
