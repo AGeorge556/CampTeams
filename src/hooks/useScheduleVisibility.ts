@@ -7,21 +7,19 @@ export function useScheduleVisibility() {
 
   useEffect(() => {
     loadScheduleVisibility()
-    const subscription = setupRealtimeSubscription()
-
-    return () => {
-      // Cleanup subscription
-      subscription?.unsubscribe()
-    }
   }, [])
 
   const loadScheduleVisibility = async () => {
     try {
       const { data, error } = await supabase
-        .rpc('get_schedule_visibility')
-
-      if (error) throw error
-      setScheduleVisible(data || true)
+        .from('camp_settings')
+        .select('schedule_visible')
+        .single()
+      if (error && (error as any).code !== 'PGRST116') {
+        console.error('Error fetching schedule visibility:', error)
+      } else {
+        setScheduleVisible((data as any)?.schedule_visible ?? true)
+      }
     } catch (error) {
       console.error('Error loading schedule visibility:', error)
     } finally {
@@ -29,42 +27,21 @@ export function useScheduleVisibility() {
     }
   }
 
-  const setupRealtimeSubscription = () => {
-    const subscription = supabase
-      .channel('camp_settings_changes')
-      .on(
-        'postgres_changes',
-        {
-          event: 'UPDATE',
-          schema: 'public',
-          table: 'camp_settings'
-        },
-        (payload) => {
-          // Update the schedule visibility when camp_settings changes
-          if (payload.new && typeof payload.new.schedule_visible === 'boolean') {
-            setScheduleVisible(payload.new.schedule_visible)
-          }
-        }
-      )
-      .subscribe()
-
-    return subscription
-  }
+  // Removed realtime subscription to mirror gallery/oil pattern
 
   const toggleScheduleVisibility = async () => {
-    // Optimistic UI update
-    const newVisibility = !scheduleVisible
-    setScheduleVisible(newVisibility)
-
     try {
-      const { error } = await supabase
-        .rpc('toggle_schedule_visibility')
-
-      if (error) throw error
+      const newVisibility = !scheduleVisible
+      const { error: updateError } = await supabase
+        .from('camp_settings')
+        .update({ schedule_visible: newVisibility })
+        .neq('id', '00000000-0000-0000-0000-000000000000')
+      if (updateError && (updateError as any).code !== 'PGRST116') {
+        throw updateError
+      }
+      setScheduleVisible(newVisibility)
     } catch (error) {
       console.error('Error toggling schedule visibility:', error)
-      // Revert optimistic update on error
-      setScheduleVisible(!newVisibility)
       throw error
     }
   }

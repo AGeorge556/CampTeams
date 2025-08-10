@@ -6,7 +6,7 @@ import { useToast } from './Toast'
 import { useScheduleVisibility } from '../hooks/useScheduleVisibility'
 import SessionManager from './SessionManager'
 import AttendanceReports from './AttendanceReports'
-import ScheduleFinalizer from './ScheduleFinalizer'
+// import ScheduleFinalizer from './ScheduleFinalizer'
 import ScheduleSessionManager from './ScheduleSessionManager'
 import ScheduleEditor from './ScheduleEditor'
 
@@ -15,7 +15,7 @@ export default function Schedule() {
   const { t } = useLanguage()
   const { addToast } = useToast()
   const { scheduleVisible, loading, toggleScheduleVisibility } = useScheduleVisibility()
-  const [activeTab, setActiveTab] = useState<'sessions' | 'reports' | 'schedule' | 'finalize' | 'editor'>('sessions')
+  const [activeTab, setActiveTab] = useState<'sessions' | 'reports' | 'schedule' | 'editor'>('sessions')
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
 
   const handleToggleScheduleVisibility = async () => {
@@ -73,12 +73,7 @@ export default function Schedule() {
       icon: Calendar,
       description: 'Manage schedule items and create sessions from schedule'
     },
-    {
-      id: 'finalize' as const,
-      name: 'Schedule Finalization',
-      icon: Settings,
-      description: 'Finalize the camp schedule and manage session delays'
-    },
+    // Finalize tab removed
     {
       id: 'reports' as const,
       name: 'Attendance Reports',
@@ -243,15 +238,7 @@ export default function Schedule() {
         </div>
       )}
 
-      {activeTab === 'finalize' && (
-        <div className="bg-white rounded-lg shadow-sm p-4 md:p-6">
-          <div className="mb-4">
-            <h3 className="text-lg font-semibold text-gray-900">Schedule Finalization</h3>
-            <p className="text-sm text-gray-600">Finalize the camp schedule and manage session delays</p>
-          </div>
-          <ScheduleFinalizer />
-        </div>
-      )}
+      {/* Finalize tab removed */}
 
       {activeTab === 'reports' && (
         <div className="bg-white rounded-lg shadow-sm p-4 md:p-6">
