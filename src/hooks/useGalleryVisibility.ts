@@ -9,20 +9,21 @@ export function useGalleryVisibility() {
 
   useEffect(() => {
     fetchGalleryVisibility()
-    // Keep a persistent subscription so refreshes reflect DB state
-    const subscription = setupRealtimeSubscription()
-    return () => subscription?.unsubscribe()
   }, [])
 
   const fetchGalleryVisibility = async () => {
     try {
       const { data, error } = await supabase
-        .rpc('get_gallery_visibility')
-
-      if (error) throw error
-      setGalleryVisible(data || true)
+        .from('camp_settings')
+        .select('gallery_visible')
+        .single()
+      if (error && (error as any).code !== 'PGRST116') {
+        console.error('Error fetching gallery visibility:', error)
+      } else {
+        setGalleryVisible((data as any)?.gallery_visible ?? true)
+      }
     } catch (error) {
-      console.error('Error loading gallery visibility:', error)
+      console.error('Error fetching gallery visibility:', error)
     } finally {
       setLoading(false)
     }
@@ -51,20 +52,24 @@ export function useGalleryVisibility() {
   }
 
   const toggleGalleryVisibility = async () => {
-    // Do not optimistically update; rely on DB persisted state to avoid client-side resets
     setLoading(true)
     try {
-      const { error } = await supabase.rpc('toggle_gallery_visibility')
-      if (error) throw error
-      // Re-fetch to ensure we reflect the stored value
-      await fetchGalleryVisibility()
+      const newVisibility = !galleryVisible
+      const { error: updateError } = await supabase
+        .from('camp_settings')
+        .update({ gallery_visible: newVisibility })
+        .neq('id', '00000000-0000-0000-0000-000000000000')
+      if (updateError && (updateError as any).code !== 'PGRST116') {
+        throw updateError
+      }
+      setGalleryVisible(newVisibility)
       addToast({
         type: 'success',
         title: 'Gallery Visibility Updated',
-        message: `Gallery tab is now ${!galleryVisible ? 'visible' : 'hidden'} to campers`
+        message: `Gallery tab is now ${newVisibility ? 'visible' : 'hidden'} to campers`
       })
     } catch (error: any) {
-      console.error('Error toggling gallery visibility:', error)
+      console.error('Error updating gallery visibility:', error)
       addToast({
         type: 'error',
         title: 'Error',
