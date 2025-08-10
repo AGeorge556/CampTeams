@@ -6,6 +6,7 @@ import { TEAMS, TeamColor, supabase } from '../lib/supabase'
 import AdminPanel from './AdminPanel'
 import PlayerLists from './PlayerLists'
 import CountdownTimer from './CountdownTimer'
+import Scoreboard from './Scoreboard'
 import { useLanguage } from '../contexts/LanguageContext'
 import { Skeleton, SkeletonCard } from './LoadingSpinner'
 
@@ -565,6 +566,9 @@ export default function Dashboard({ onPageChange }: DashboardProps) {
           <CountdownTimer targetDate="2025-08-28T00:00:00" compact={false} />
         </div>
       </div>
+
+      {/* Scoreboard visible after Daily Inspiration */}
+      <Scoreboard />
 
       {/* Player Lists */}
       <PlayerLists />

@@ -1,5 +1,5 @@
 import React, { useState } from 'react'
-import { Menu, X, Users, Calendar, Trophy, LogOut, Zap, Camera } from 'lucide-react'
+import { Menu, X, Users, Calendar, Trophy, LogOut, Zap, Camera, Settings } from 'lucide-react'
 import { useAuth } from '../hooks/useAuth'
 import { useProfile } from '../hooks/useProfile'
 import { useLanguage } from '../contexts/LanguageContext'
@@ -31,6 +31,7 @@ export default function Navigation({ currentPage, onPageChange }: NavigationProp
     ...(profile?.is_admin || scheduleVisible ? [{ id: 'schedule', name: t('schedule'), icon: Calendar }] : []),
     { id: 'sports', name: t('teams'), icon: Trophy },
     ...(profile?.is_admin || galleryVisible ? [{ id: 'gallery', name: t('gallery'), icon: Camera }] : []),
+    { id: 'scoreboard', name: 'Scoreboard', icon: Trophy },
     ...(profile?.is_admin || oilExtractionVisible ? [{ id: 'oil-extraction', name: 'Oil Extraction', icon: Zap }] : [])
   ]
 

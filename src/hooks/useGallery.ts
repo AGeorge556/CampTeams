@@ -105,6 +105,15 @@ export function useGallery() {
     }
   }
 
+  const getSignedUrl = async (storage_path: string | null) => {
+    if (!storage_path) return null
+    const { data, error } = await supabase.storage
+      .from('gallery-photos')
+      .createSignedUrl(storage_path, 60) // 60 seconds
+    if (error) return null
+    return data?.signedUrl || null
+  }
+
   const uploadPhoto = async (photoUpload: PhotoUpload): Promise<{ success: boolean; error?: string }> => {
     if (!user || !profile) {
       return { success: false, error: 'User not authenticated' }
@@ -134,31 +143,25 @@ export function useGallery() {
         return { success: false, error: 'Daily upload limit reached (10 photos per day)' }
       }
 
-      // Upload to Supabase Storage
+      // Upload to Supabase Storage (private bucket)
       const fileExt = photoUpload.file.name.split('.').pop()
-      const fileName = `${user.id}/${Date.now()}.${fileExt}`
-      
-      const { data: uploadData, error: uploadError } = await supabase.storage
+      const storage_path = `${user.id}/${Date.now()}.${fileExt}`
+      const { error: uploadError } = await supabase.storage
         .from('gallery-photos')
-        .upload(fileName, photoUpload.file, {
+        .upload(storage_path, photoUpload.file, {
           cacheControl: '3600',
           upsert: false
         })
 
       if (uploadError) throw uploadError
 
-      // Get public URL
-      const { data: urlData } = supabase.storage
-        .from('gallery-photos')
-        .getPublicUrl(fileName)
-
-      // Save to database
+      // Save to database (do not store publicUrl)
       const { error: dbError } = await supabase
         .from('gallery_photos')
         .insert({
           user_id: user.id,
           team_id: profile.current_team,
-          image_url: urlData.publicUrl,
+          storage_path,
           caption: photoUpload.caption || null
         })
 
@@ -208,13 +211,11 @@ export function useGallery() {
 
       if (dbError) throw dbError
 
-      // Delete from storage
-      const imageUrl = photo.image_url
-      const fileName = imageUrl.split('/').pop()
-      if (fileName) {
+      // Delete from storage using storage_path
+      if (photo.storage_path) {
         await supabase.storage
           .from('gallery-photos')
-          .remove([`${user.id}/${fileName}`])
+          .remove([photo.storage_path])
       }
 
       return { success: true }
@@ -254,6 +255,7 @@ export function useGallery() {
     uploadPhoto,
     deletePhoto,
     getFilteredPhotos,
+    getSignedUrl,
     refresh: loadPhotos
   }
 } 

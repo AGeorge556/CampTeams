@@ -25,6 +25,8 @@ import { ToastProvider } from './components/Toast'
 import LoadingSpinner from './components/LoadingSpinner'
 import { LanguageProvider } from './contexts/LanguageContext'
 import LanguageNotification from './components/LanguageNotification'
+import Scoreboard from './components/Scoreboard'
+import ScoreboardAdmin from './components/ScoreboardAdmin'
 
 function App() {
   const { user, loading: authLoading } = useAuth()
@@ -112,6 +114,10 @@ function AppContent({
               return <Gallery />
             case 'gallery-moderation':
               return <GalleryModeration />
+            case 'scoreboard':
+              return <Scoreboard />
+            case 'scoreboard-admin':
+              return <ScoreboardAdmin />
             case 'oil-extraction':
               return <OilExtractionGame onPageChange={setCurrentPage} />
             case 'oil-extraction-admin':

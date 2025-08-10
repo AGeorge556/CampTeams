@@ -9,12 +9,9 @@ export function useGalleryVisibility() {
 
   useEffect(() => {
     fetchGalleryVisibility()
+    // Keep a persistent subscription so refreshes reflect DB state
     const subscription = setupRealtimeSubscription()
-
-    return () => {
-      // Cleanup subscription
-      subscription?.unsubscribe()
-    }
+    return () => subscription?.unsubscribe()
   }, [])
 
   const fetchGalleryVisibility = async () => {
@@ -54,26 +51,20 @@ export function useGalleryVisibility() {
   }
 
   const toggleGalleryVisibility = async () => {
+    // Do not optimistically update; rely on DB persisted state to avoid client-side resets
     setLoading(true)
     try {
-      // Optimistic UI update
-      const newVisibility = !galleryVisible
-      setGalleryVisible(newVisibility)
-
-      const { error } = await supabase
-        .rpc('toggle_gallery_visibility')
-
+      const { error } = await supabase.rpc('toggle_gallery_visibility')
       if (error) throw error
-
+      // Re-fetch to ensure we reflect the stored value
+      await fetchGalleryVisibility()
       addToast({
         type: 'success',
         title: 'Gallery Visibility Updated',
-        message: `Gallery tab is now ${newVisibility ? 'visible' : 'hidden'} to campers`
+        message: `Gallery tab is now ${!galleryVisible ? 'visible' : 'hidden'} to campers`
       })
     } catch (error: any) {
       console.error('Error toggling gallery visibility:', error)
-      // Revert optimistic update on error
-      setGalleryVisible(!galleryVisible)
       addToast({
         type: 'error',
         title: 'Error',

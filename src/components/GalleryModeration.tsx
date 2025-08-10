@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React, { useState, useEffect } from 'react'
 import { Shield, CheckCircle, XCircle, Trash2, Download, Filter, BarChart3, Eye, Users, Image, Clock } from 'lucide-react'
 import { useGalleryModeration } from '../hooks/useGalleryModeration'
 import { useLanguage } from '../contexts/LanguageContext'
@@ -8,6 +8,7 @@ import { PHOTO_STATUS_LABELS, PHOTO_STATUS_COLORS } from '../lib/types'
 import Button from './ui/Button'
 import LoadingSpinner from './LoadingSpinner'
 import PhotoModal from './PhotoModal'
+import { useGallery } from '../hooks/useGallery'
 
 export default function GalleryModeration() {
   const { t } = useLanguage()
@@ -28,9 +29,31 @@ export default function GalleryModeration() {
     getRejectedPhotos
   } = useGalleryModeration()
 
+  const { getSignedUrl } = useGallery()
+
   const [selectedPhoto, setSelectedPhoto] = useState<GalleryPhotoWithInfo | null>(null)
   const [showDeleteConfirm, setShowDeleteConfirm] = useState<string | null>(null)
   const [showFilters, setShowFilters] = useState(false)
+
+  // Signed URL state for previews
+  const [signedUrls, setSignedUrls] = useState<Record<string, string>>({})
+
+  // Fetch signed URLs for all displayed photos
+  useEffect(() => {
+    const fetchUrls = async () => {
+      const urlMap: Record<string, string> = {}
+      await Promise.all(
+        photosWithInfo.map(async (photo) => {
+          if (photo.storage_path) {
+            const url = await getSignedUrl(photo.storage_path)
+            if (url) urlMap[photo.id] = url
+          }
+        })
+      )
+      setSignedUrls(urlMap)
+    }
+    fetchUrls()
+  }, [photosWithInfo])
 
   const handleApprove = async (photoId: string) => {
     const result = await approvePhoto(photoId)
@@ -216,7 +239,7 @@ export default function GalleryModeration() {
                 {/* Photo */}
                 <div className="relative group">
                   <img
-                    src={photo.image_url}
+                    src={signedUrls[photo.id] || photo.image_url}
                     alt={photo.caption || 'Photo'}
                     className="w-full h-48 object-cover cursor-pointer"
                     onClick={() => setSelectedPhoto(photo)}
@@ -331,6 +354,7 @@ export default function GalleryModeration() {
       {selectedPhoto && (
         <PhotoModal
           photo={selectedPhoto}
+          signedUrl={signedUrls[selectedPhoto.id] || null}
           onClose={() => setSelectedPhoto(null)}
         />
       )}

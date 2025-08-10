@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react'
 import { Shield, Users, Settings, Calendar, Download, UserX, UserCheck, Trophy, Zap, Camera } from 'lucide-react'
+import ScoreboardAdmin from './ScoreboardAdmin'
 import { supabase, Profile, TEAMS, TeamColor } from '../lib/supabase'
 import { useTeamBalance } from '../hooks/useTeamBalance'
 import { useOilExtractionVisibility } from '../hooks/useOilExtractionVisibility'
@@ -329,6 +330,11 @@ export default function AdminPanel() {
             )}
             {galleryVisible ? t('hideGallery') : t('showGallery')}
           </button>
+        </div>
+
+        {/* Scoreboard Admin */}
+        <div className="mt-6">
+          <ScoreboardAdmin />
         </div>
       </div>
 

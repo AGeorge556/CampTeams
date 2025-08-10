@@ -330,6 +330,7 @@ export interface GalleryPhoto {
   user_id: string
   team_id?: 'red' | 'blue' | 'green' | 'yellow'
   image_url: string
+  storage_path?: string | null
   caption?: string
   status: PhotoStatus
   submitted_at: string
@@ -375,4 +376,20 @@ export const PHOTO_STATUS_COLORS: Record<PhotoStatus, string> = {
   pending: 'bg-yellow-100 text-yellow-800',
   approved: 'bg-green-100 text-green-800',
   rejected: 'bg-red-100 text-red-800'
+}
+
+// Scoreboard Types
+export interface TeamScore {
+  team_id: 'red' | 'blue' | 'green' | 'yellow'
+  points: number
+  updated_at: string
+}
+
+export interface ScoreEvent {
+  id: string
+  team_id: 'red' | 'blue' | 'green' | 'yellow'
+  delta: number
+  reason?: string | null
+  admin_id: string
+  created_at: string
 } 

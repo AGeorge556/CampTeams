@@ -5,6 +5,7 @@ import { useLanguage } from '../contexts/LanguageContext'
 
 interface PhotoModalProps {
   photo: GalleryPhoto
+  signedUrl: string | null
   onClose: () => void
   onNext?: () => void
   onPrevious?: () => void
@@ -14,6 +15,7 @@ interface PhotoModalProps {
 
 export default function PhotoModal({ 
   photo, 
+  signedUrl,
   onClose, 
   onNext, 
   onPrevious, 
@@ -46,8 +48,9 @@ export default function PhotoModal({
   }, [onClose, onNext, onPrevious, hasNext, hasPrevious])
 
   const handleDownload = () => {
+    if (!signedUrl) return
     const link = document.createElement('a')
-    link.href = photo.image_url
+    link.href = signedUrl
     link.download = `photo-${photo.id}.jpg`
     document.body.appendChild(link)
     link.click()
@@ -112,11 +115,13 @@ export default function PhotoModal({
           )}
 
           {/* Image */}
-          <img
-            src={photo.image_url}
-            alt={photo.caption || 'Photo'}
-            className="max-w-full max-h-full object-contain"
-          />
+          {signedUrl && (
+            <img
+              src={signedUrl}
+              alt={photo.caption || 'Photo'}
+              className="max-w-full max-h-full object-contain"
+            />
+          )}
         </div>
 
         {/* Footer with Details */}

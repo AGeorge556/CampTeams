@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React, { useState, useEffect } from 'react'
 import { Camera, Upload, Image, Clock, CheckCircle, XCircle, Trash2, Eye, Plus, X } from 'lucide-react'
 import { useGallery } from '../hooks/useGallery'
 import { useProfile } from '../hooks/useProfile'
@@ -22,7 +22,8 @@ export default function Gallery() {
     uploading,
     error,
     uploadPhoto,
-    deletePhoto
+    deletePhoto,
+    getSignedUrl
   } = useGallery()
 
   const [showUpload, setShowUpload] = useState(false)
@@ -30,6 +31,27 @@ export default function Gallery() {
   const [captions, setCaptions] = useState<Record<string, string>>({})
   const [selectedPhoto, setSelectedPhoto] = useState<GalleryPhoto | null>(null)
   const [showDeleteConfirm, setShowDeleteConfirm] = useState<string | null>(null)
+
+  // Signed URL state for previews
+  const [signedUrls, setSignedUrls] = useState<Record<string, string>>({})
+
+  // Fetch signed URLs for all displayed photos
+  useEffect(() => {
+    const fetchUrls = async () => {
+      const allPhotos = [...myPhotos, ...approvedPhotos]
+      const urlMap: Record<string, string> = {}
+      await Promise.all(
+        allPhotos.map(async (photo) => {
+          if (photo.storage_path) {
+            const url = await getSignedUrl(photo.storage_path)
+            if (url) urlMap[photo.id] = url
+          }
+        })
+      )
+      setSignedUrls(urlMap)
+    }
+    fetchUrls()
+  }, [myPhotos, approvedPhotos])
 
   const handleFileSelect = (event: React.ChangeEvent<HTMLInputElement>) => {
     const files = Array.from(event.target.files || [])
@@ -260,7 +282,7 @@ export default function Gallery() {
             {myPhotos.map((photo) => (
               <div key={photo.id} className="relative group">
                 <img
-                  src={photo.image_url}
+                  src={signedUrls[photo.id] || photo.image_url}
                   alt={photo.caption || 'Photo'}
                   className="w-full h-48 object-cover rounded-lg cursor-pointer"
                   onClick={() => setSelectedPhoto(photo)}
@@ -325,7 +347,7 @@ export default function Gallery() {
             {approvedPhotos.map((photo) => (
               <div key={photo.id} className="relative group">
                 <img
-                  src={photo.image_url}
+                  src={signedUrls[photo.id] || photo.image_url}
                   alt={photo.caption || 'Photo'}
                   className="w-full h-48 object-cover rounded-lg cursor-pointer"
                   onClick={() => setSelectedPhoto(photo)}
@@ -357,6 +379,7 @@ export default function Gallery() {
       {selectedPhoto && (
         <PhotoModal
           photo={selectedPhoto}
+          signedUrl={signedUrls[selectedPhoto.id] || null}
           onClose={() => setSelectedPhoto(null)}
         />
       )}
