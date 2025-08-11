@@ -706,6 +706,49 @@ export type Database = {
           },
         ]
       }
+      ,
+      sports_matches: {
+        Row: {
+          id: string
+          sport_id: string
+          team_a: string
+          team_b: string
+          scheduled_time: string | null
+          score_a: number | null
+          score_b: number | null
+          status: string
+          final: boolean
+          created_at: string
+          updated_at: string
+        }
+        Insert: {
+          id?: string
+          sport_id: string
+          team_a: string
+          team_b: string
+          scheduled_time?: string | null
+          score_a?: number | null
+          score_b?: number | null
+          status?: string
+          final?: boolean
+          created_at?: string
+          updated_at?: string
+        }
+        Update: {
+          id?: string
+          sport_id?: string
+          team_a?: string
+          team_b?: string
+          scheduled_time?: string | null
+          score_a?: number | null
+          score_b?: number | null
+          status?: string
+          final?: boolean
+          created_at?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never

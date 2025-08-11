@@ -19,6 +19,7 @@ export type OilSale = Database['public']['Tables']['oil_sales']['Row']
 export type OilHint = Database['public']['Tables']['oil_hints']['Row']
 export type HintPurchase = Database['public']['Tables']['hint_purchases']['Row']
 export type RulesAcceptance = Database['public']['Tables']['rules_acceptance']['Row']
+export type SportsMatch = Database['public']['Tables']['sports_matches']['Row']
 
 export const TEAMS = {
   red: { name: 'Red', color: 'bg-red-500', lightColor: 'bg-red-100', textColor: 'text-red-600' },
