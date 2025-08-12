@@ -60,7 +60,7 @@ export default function Gallery() {
       preview: URL.createObjectURL(file)
     }))
     
-    setSelectedFiles(prev => [...prev, ...newUploads].slice(0, 5)) // Max 5 files
+    setSelectedFiles(prev => [...prev, ...newUploads]) // No file limit
   }
 
   const removeFile = (index: number) => {
@@ -88,7 +88,7 @@ export default function Gallery() {
       addToast({
         type: 'error',
         title: t('error'),
-        message: 'Please select at least one photo'
+        message: 'Please select at least one file'
       })
       return
     }
@@ -118,7 +118,7 @@ export default function Gallery() {
       addToast({
         type: 'success',
         title: t('uploadSuccess'),
-        message: `Successfully uploaded ${successCount} photo${successCount > 1 ? 's' : ''}`
+        message: `Successfully uploaded ${successCount} file${successCount > 1 ? 's' : ''}`
       })
     }
 
@@ -207,12 +207,12 @@ export default function Gallery() {
           {/* File Selection */}
           <div className="mb-4">
             <label className="block text-sm font-medium text-gray-700 mb-2">
-              {t('selectPhotos')} (Max 5, 5MB each)
+              {t('selectPhotos')} (Images and videos)
             </label>
             <input
               type="file"
               multiple
-              accept="image/*"
+              accept="image/*,video/*"
               onChange={handleFileSelect}
               className="block w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-md file:border-0 file:text-sm file:font-medium file:bg-orange-50 file:text-orange-700 hover:file:bg-orange-100"
             />
@@ -221,15 +221,23 @@ export default function Gallery() {
           {/* Selected Files Preview */}
           {selectedFiles.length > 0 && (
             <div className="mb-4">
-              <h3 className="text-sm font-medium text-gray-700 mb-2">Selected Photos:</h3>
+              <h3 className="text-sm font-medium text-gray-700 mb-2">Selected Files:</h3>
               <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
                 {selectedFiles.map((upload, index) => (
                   <div key={index} className="relative group">
-                    <img
-                      src={upload.preview}
-                      alt="Preview"
-                      className="w-full h-32 object-cover rounded-lg"
-                    />
+                    {upload.file.type.startsWith('video/') ? (
+                      <video
+                        src={upload.preview}
+                        className="w-full h-32 object-cover rounded-lg"
+                        controls
+                      />
+                    ) : (
+                      <img
+                        src={upload.preview}
+                        alt="Preview"
+                        className="w-full h-32 object-cover rounded-lg"
+                      />
+                    )}
                     <button
                       onClick={() => removeFile(index)}
                       className="absolute top-2 right-2 bg-red-500 text-white rounded-full p-1 opacity-0 group-hover:opacity-100 transition-opacity"
@@ -281,13 +289,35 @@ export default function Gallery() {
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 sm:gap-4">
             {myPhotos.map((photo) => (
               <div key={photo.id} className="relative group mobile-touch-feedback">
-                <img
-                  src={signedUrls[photo.id] || photo.image_url}
-                  alt={photo.caption || 'Photo'}
-                  className="w-full h-40 sm:h-48 object-cover rounded-lg cursor-pointer mobile-image"
-                  onClick={() => setSelectedPhoto(photo)}
-                  loading="lazy"
-                />
+                {(() => {
+                  const isVideo = photo.storage_path?.toLowerCase().match(/\.(mp4|webm|ogg|mov)$/)
+                  return isVideo ? (
+                    <div className="relative w-full h-40 sm:h-48">
+                      <video
+                        src={signedUrls[photo.id] || photo.image_url}
+                        className="w-full h-full object-cover rounded-lg cursor-pointer mobile-image"
+                        onClick={() => setSelectedPhoto(photo)}
+                        muted
+                        preload="metadata"
+                      />
+                      <div className="absolute inset-0 flex items-center justify-center">
+                        <div className="bg-black bg-opacity-50 rounded-full p-2">
+                          <svg className="w-6 h-6 text-white" fill="currentColor" viewBox="0 0 20 20">
+                            <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM9.555 7.168A1 1 0 008 8v4a1 1 0 001.555.832l3-2a1 1 0 000-1.664l-3-2z" clipRule="evenodd" />
+                          </svg>
+                        </div>
+                      </div>
+                    </div>
+                  ) : (
+                    <img
+                      src={signedUrls[photo.id] || photo.image_url}
+                      alt={photo.caption || 'Photo'}
+                      className="w-full h-40 sm:h-48 object-cover rounded-lg cursor-pointer mobile-image"
+                      onClick={() => setSelectedPhoto(photo)}
+                      loading="lazy"
+                    />
+                  )
+                })()}
                 
                 {/* Status Badge */}
                 <div className="absolute top-2 left-2">
@@ -348,13 +378,35 @@ export default function Gallery() {
           <div className="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-3 sm:gap-4">
             {approvedPhotos.map((photo) => (
               <div key={photo.id} className="relative group mobile-touch-feedback">
-                <img
-                  src={signedUrls[photo.id] || photo.image_url}
-                  alt={photo.caption || 'Photo'}
-                  className="w-full h-40 sm:h-48 object-cover rounded-lg cursor-pointer mobile-image"
-                  onClick={() => setSelectedPhoto(photo)}
-                  loading="lazy"
-                />
+                {(() => {
+                  const isVideo = photo.storage_path?.toLowerCase().match(/\.(mp4|webm|ogg|mov)$/)
+                  return isVideo ? (
+                    <div className="relative w-full h-40 sm:h-48">
+                      <video
+                        src={signedUrls[photo.id] || photo.image_url}
+                        className="w-full h-full object-cover rounded-lg cursor-pointer mobile-image"
+                        onClick={() => setSelectedPhoto(photo)}
+                        muted
+                        preload="metadata"
+                      />
+                      <div className="absolute inset-0 flex items-center justify-center">
+                        <div className="bg-black bg-opacity-50 rounded-full p-2">
+                          <svg className="w-6 h-6 text-white" fill="currentColor" viewBox="0 0 20 20">
+                            <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM9.555 7.168A1 1 0 008 8v4a1 1 0 001.555.832l3-2a1 1 0 000-1.664l-3-2z" clipRule="evenodd" />
+                          </svg>
+                        </div>
+                      </div>
+                    </div>
+                  ) : (
+                    <img
+                      src={signedUrls[photo.id] || photo.image_url}
+                      alt={photo.caption || 'Photo'}
+                      className="w-full h-40 sm:h-48 object-cover rounded-lg cursor-pointer mobile-image"
+                      onClick={() => setSelectedPhoto(photo)}
+                      loading="lazy"
+                    />
+                  )
+                })()}
                 
                 {/* Actions */}
                 <div className="absolute top-2 right-2 opacity-0 group-hover:opacity-100 transition-opacity">

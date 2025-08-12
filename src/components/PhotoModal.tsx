@@ -24,6 +24,9 @@ export default function PhotoModal({
 }: PhotoModalProps) {
   const { t } = useLanguage()
 
+  // Determine if the file is a video based on storage path extension
+  const isVideo = photo.storage_path?.toLowerCase().match(/\.(mp4|webm|ogg|mov)$/)
+
   useEffect(() => {
     const handleKeyDown = (event: KeyboardEvent) => {
       switch (event.key) {
@@ -51,7 +54,8 @@ export default function PhotoModal({
     if (!signedUrl) return
     const link = document.createElement('a')
     link.href = signedUrl
-    link.download = `photo-${photo.id}.jpg`
+    const fileExtension = photo.storage_path?.split('.').pop() || 'jpg'
+    link.download = `${isVideo ? 'video' : 'photo'}-${photo.id}.${fileExtension}`
     document.body.appendChild(link)
     link.click()
     document.body.removeChild(link)
@@ -72,12 +76,12 @@ export default function PhotoModal({
       <div className="relative max-w-4xl max-h-full w-full h-full flex flex-col">
         {/* Header */}
         <div className="flex items-center justify-between p-3 sm:p-4 bg-black bg-opacity-50 text-white">
-          <h2 className="text-base sm:text-lg font-semibold">{t('photoPreview')}</h2>
+          <h2 className="text-base sm:text-lg font-semibold">{isVideo ? t('videoPreview') : t('photoPreview')}</h2>
           <div className="flex items-center space-x-2">
             <button
               onClick={handleDownload}
               className="p-2 sm:p-2.5 hover:bg-white hover:bg-opacity-20 rounded-full transition-colors touch-target"
-              title={t('downloadPhoto')}
+              title={isVideo ? t('downloadVideo') : t('downloadPhoto')}
             >
               <Download className="h-4 w-4 sm:h-5 sm:w-5" />
             </button>
@@ -91,14 +95,14 @@ export default function PhotoModal({
           </div>
         </div>
 
-        {/* Image Container */}
+        {/* Media Container */}
         <div className="flex-1 flex items-center justify-center relative">
           {/* Navigation Buttons */}
           {hasPrevious && onPrevious && (
             <button
               onClick={onPrevious}
               className="absolute left-2 sm:left-4 top-1/2 transform -translate-y-1/2 bg-black bg-opacity-50 text-white p-2.5 sm:p-3 rounded-full hover:bg-opacity-70 transition-colors z-10 touch-target"
-              title={t('previousPhoto')}
+              title={isVideo ? t('previousVideo') : t('previousPhoto')}
             >
               <ChevronLeft className="h-5 w-5 sm:h-6 sm:w-6" />
             </button>
@@ -108,19 +112,29 @@ export default function PhotoModal({
             <button
               onClick={onNext}
               className="absolute right-2 sm:right-4 top-1/2 transform -translate-y-1/2 bg-black bg-opacity-50 text-white p-2.5 sm:p-3 rounded-full hover:bg-opacity-70 transition-colors z-10 touch-target"
-              title={t('nextPhoto')}
+              title={isVideo ? t('nextVideo') : t('nextPhoto')}
             >
               <ChevronRight className="h-5 w-5 sm:h-6 sm:w-6" />
             </button>
           )}
 
-          {/* Image */}
+          {/* Media */}
           {signedUrl && (
-            <img
-              src={signedUrl}
-              alt={photo.caption || 'Photo'}
-              className="max-w-full max-h-full object-contain mobile-image"
-            />
+            isVideo ? (
+              <video
+                src={signedUrl}
+                className="max-w-full max-h-full object-contain mobile-image"
+                controls
+                autoPlay={false}
+                muted
+              />
+            ) : (
+              <img
+                src={signedUrl}
+                alt={photo.caption || 'Photo'}
+                className="max-w-full max-h-full object-contain mobile-image"
+              />
+            )
           )}
         </div>
 

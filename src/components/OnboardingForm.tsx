@@ -71,7 +71,7 @@ export default function OnboardingForm() {
         switches_remaining: 3,
         is_admin: false,
         participate_in_teams: true,
-        role: 'team_leader'
+        role: 'camper'
       })
 
       if (error) throw error

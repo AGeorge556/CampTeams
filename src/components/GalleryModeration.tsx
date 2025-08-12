@@ -238,12 +238,34 @@ export default function GalleryModeration() {
               <div key={photo.id} className="border border-gray-200 rounded-lg overflow-hidden">
                 {/* Photo */}
                 <div className="relative group">
-                  <img
-                    src={signedUrls[photo.id] || photo.image_url}
-                    alt={photo.caption || 'Photo'}
-                    className="w-full h-48 object-cover cursor-pointer"
-                    onClick={() => setSelectedPhoto(photo)}
-                  />
+                  {(() => {
+                    const isVideo = photo.storage_path?.toLowerCase().match(/\.(mp4|webm|ogg|mov)$/)
+                    return isVideo ? (
+                      <div className="relative w-full h-48">
+                        <video
+                          src={signedUrls[photo.id] || photo.image_url}
+                          className="w-full h-full object-cover cursor-pointer"
+                          onClick={() => setSelectedPhoto(photo)}
+                          muted
+                          preload="metadata"
+                        />
+                        <div className="absolute inset-0 flex items-center justify-center">
+                          <div className="bg-black bg-opacity-50 rounded-full p-2">
+                            <svg className="w-6 h-6 text-white" fill="currentColor" viewBox="0 0 20 20">
+                              <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM9.555 7.168A1 1 0 008 8v4a1 1 0 001.555.832l3-2a1 1 0 000-1.664l-3-2z" clipRule="evenodd" />
+                            </svg>
+                          </div>
+                        </div>
+                      </div>
+                    ) : (
+                      <img
+                        src={signedUrls[photo.id] || photo.image_url}
+                        alt={photo.caption || 'Photo'}
+                        className="w-full h-48 object-cover cursor-pointer"
+                        onClick={() => setSelectedPhoto(photo)}
+                      />
+                    )
+                  })()}
                   
                   {/* Status Badge */}
                   <div className="absolute top-2 left-2">
@@ -265,9 +287,11 @@ export default function GalleryModeration() {
                       </button>
                       <button
                         onClick={() => {
+                          const isVideo = photo.storage_path?.toLowerCase().match(/\.(mp4|webm|ogg|mov)$/)
                           const link = document.createElement('a')
                           link.href = photo.image_url
-                          link.download = `photo-${photo.id}.jpg`
+                          const fileExtension = photo.storage_path?.split('.').pop() || 'jpg'
+                          link.download = `${isVideo ? 'video' : 'photo'}-${photo.id}.${fileExtension}`
                           document.body.appendChild(link)
                           link.click()
                           document.body.removeChild(link)

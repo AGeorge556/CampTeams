@@ -88,7 +88,7 @@ export const SESSION_TYPE_COLORS: Record<SessionType, string> = {
 }
 
 // Oil Extraction Game Types
-export type UserRole = 'admin' | 'shop_owner' | 'team_leader'
+export type UserRole = 'admin' | 'shop_owner' | 'team_leader' | 'camper'
 
 export interface GameSession {
   id: string
@@ -355,7 +355,7 @@ export interface GalleryStats {
 }
 
 export interface PhotoUpload {
-  file: File
+  file: File // Supports both images and videos
   caption?: string
   preview?: string
 }

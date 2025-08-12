@@ -24,7 +24,7 @@ export default function AdminPanel() {
   const [sportSelections, setSportSelections] = useState<SportSelection[]>([])
   const [loading, setLoading] = useState(false)
   const [selectedTeam, setSelectedTeam] = useState<TeamColor | 'all'>('all')
-  const [activeTab, setActiveTab] = useState<'participants' | 'sports'>('participants')
+  const [activeTab, setActiveTab] = useState<'participants' | 'sports' | 'roles'>('participants')
 
   useEffect(() => {
     fetchProfiles()
@@ -152,6 +152,21 @@ export default function AdminPanel() {
     }
   }
 
+  const updateUserRole = async (userId: string, newRole: string) => {
+    try {
+      const { error } = await supabase
+        .from('profiles')
+        .update({ role: newRole })
+        .eq('id', userId)
+      
+      if (error) throw error
+      
+      await fetchProfiles()
+    } catch (error) {
+      console.error('Error updating user role:', error)
+    }
+  }
+
   const exportRoster = () => {
     const csvContent = "data:text/csv;charset=utf-8," + 
       "Name,Grade,Gender,Team,Switches Remaining,Join Date\n" +
@@ -230,6 +245,17 @@ export default function AdminPanel() {
             >
               <Trophy className="h-4 w-4 inline mr-2" />
               Sport Selections
+            </button>
+            <button
+              onClick={() => setActiveTab('roles')}
+              className={`py-2 px-1 border-b-2 font-medium text-sm ${
+                activeTab === 'roles'
+                  ? 'border-purple-500 text-purple-600'
+                  : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
+              }`}
+            >
+              <Shield className="h-4 w-4 inline mr-2" />
+              Role Management
             </button>
           </nav>
         </div>
@@ -484,6 +510,87 @@ export default function AdminPanel() {
                 </div>
               </div>
             ))}
+          </div>
+        </div>
+      ) : activeTab === 'roles' ? (
+        <div>
+          <div className="flex items-center justify-between mb-4">
+            <h3 className="font-semibold text-gray-900">Role Management</h3>
+            <div className="text-sm text-gray-600">
+              Only you can assign team_leader roles. New users get 'camper' by default.
+            </div>
+          </div>
+          
+          <div className="bg-white shadow overflow-hidden sm:rounded-md">
+            <table className="min-w-full divide-y divide-gray-200">
+              <thead className="bg-gray-50">
+                <tr>
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    Name
+                  </th>
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    Grade
+                  </th>
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    Team
+                  </th>
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    Current Role
+                  </th>
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    Assign Role
+                  </th>
+                </tr>
+              </thead>
+              <tbody className="bg-white divide-y divide-gray-200">
+                {profiles.map((profile) => (
+                  <tr key={profile.id}>
+                    <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
+                      {profile.full_name}
+                    </td>
+                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                      {getGradeDisplayWithNumber(profile.grade)}
+                    </td>
+                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                      {profile.current_team ? (
+                        <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${
+                          TEAMS[profile.current_team].lightColor
+                        } ${TEAMS[profile.current_team].textColor}`}>
+                          {TEAMS[profile.current_team].name}
+                        </span>
+                      ) : (
+                        <span className="text-gray-400">Unassigned</span>
+                      )}
+                    </td>
+                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                      <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${
+                        profile.role === 'admin' ? 'bg-purple-100 text-purple-800' :
+                        profile.role === 'shop_owner' ? 'bg-yellow-100 text-yellow-800' :
+                        profile.role === 'team_leader' ? 'bg-blue-100 text-blue-800' :
+                        'bg-green-100 text-green-800'
+                      }`}>
+                        {profile.role === 'admin' ? 'Admin' :
+                         profile.role === 'shop_owner' ? 'Shop Owner' :
+                         profile.role === 'team_leader' ? 'Team Leader' :
+                         'Camper'}
+                      </span>
+                    </td>
+                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                      <select
+                        value={profile.role || 'camper'}
+                        onChange={(e) => updateUserRole(profile.id, e.target.value)}
+                        className="rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50 text-sm"
+                      >
+                        <option value="camper">Camper</option>
+                        <option value="team_leader">Team Leader</option>
+                        <option value="shop_owner">Shop Owner</option>
+                        {profile.is_admin && <option value="admin">Admin</option>}
+                      </select>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
           </div>
         </div>
       ) : null}

@@ -33,19 +33,28 @@ export default function ScheduleSessionManager() {
         .from('camp_schedule')
         .select('*')
         .order('day', { ascending: true })
-        .order('time', { ascending: true })
-
-      if (error) throw error
-      setScheduleItems(data || [])
+        .order('time', { ascending: true });
+  
+      if (error) throw error;
+  
+      setScheduleItems(
+        (data || []).map(item => ({
+          ...item,
+          description: item.description ?? undefined,
+          created_at: item.created_at ?? undefined,
+          updated_at: item.updated_at ?? undefined
+        }))
+      );
     } catch (error) {
-      console.error('Error loading schedule items:', error)
+      console.error('Error loading schedule items:', error);
       addToast({
         type: 'error',
         title: 'Error',
         message: 'Failed to load schedule items'
-      })
+      });
     }
-  }
+  };
+  
 
   const loadSessions = async () => {
     try {

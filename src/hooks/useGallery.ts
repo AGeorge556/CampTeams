@@ -123,24 +123,13 @@ export function useGallery() {
       setUploading(true)
       setError(null)
 
-      // Check file size (5MB limit)
-      if (photoUpload.file.size > 5 * 1024 * 1024) {
-        return { success: false, error: 'File size must be less than 5MB' }
-      }
-
-      // Check file type
-      const allowedTypes = ['image/jpeg', 'image/jpg', 'image/png', 'image/gif', 'image/webp']
+      // Check file type (now including videos)
+      const allowedTypes = [
+        'image/jpeg', 'image/jpg', 'image/png', 'image/gif', 'image/webp',
+        'video/mp4', 'video/webm', 'video/ogg', 'video/quicktime'
+      ]
       if (!allowedTypes.includes(photoUpload.file.type)) {
-        return { success: false, error: 'Only image files are allowed (JPEG, PNG, GIF, WebP)' }
-      }
-
-      // Check daily upload limit
-      const { data: canUpload, error: limitError } = await supabase
-        .rpc('check_daily_upload_limit', { user_id_param: user.id })
-
-      if (limitError) throw limitError
-      if (!canUpload) {
-        return { success: false, error: 'Daily upload limit reached (10 photos per day)' }
+        return { success: false, error: 'Only image and video files are allowed (JPEG, PNG, GIF, WebP, MP4, WebM, OGG, MOV)' }
       }
 
       // Upload to Supabase Storage (private bucket)
