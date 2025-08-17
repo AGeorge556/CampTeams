@@ -17,10 +17,10 @@ const LanguageNotification: React.FC = () => {
       setMessage('Welcome! Language switched to English 🇺🇸')
     }
 
-    // Hide notification after 3 seconds
+    // Hide notification after 1.5 seconds (shorter screen time)
     const timer = setTimeout(() => {
       setShowNotification(false)
-    }, 3000)
+    }, 1500)
 
     return () => clearTimeout(timer)
   }, [language])
@@ -28,14 +28,14 @@ const LanguageNotification: React.FC = () => {
   if (!showNotification) return null
 
   return (
-    <div className="fixed top-4 right-4 z-50 animate-in slide-in-from-right duration-500">
+    <div className="fixed top-3 right-3 z-50 animate-in slide-in-from-right duration-300">
       <div className={`
         relative overflow-hidden
         bg-gradient-to-r from-orange-400 to-pink-500
-        text-white px-6 py-4 rounded-lg shadow-lg
+        text-white px-4 py-3 rounded-md shadow-lg
         border border-white/20 backdrop-blur-sm
         transform transition-all duration-300
-        hover:scale-105
+        hover:scale-[1.02]
         ${language === 'ar' ? 'text-right' : 'text-left'}
       `}>
         {/* Animated background elements */}
@@ -46,13 +46,13 @@ const LanguageNotification: React.FC = () => {
         </div>
 
         {/* Content */}
-        <div className="relative z-10 flex items-center gap-3">
-          <Globe className="h-5 w-5 animate-spin-slow" />
+        <div className="relative z-10 flex items-center gap-2">
+          <Globe className="h-4 w-4 animate-spin-slow" />
           <div>
-            <p className="font-semibold text-sm">
+            <p className="font-semibold text-xs">
               {message}
             </p>
-            <p className="text-xs opacity-90 mt-1">
+            <p className="text-[11px] opacity-90 mt-0.5">
               {language === 'ar' ? 'استمتع بتجربة رائعة!' : 'Enjoy the amazing experience!'}
             </p>
           </div>
@@ -61,7 +61,7 @@ const LanguageNotification: React.FC = () => {
         {/* Close button */}
         <button
           onClick={() => setShowNotification(false)}
-          className="absolute top-2 right-2 text-white/70 hover:text-white transition-colors"
+          className="absolute top-1.5 right-1.5 text-white/70 hover:text-white transition-colors text-sm"
         >
           ×
         </button>
