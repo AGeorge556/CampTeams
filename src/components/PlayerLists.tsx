@@ -34,12 +34,11 @@ export default function PlayerLists() {
         return
       }
 
-      // Check gender balance for the target team
+      // Check gender balance for the target team (difference ≤ 2)
       const maleCount = targetTeamPlayers.filter(p => p.gender === 'male').length
       const femaleCount = targetTeamPlayers.filter(p => p.gender === 'female').length
       const newMaleCount = profile.gender === 'male' ? maleCount + 1 : maleCount
       const newFemaleCount = profile.gender === 'female' ? femaleCount + 1 : femaleCount
-      
       if (Math.abs(newMaleCount - newFemaleCount) > 2) {
         addToast({
           type: 'error',
@@ -47,6 +46,38 @@ export default function PlayerLists() {
           message: t('genderBalanceLimitReached')
         })
         return
+      }
+
+      // Global near-even distribution: user's gender should not exceed min count + 1 across teams
+      const teams = Object.keys(TEAMS)
+      const countsByTeam = teams.reduce<Record<string, { male: number; female: number }>>((acc, key) => {
+        const list = (players[key as keyof typeof players] || []).filter(p => p.participate_in_teams)
+        acc[key] = {
+          male: list.filter(p => p.gender === 'male').length,
+          female: list.filter(p => p.gender === 'female').length
+        }
+        return acc
+      }, {})
+      const minMale = Math.min(...teams.map(k => countsByTeam[k].male))
+      const minFemale = Math.min(...teams.map(k => countsByTeam[k].female))
+      if (profile.gender === 'male') {
+        if (newMaleCount > minMale + 1) {
+          addToast({
+            type: 'error',
+            title: t('cannotSwitchTeams'),
+            message: t('teamSwitchNotAllowed')
+          })
+          return
+        }
+      } else {
+        if (newFemaleCount > minFemale + 1) {
+          addToast({
+            type: 'error',
+            title: t('cannotSwitchTeams'),
+            message: t('teamSwitchNotAllowed')
+          })
+          return
+        }
       }
 
       // Check if switch is allowed

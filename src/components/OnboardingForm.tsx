@@ -67,7 +67,8 @@ export default function OnboardingForm() {
         grade: formData.grade,
         gender: formData.gender,
         preferred_team: formData.preferred_team,
-        current_team: formData.preferred_team, // This will be overridden for admins
+        // Do not auto-assign team to avoid early imbalance. New users will explicitly join via Dashboard.
+        current_team: null as any,
         switches_remaining: 3,
         is_admin: false,
         participate_in_teams: true,
