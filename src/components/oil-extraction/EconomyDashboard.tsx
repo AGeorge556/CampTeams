@@ -74,12 +74,12 @@ export default function EconomyDashboard({ onPageChange }: EconomyDashboardProps
   // Check if user has admin access
   if (!profile || (profile.role !== 'admin' && profile.role !== 'shop_owner')) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-purple-50 to-blue-50 flex items-center justify-center">
-        <div className="bg-white rounded-lg shadow-lg p-8 max-w-md w-full mx-4">
+      <div className="min-h-screen bg-gradient-to-br from-purple-50 to-blue-50 flex items-center justify-center dark:bg-transparent">
+        <div className="bg-white rounded-lg shadow-lg p-8 max-w-md w-full mx-4 dark:bg-[color:var(--card-bg)]">
           <div className="text-center">
             <BarChart3 className="h-12 w-12 text-red-500 mx-auto mb-4" />
-            <h2 className="text-2xl font-bold text-gray-900 mb-2">Access Denied</h2>
-            <p className="text-gray-600">
+            <h2 className="text-2xl font-bold text-gray-900 mb-2 dark:text-[color:var(--text)]">Access Denied</h2>
+            <p className="text-gray-600 dark:text-[color:var(--muted)]">
               Only admins and shop owners can access the economy dashboard.
             </p>
           </div>
@@ -97,7 +97,7 @@ export default function EconomyDashboard({ onPageChange }: EconomyDashboardProps
 
   if (!activeSession) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-purple-50 to-blue-50">
+      <div className="min-h-screen bg-gradient-to-br from-purple-50 to-blue-50 dark:bg-transparent">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
           {/* Header */}
           <div className="mb-8">
@@ -129,12 +129,12 @@ export default function EconomyDashboard({ onPageChange }: EconomyDashboardProps
 
           {/* No Active Session Warning */}
           <div className="mb-8">
-            <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-4">
+            <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-4 dark:bg-[color:var(--card-bg)] dark:border-[color:var(--card-border)]">
               <div className="flex">
                 <Target className="h-5 w-5 text-yellow-400 mr-2 mt-0.5" />
                 <div>
-                  <h3 className="text-sm font-medium text-yellow-800">No Active Session</h3>
-                  <p className="text-sm text-yellow-700 mt-1">
+                  <h3 className="text-sm font-medium text-yellow-800 dark:text-[color:var(--text)]">No Active Session</h3>
+                  <p className="text-sm text-yellow-700 mt-1 dark:text-[color:var(--muted)]">
                     There is no active game session. Team economy data will be limited. Please wait for an admin to start a session for full functionality.
                   </p>
                 </div>
@@ -144,8 +144,8 @@ export default function EconomyDashboard({ onPageChange }: EconomyDashboardProps
 
           {/* Economy Overview */}
           <div className="mb-8">
-            <div className="bg-white rounded-lg shadow p-6">
-              <h2 className="text-xl font-semibold text-gray-900 mb-6">Economy Pipeline Overview</h2>
+            <div className="bg-white rounded-lg shadow p-6 dark:bg-[color:var(--card-bg)] dark:border dark:border-[color:var(--card-border)]">
+              <h2 className="text-xl font-semibold text-gray-900 mb-6 dark:text-[color:var(--text)]">Economy Pipeline Overview</h2>
               
               <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
                 <div className="text-center p-4 border rounded-lg">
@@ -193,8 +193,8 @@ export default function EconomyDashboard({ onPageChange }: EconomyDashboardProps
 
           {/* Team Wallets (Basic) */}
           <div className="mb-8">
-            <div className="bg-white rounded-lg shadow p-6">
-              <h2 className="text-xl font-semibold text-gray-900 mb-6">Team Wallets</h2>
+            <div className="bg-white rounded-lg shadow p-6 dark:bg-[color:var(--card-bg)] dark:border dark:border-[color:var(--card-border)]">
+              <h2 className="text-xl font-semibold text-gray-900 mb-6 dark:text-[color:var(--text)]">Team Wallets</h2>
               
               {wallets.length > 0 ? (
                 <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4">

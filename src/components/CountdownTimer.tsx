@@ -43,28 +43,28 @@ export default function CountdownTimer({ targetDate, compact = false }: Countdow
 
   if (compact) {
     return (
-      <div className="bg-gradient-to-r from-orange-50 to-yellow-50 rounded-lg p-4 border border-orange-100">
+      <div className="bg-gradient-to-r from-orange-50 to-yellow-50 rounded-lg p-4 border border-orange-100 dark:bg-transparent dark:border-[color:var(--card-border)]">
         <div className="flex items-center justify-between">
           <div className="flex items-center space-x-2">
             <Calendar className="h-4 w-4 text-orange-500" />
-            <span className="text-sm font-medium text-gray-700">{t('campStartsIn')}</span>
+            <span className="text-sm font-medium text-gray-700 dark:text-[color:var(--text)]">{t('campStartsIn')}</span>
           </div>
           <div className="flex items-center space-x-3">
             <div className="text-center">
               <div className="text-lg font-bold text-orange-600">{countdown.days}</div>
-              <div className="text-xs text-gray-500">{t('daysRemaining')}</div>
+              <div className="text-xs text-gray-500 dark:text-[color:var(--muted)]">{t('daysRemaining')}</div>
             </div>
             <div className="text-center">
               <div className="text-lg font-bold text-orange-600">{countdown.hours}</div>
-              <div className="text-xs text-gray-500">{t('hoursRemaining')}</div>
+              <div className="text-xs text-gray-500 dark:text-[color:var(--muted)]">{t('hoursRemaining')}</div>
             </div>
             <div className="text-center">
               <div className="text-lg font-bold text-orange-600">{countdown.minutes}</div>
-              <div className="text-xs text-gray-500">{t('minutesRemaining')}</div>
+              <div className="text-xs text-gray-500 dark:text-[color:var(--muted)]">{t('minutesRemaining')}</div>
             </div>
             <div className="text-center">
               <div className="text-lg font-bold text-orange-600">{countdown.seconds}</div>
-              <div className="text-xs text-gray-500">{t('secondsRemaining')}</div>
+              <div className="text-xs text-gray-500 dark:text-[color:var(--muted)]">{t('secondsRemaining')}</div>
             </div>
           </div>
         </div>
@@ -73,32 +73,32 @@ export default function CountdownTimer({ targetDate, compact = false }: Countdow
   }
 
   return (
-    <div className="bg-gradient-to-r from-orange-50 to-yellow-50 rounded-lg p-6 border border-orange-100">
+    <div className="bg-gradient-to-r from-orange-50 to-yellow-50 rounded-lg p-6 border border-orange-100 dark:bg-transparent dark:border-[color:var(--card-border)]">
       <div className="flex items-center justify-center mb-4">
         <Calendar className="h-5 w-5 text-orange-500 mr-2" />
-        <h3 className="text-lg font-semibold text-gray-900">{t('countdownToCamp')}</h3>
+        <h3 className="text-lg font-semibold text-gray-900 dark:text-[color:var(--text)]">{t('countdownToCamp')}</h3>
       </div>
       
       <div className="grid grid-cols-4 gap-3">
-        <div className="bg-white rounded-lg p-3 shadow-sm border border-orange-100">
+        <div className="bg-white rounded-lg p-3 shadow-sm border border-orange-100 dark:bg-[color:var(--card-bg)] dark:border-[color:var(--card-border)]">
           <div className="text-2xl font-bold text-orange-600">{countdown.days}</div>
-          <div className="text-xs text-gray-600">{t('daysRemaining')}</div>
+          <div className="text-xs text-gray-600 dark:text-[color:var(--muted)]">{t('daysRemaining')}</div>
         </div>
-        <div className="bg-white rounded-lg p-3 shadow-sm border border-orange-100">
+        <div className="bg-white rounded-lg p-3 shadow-sm border border-orange-100 dark:bg-[color:var(--card-bg)] dark:border-[color:var(--card-border)]">
           <div className="text-2xl font-bold text-orange-600">{countdown.hours}</div>
-          <div className="text-xs text-gray-600">{t('hoursRemaining')}</div>
+          <div className="text-xs text-gray-600 dark:text-[color:var(--muted)]">{t('hoursRemaining')}</div>
         </div>
-        <div className="bg-white rounded-lg p-3 shadow-sm border border-orange-100">
+        <div className="bg-white rounded-lg p-3 shadow-sm border border-orange-100 dark:bg-[color:var(--card-bg)] dark:border-[color:var(--card-border)]">
           <div className="text-2xl font-bold text-orange-600">{countdown.minutes}</div>
-          <div className="text-xs text-gray-600">{t('minutesRemaining')}</div>
+          <div className="text-xs text-gray-600 dark:text-[color:var(--muted)]">{t('minutesRemaining')}</div>
         </div>
-        <div className="bg-white rounded-lg p-3 shadow-sm border border-orange-100">
+        <div className="bg-white rounded-lg p-3 shadow-sm border border-orange-100 dark:bg-[color:var(--card-bg)] dark:border-[color:var(--card-border)]">
           <div className="text-2xl font-bold text-orange-600">{countdown.seconds}</div>
-          <div className="text-xs text-gray-600">{t('secondsRemaining')}</div>
+          <div className="text-xs text-gray-600 dark:text-[color:var(--muted)]">{t('secondsRemaining')}</div>
         </div>
       </div>
       
-      <div className="mt-3 text-center text-sm text-gray-500">
+      <div className="mt-3 text-center text-sm text-gray-500 dark:text-[color:var(--muted)]">
         August 28, 2025
       </div>
     </div>

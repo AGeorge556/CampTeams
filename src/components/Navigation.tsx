@@ -1,5 +1,5 @@
-import React, { useState } from 'react'
-import { Menu, X, Users, Calendar, Trophy, LogOut, Zap, Camera, Settings } from 'lucide-react'
+import React, { useEffect, useState } from 'react'
+import { Menu, X, Users, Calendar, Trophy, LogOut, Zap, Camera, Settings, Moon, Sun } from 'lucide-react'
 import { useAuth } from '../hooks/useAuth'
 import { useProfile } from '../hooks/useProfile'
 import { useLanguage } from '../contexts/LanguageContext'
@@ -21,6 +21,20 @@ export default function Navigation({ currentPage, onPageChange }: NavigationProp
   const { oilExtractionVisible } = useOilExtractionVisibility()
   const { galleryVisible } = useGalleryVisibility()
   const [isMenuOpen, setIsMenuOpen] = useState(false)
+  const [theme, setTheme] = useState<'light' | 'dark'>(() => (localStorage.getItem('theme') as 'light' | 'dark') || 'light')
+
+  // Apply theme to document root
+  useEffect(() => {
+    const root = document.documentElement
+    if (theme === 'dark') {
+      root.setAttribute('data-theme', 'dark')
+    } else {
+      root.setAttribute('data-theme', 'light')
+    }
+    localStorage.setItem('theme', theme)
+  }, [theme])
+
+  const toggleTheme = () => setTheme(prev => (prev === 'light' ? 'dark' : 'light'))
 
   const handleSignOut = async () => {
     await signOut()
@@ -74,6 +88,15 @@ export default function Navigation({ currentPage, onPageChange }: NavigationProp
 
           {/* User Info and Actions */}
           <div className="flex items-center space-x-4">
+            {/* Theme Toggle */}
+            <button
+              aria-label={theme === 'dark' ? 'Switch to light mode' : 'Switch to dark mode'}
+              title={theme === 'dark' ? 'Switch to light mode' : 'Switch to dark mode'}
+              onClick={toggleTheme}
+              className="inline-flex items-center justify-center w-9 h-9 rounded-full border border-gray-300 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-orange-500"
+            >
+              {theme === 'dark' ? <Sun className="h-5 w-5 text-yellow-500" /> : <Moon className="h-5 w-5 text-gray-700" />}
+            </button>
             {/* Language Switcher */}
             <LanguageSwitcher />
             
@@ -111,6 +134,17 @@ export default function Navigation({ currentPage, onPageChange }: NavigationProp
       {isMenuOpen && (
         <div className="md:hidden">
           <div className="px-2 pt-2 pb-3 space-y-1 sm:px-3 bg-white border-t">
+            {/* Mobile Theme Toggle */}
+            <div className="flex justify-end pb-2">
+              <button
+                aria-label={theme === 'dark' ? 'Switch to light mode' : 'Switch to dark mode'}
+                title={theme === 'dark' ? 'Switch to light mode' : 'Switch to dark mode'}
+                onClick={toggleTheme}
+                className="inline-flex items-center justify-center w-9 h-9 rounded-full border border-gray-300 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-orange-500"
+              >
+                {theme === 'dark' ? <Sun className="h-5 w-5 text-yellow-500" /> : <Moon className="h-5 w-5 text-gray-700" />}
+              </button>
+            </div>
             {navigationItems.map((item) => {
               const Icon = item.icon
               return (
