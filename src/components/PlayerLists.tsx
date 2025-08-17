@@ -1,10 +1,10 @@
 import React from 'react'
-import { Users, User, GraduationCap, ArrowRight, AlertTriangle, Shield } from 'lucide-react'
+import { Users, User, ArrowRight, Shield } from 'lucide-react'
 import { TEAMS, TeamColor, supabase } from '../lib/supabase'
 import { usePlayers } from '../hooks/usePlayers'
 import { useProfile } from '../hooks/useProfile'
 import { useToast } from './Toast'
-import { getGradeDisplayWithNumber, MAX_PLAYERS_PER_GRADE, GRADES } from '../lib/utils'
+import { getGradeDisplayWithNumber, MAX_PLAYERS_PER_GRADE } from '../lib/utils'
 import Button from './ui/Button'
 import LoadingSpinner from './LoadingSpinner'
 import { useLanguage } from '../contexts/LanguageContext'
@@ -116,7 +116,7 @@ export default function PlayerLists() {
       // Update profile
       const { error: updateError } = await updateProfile({
         current_team: newTeam,
-        switches_remaining: profile.switches_remaining - 1
+        switches_remaining: (profile.switches_remaining ?? 0) - 1
       })
 
       if (updateError) {
@@ -181,7 +181,7 @@ export default function PlayerLists() {
                       </div>
                     )}
                   </div>
-                  {profile && profile.current_team !== teamKey && profile.switches_remaining > 0 && profile.participate_in_teams && (
+                  {profile && profile.current_team !== teamKey && (profile.switches_remaining ?? 0) > 0 && profile.participate_in_teams && (
                     <Button
                       onClick={() => handleSwitchTeam(teamKey as TeamColor)}
                       loading={switching === teamKey}
@@ -208,7 +208,7 @@ export default function PlayerLists() {
                     return (
                       <span key={p.id} className="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-gray-100 text-gray-800 mr-2">
                         <User className="h-4 w-4 mr-1 text-orange-500" />
-                        {p.full_name} {!p.is_admin && <span className="ml-1 text-xs text-gray-500">({getGradeDisplayWithNumber(p.grade)}, {t(p.gender)})</span>}
+                        {p.full_name} {!p.is_admin && <span className="ml-1 text-xs text-gray-500">({getGradeDisplayWithNumber(p.grade)}, {p.gender === 'male' ? t('male') : t('female')})</span>}
                         {roles.map((role, idx) => (
                           <span key={idx} className={`ml-2 inline-flex items-center px-2 py-0.5 rounded-full text-xs font-bold ${role.color}`}>{role.icon}{role.label}</span>
                         ))}
