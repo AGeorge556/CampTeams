@@ -37,7 +37,7 @@ export function useTeamBalancing() {
     if (!players) return
 
     const balances: TeamBalance[] = Object.entries(TEAMS).map(([teamKey, teamConfig]) => {
-      const teamPlayers = (players[teamKey] || []).filter(p => p.participate_in_teams)
+      const teamPlayers = (players[teamKey] || []).filter(p => p.participate_in_teams && !p.is_admin)
       const maleCount = teamPlayers.filter(p => p.gender === 'male').length
       const femaleCount = teamPlayers.filter(p => p.gender === 'female').length
       
@@ -95,7 +95,7 @@ export function useTeamBalancing() {
 
     // Check grade limit (max 4 players per grade per team)
     if (profile) {
-      const teamPlayers = (players[teamKey] || []).filter(p => p.participate_in_teams)
+      const teamPlayers = (players[teamKey] || []).filter(p => p.participate_in_teams && !p.is_admin)
       const playersInSameGrade = teamPlayers.filter(p => p.grade === profile.grade)
       if (playersInSameGrade.length >= MAX_PLAYERS_PER_GRADE) {
         return { canAccept: false, reason: 'Maximum players per grade reached' }
@@ -108,6 +108,11 @@ export function useTeamBalancing() {
   // Check if user can switch to a specific team (full client-side projection)
   const canSwitchToTeam = async (newTeam: TeamColor): Promise<SwitchResult> => {
     if (!profile) return { canSwitch: false, reason: 'User profile not found' }
+
+    // Admins never count toward restrictions and can always move
+    if (profile.is_admin) {
+      return { canSwitch: true, reason: 'Admin override' }
+    }
 
     if (profile.current_team === newTeam) {
       return { canSwitch: false, reason: 'Already on this team' }

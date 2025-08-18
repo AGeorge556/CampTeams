@@ -1,11 +1,11 @@
 import React from 'react'
-import { Users, User, GraduationCap, ArrowRight, AlertTriangle, Shield, Info } from 'lucide-react'
+import { Users, User, ArrowRight, AlertTriangle, Shield, Info } from 'lucide-react'
 import { TEAMS, TeamColor, supabase } from '../lib/supabase'
 import { usePlayers } from '../hooks/usePlayers'
 import { useProfile } from '../hooks/useProfile'
 import { useTeamBalancing } from '../hooks/useTeamBalancing'
 import { useToast } from './Toast'
-import { getGradeDisplayWithNumber, MAX_PLAYERS_PER_GRADE, GRADES } from '../lib/utils'
+import { getGradeDisplayWithNumber } from '../lib/utils'
 import Button from './ui/Button'
 import LoadingSpinner from './LoadingSpinner'
 import { useLanguage } from '../contexts/LanguageContext'
@@ -14,7 +14,7 @@ export default function PlayerLists() {
   const { t } = useLanguage()
   const { players, loading } = usePlayers()
   const { profile, updateProfile } = useProfile()
-  const { teamBalances, canTeamAcceptPlayer, canSwitchToTeam, getRecommendedTeam } = useTeamBalancing()
+  const { teamBalances, canTeamAcceptPlayer, canSwitchToTeam } = useTeamBalancing()
   const { addToast } = useToast()
   const [switching, setSwitching] = React.useState<string | null>(null)
 
@@ -119,8 +119,8 @@ export default function PlayerLists() {
       <div className="grid grid-cols-1 lg:grid-cols-4 gap-6">
         {Object.entries(TEAMS).map(([teamKey, teamConfig]) => {
           const teamPlayers = (players[teamKey] || [])
-          const nonAdminPlayers = teamPlayers.filter(p => p.participate_in_teams)
-          const adminPlayers = teamPlayers.filter(p => !p.participate_in_teams)
+          const nonAdminPlayers = teamPlayers.filter(p => p.participate_in_teams && !p.is_admin)
+          const adminPlayers = teamPlayers.filter(p => p.is_admin)
           return (
             <div key={teamKey} className="mb-8">
               <div className={`${teamConfig.color} rounded-lg p-4 text-white`}>
@@ -143,17 +143,17 @@ export default function PlayerLists() {
                         onClick={() => handleSwitchTeam(teamKey as TeamColor)}
                         loading={switching === teamKey}
                         disabled={!teamAcceptance.canAccept}
-                        icon={teamAcceptance.canAccept ? <ArrowRight /> : <AlertTriangle />}
+                        icon={teamAcceptance.canAccept ? <ArrowRight /> : <AlertTriangle className="text-red-600" />}
                         variant="ghost"
                         size="sm"
-                        className={`bg-white bg-opacity-20 text-white border-white ${
+                        className={`${
                           teamAcceptance.canAccept 
-                            ? 'hover:bg-opacity-30' 
-                            : 'opacity-50 cursor-not-allowed'
+                            ? 'bg-white bg-opacity-20 text-white border-white hover:bg-opacity-30' 
+                            : 'bg-red-100 text-red-800 border-red-300 opacity-90 cursor-not-allowed'
                         }`}
                         title={!teamAcceptance.canAccept ? teamAcceptance.reason : undefined}
                       >
-                        {teamAcceptance.canAccept ? t('joinTeam') : t('teamFull')}
+                        {teamAcceptance.canAccept ? t('joinTeam') : teamAcceptance.reason}
                       </Button>
                     )
                   })()}
