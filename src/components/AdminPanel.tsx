@@ -139,6 +139,11 @@ export default function AdminPanel() {
 
   const reassignUser = async (userId: string, newTeam: TeamColor) => {
     try {
+      if (!newTeam) {
+        console.error('Invalid team selected');
+        return;
+      }
+
       const { error } = await supabase
         .from('profiles')
         .update({ current_team: newTeam })
@@ -146,6 +151,7 @@ export default function AdminPanel() {
 
       if (error) throw error;
 
+      console.log(`User ${userId} reassigned to team ${newTeam}`);
       await fetchProfiles();
     } catch (error) {
       console.error('Error reassigning user:', error);
@@ -503,9 +509,9 @@ export default function AdminPanel() {
                               {getGradeDisplayWithNumber(participant.grade)} • {participant.gender}
                               {participant.current_team && (
                                 <span className={`ml-2 inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium ${
-                                  TEAMS[participant.current_team].lightColor
-                                } ${TEAMS[participant.current_team].textColor}`}>
-                                  {TEAMS[participant.current_team].name}
+                                  TEAMS[participant.current_team as keyof typeof TEAMS].lightColor
+                                } ${TEAMS[participant.current_team as keyof typeof TEAMS].textColor}`}>
+                                  {TEAMS[participant.current_team as keyof typeof TEAMS].name}
                                 </span>
                               )}
                             </p>
@@ -568,9 +574,9 @@ export default function AdminPanel() {
                     <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
                       {profile.current_team ? (
                         <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${
-                          TEAMS[profile.current_team].lightColor
-                        } ${TEAMS[profile.current_team].textColor}`}>
-                          {TEAMS[profile.current_team].name}
+                          TEAMS[profile.current_team as keyof typeof TEAMS].lightColor
+                        } ${TEAMS[profile.current_team as keyof typeof TEAMS].textColor}`}>
+                          {TEAMS[profile.current_team as keyof typeof TEAMS].name}
                         </span>
                       ) : (
                         <span className="text-gray-400">Unassigned</span>

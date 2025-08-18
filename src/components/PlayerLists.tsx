@@ -94,14 +94,14 @@ export default function PlayerLists() {
       if (!serverResult?.allowed) {
         const reason = (serverResult && typeof serverResult.reason === 'string') ? serverResult.reason : 'unknown'
         const messages: Record<string, string> = {
-          no_switches_left: t('teamSwitchNotAllowed'),
-          teams_locked: t('teamSwitchNotAllowed'),
-          same_team: t('teamSwitchNotAllowed'),
-          team_full: t('teamSwitchNotAllowed'),
-          grade_cap: t('gradeLimitReached'),
-          gender_team_imbalance: t('genderBalanceLimitReached'),
-          unknown: t('teamSwitchNotAllowed')
-        }
+          no_switches_left: t('You have no team switches remaining.'),
+          teams_locked: t('Team switching is currently locked.'),
+          same_team: t('You are already in this team.'),
+          team_full: t('The selected team is full.'),
+          grade_cap: t('The grade limit for this team has been reached.'),
+          gender_team_imbalance: t('Switching to this team would cause a gender imbalance.'),
+          unknown: t('Team switching is not allowed for an unknown reason.')
+        };
         const reasonMessage = messages[reason as keyof typeof messages]
 
         addToast({
@@ -251,4 +251,4 @@ export default function PlayerLists() {
       </div>
     </div>
   )
-} 
+}
