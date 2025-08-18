@@ -85,7 +85,7 @@ export default function PlayerLists() {
         .rpc('can_switch_team_with_reason', {
           user_id: profile.id,
           new_team: newTeam
-        }) as { data: { allowed: boolean; reason: string } | null, error: any }
+        }) as { data: { allowed: boolean; reason: string; details: any } | null, error: any }
 
       if (validateError) {
         throw validateError
@@ -93,21 +93,38 @@ export default function PlayerLists() {
 
       if (!serverResult?.allowed) {
         const reason = (serverResult && typeof serverResult.reason === 'string') ? serverResult.reason : 'unknown'
-        const messages: Record<string, string> = {
-          no_switches_left: t('You have no team switches remaining.'),
-          teams_locked: t('Team switching is currently locked.'),
-          same_team: t('You are already in this team.'),
-          team_full: t('The selected team is full.'),
-          grade_cap: t('The grade limit for this team has been reached.'),
-          gender_team_imbalance: t('Switching to this team would cause a gender imbalance.'),
-          unknown: t('Team switching is not allowed for an unknown reason.')
-        };
-        const reasonMessage = messages[reason as keyof typeof messages]
+        const details = serverResult?.details || {}
+        
+        let errorMessage = ''
+        switch (reason) {
+          case 'no_switches_left':
+            errorMessage = `You have used all ${details.max_switches} team switches allowed.`
+            break
+          case 'teams_locked':
+            errorMessage = details.message || 'Team switching is currently locked.'
+            break
+          case 'same_team':
+            errorMessage = `You are already in the ${TEAMS[details.current_team].name} team.`
+            break
+          case 'team_full':
+            errorMessage = `The team is full (${details.current_size}/${details.max_size} players).`
+            break
+          case 'grade_cap':
+            errorMessage = `Maximum number of players (${details.max_allowed}) from grade ${getGradeDisplayWithNumber(details.grade)} has been reached in this team.`
+            break
+          case 'gender_team_imbalance':
+            const currentRatio = `${details.current_male}:${details.current_female}`
+            const newRatio = `${details.new_male}:${details.new_female}`
+            errorMessage = `Cannot switch teams as it would create a gender imbalance. Current ratio is ${currentRatio} (M:F), and switching would make it ${newRatio}. The maximum allowed difference is ${details.max_difference}.`
+            break
+          default:
+            errorMessage = 'Team switching is not allowed at this time.'
+        }
 
         addToast({
           type: 'error',
           title: t('cannotSwitchTeams'),
-          message: reasonMessage
+          message: errorMessage
         })
         return
       }
