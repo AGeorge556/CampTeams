@@ -7,7 +7,6 @@ import { useScheduleVisibility } from '../hooks/useScheduleVisibility'
 import { useOilExtractionVisibility } from '../hooks/useOilExtractionVisibility'
 import { useGalleryVisibility } from '../hooks/useGalleryVisibility'
 import LanguageSwitcher from './LanguageSwitcher'
-import DarkModeToggle from './DarkModeToggle'
 
 interface NavigationProps {
   currentPage: string
@@ -41,13 +40,13 @@ export default function Navigation({ currentPage, onPageChange }: NavigationProp
   }
 
   return (
-    <header className="bg-white dark:bg-gray-900 shadow-sm border-b border-gray-200 dark:border-gray-700 transition-colors duration-300">
+    <header className="bg-white shadow-sm border-b">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex justify-between items-center h-16">
           {/* Logo and Title */}
           <div className="flex items-center space-x-2">
             <Users className="h-8 w-8 text-orange-500" />
-            <h1 className="text-xl font-bold text-gray-900 dark:text-white transition-colors duration-300">
+            <h1 className="text-xl font-bold text-gray-900">
               Camp Teams
             </h1>
           </div>
@@ -62,8 +61,8 @@ export default function Navigation({ currentPage, onPageChange }: NavigationProp
                   onClick={() => handlePageChange(item.id)}
                   className={`flex items-center space-x-2 px-3 py-2 rounded-md text-sm font-medium transition-colors ${
                     currentPage === item.id
-                      ? 'text-orange-600 bg-orange-50 dark:bg-orange-900 dark:text-orange-300'
-                      : 'text-gray-500 hover:text-gray-700 hover:bg-gray-50 dark:text-gray-300 dark:hover:text-gray-100 dark:hover:bg-gray-800'
+                      ? 'text-orange-600 bg-orange-50'
+                      : 'text-gray-500 hover:text-gray-700 hover:bg-gray-50'
                   }`}
                 >
                   <Icon className="h-4 w-4" />
@@ -75,14 +74,11 @@ export default function Navigation({ currentPage, onPageChange }: NavigationProp
 
           {/* User Info and Actions */}
           <div className="flex items-center space-x-4">
-            {/* Dark Mode Toggle */}
-            <DarkModeToggle />
-            
             {/* Language Switcher */}
             <LanguageSwitcher />
             
             {profile?.is_admin && (
-              <span className="hidden md:inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-purple-100 text-purple-800 dark:bg-purple-900 dark:text-purple-200">
+              <span className="hidden md:inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-purple-100 text-purple-800">
                 {t('admin')}
               </span>
             )}
@@ -90,7 +86,7 @@ export default function Navigation({ currentPage, onPageChange }: NavigationProp
             {/* Desktop Sign Out */}
             <button
               onClick={handleSignOut}
-              className="hidden md:inline-flex items-center px-3 py-2 border border-transparent text-sm leading-4 font-medium rounded-md text-gray-500 bg-white hover:text-gray-700 dark:text-gray-300 dark:bg-gray-800 dark:hover:text-gray-100 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-orange-500 dark:focus:ring-offset-gray-800 transition-colors duration-300"
+              className="hidden md:inline-flex items-center px-3 py-2 border border-transparent text-sm leading-4 font-medium rounded-md text-gray-500 bg-white hover:text-gray-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-orange-500"
             >
               <LogOut className="h-4 w-4 mr-2" />
               {t('logout')}
@@ -99,7 +95,7 @@ export default function Navigation({ currentPage, onPageChange }: NavigationProp
             {/* Mobile menu button */}
             <button
               onClick={() => setIsMenuOpen(!isMenuOpen)}
-              className="md:hidden inline-flex items-center justify-center p-2 rounded-md text-gray-400 hover:text-gray-500 hover:bg-gray-100 dark:text-gray-300 dark:hover:text-gray-100 dark:hover:bg-gray-800 focus:outline-none focus:ring-2 focus:ring-inset focus:ring-orange-500 transition-colors duration-300"
+              className="md:hidden inline-flex items-center justify-center p-2 rounded-md text-gray-400 hover:text-gray-500 hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-inset focus:ring-orange-500"
             >
               {isMenuOpen ? (
                 <X className="h-6 w-6" />
@@ -114,7 +110,7 @@ export default function Navigation({ currentPage, onPageChange }: NavigationProp
       {/* Mobile Navigation */}
       {isMenuOpen && (
         <div className="md:hidden">
-          <div className="px-2 pt-2 pb-3 space-y-1 sm:px-3 bg-white dark:bg-gray-900 border-t border-gray-200 dark:border-gray-700 transition-colors duration-300">
+          <div className="px-2 pt-2 pb-3 space-y-1 sm:px-3 bg-white border-t">
             {navigationItems.map((item) => {
               const Icon = item.icon
               return (
@@ -123,8 +119,8 @@ export default function Navigation({ currentPage, onPageChange }: NavigationProp
                   onClick={() => handlePageChange(item.id)}
                   className={`flex items-center space-x-3 w-full px-3 py-2 rounded-md text-base font-medium transition-colors ${
                     currentPage === item.id
-                      ? 'text-orange-600 bg-orange-50 dark:bg-orange-900 dark:text-orange-300'
-                      : 'text-gray-500 hover:text-gray-700 hover:bg-gray-50 dark:text-gray-300 dark:hover:text-gray-100 dark:hover:bg-gray-800'
+                      ? 'text-orange-600 bg-orange-50'
+                      : 'text-gray-500 hover:text-gray-700 hover:bg-gray-50'
                   }`}
                 >
                   <Icon className="h-5 w-5" />
@@ -136,7 +132,7 @@ export default function Navigation({ currentPage, onPageChange }: NavigationProp
             {/* Mobile Sign Out */}
             <button
               onClick={handleSignOut}
-              className="flex items-center space-x-3 w-full px-3 py-2 rounded-md text-base font-medium text-gray-500 hover:text-gray-700 hover:bg-gray-50 dark:text-gray-300 dark:hover:text-gray-100 dark:hover:bg-gray-800 transition-colors"
+              className="flex items-center space-x-3 w-full px-3 py-2 rounded-md text-base font-medium text-gray-500 hover:text-gray-700 hover:bg-gray-50 transition-colors"
             >
               <LogOut className="h-5 w-5" />
               <span>{t('logout')}</span>

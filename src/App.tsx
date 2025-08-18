@@ -24,7 +24,6 @@ import ErrorBoundary from './components/ErrorBoundary'
 import { ToastProvider } from './components/Toast'
 import LoadingSpinner from './components/LoadingSpinner'
 import { LanguageProvider } from './contexts/LanguageContext'
-import { DarkModeProvider } from './contexts/DarkModeContext'
 import LanguageNotification from './components/LanguageNotification'
 import Scoreboard from './components/Scoreboard'
 import ScoreboardAdmin from './components/ScoreboardAdmin'
@@ -136,18 +135,16 @@ function App() {
   return (
     <ErrorBoundary>
       <LanguageProvider>
-        <DarkModeProvider>
-          <ToastProvider>
-            <AppContent 
-              user={user} 
-              authLoading={authLoading} 
-              profile={profile} 
-              profileLoading={profileLoading}
-              currentPage={currentPage}
-              setCurrentPage={setCurrentPage}
-            />
-          </ToastProvider>
-        </DarkModeProvider>
+        <ToastProvider>
+          <AppContent 
+            user={user} 
+            authLoading={authLoading} 
+            profile={profile} 
+            profileLoading={profileLoading}
+            currentPage={currentPage}
+            setCurrentPage={setCurrentPage}
+          />
+        </ToastProvider>
       </LanguageProvider>
     </ErrorBoundary>
   )
@@ -203,7 +200,7 @@ function AppContent({
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-orange-50 to-yellow-50 dark:from-gray-900 dark:to-gray-800 transition-colors duration-300">
+    <div className="min-h-screen bg-gradient-to-br from-orange-50 to-yellow-50">
       <Navigation currentPage={currentPage} onPageChange={setCurrentPage} />
       <Layout>
         {(() => {

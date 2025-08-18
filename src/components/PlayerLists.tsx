@@ -90,24 +90,24 @@ export default function PlayerLists() {
   }
 
   return (
-    <div className="bg-white dark:bg-gray-800 rounded-lg shadow-sm p-6 transition-colors duration-300">
-      <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-6 flex items-center transition-colors duration-300">
+    <div className="bg-white rounded-lg shadow-sm p-6">
+      <h3 className="text-lg font-semibold text-gray-900 mb-6 flex items-center">
         <Users className="h-5 w-5 mr-2" />
         {t('teamRosters')}
       </h3>
       
       {/* Team Balance Summary */}
       {teamBalances.length > 0 && (
-        <div className="mb-6 p-4 bg-blue-50 dark:bg-blue-900/20 rounded-lg border border-blue-200 dark:border-blue-700 transition-colors duration-300">
+        <div className="mb-6 p-4 bg-blue-50 rounded-lg border border-blue-200">
           <div className="flex items-center mb-3">
-            <Info className="h-5 w-5 mr-2 text-blue-600 dark:text-blue-400" />
-            <h4 className="font-medium text-blue-900 dark:text-blue-100">{t('teamBalanceSummary')}</h4>
+            <Info className="h-5 w-5 mr-2 text-blue-600" />
+            <h4 className="font-medium text-blue-900">{t('teamBalanceSummary')}</h4>
           </div>
           <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
             {teamBalances.map((balance) => (
               <div key={balance.team} className="text-center">
-                <div className="font-semibold text-blue-800 dark:text-blue-200">{TEAMS[balance.team as TeamColor].name}</div>
-                <div className="text-sm text-blue-600 dark:text-blue-300">
+                <div className="font-semibold text-blue-800">{TEAMS[balance.team as TeamColor].name}</div>
+                <div className="text-sm text-blue-600">
                   {balance.total_count} {t('players')} • {balance.male_count} {t('male')} • {balance.female_count} {t('female')}
                 </div>
               </div>
@@ -161,7 +161,7 @@ export default function PlayerLists() {
               </div>
 
               {/* Player List */}
-              <div className="bg-white dark:bg-gray-800 rounded-b-lg p-4 border-t-0 border shadow-sm transition-colors duration-300">
+              <div className="bg-white rounded-b-lg p-4 border-t-0 border shadow-sm">
                 <div className="flex flex-wrap gap-2">
                   {nonAdminPlayers.map((p) => {
                     const roles: { label: string; color: string; icon: React.ReactNode }[] = []
@@ -170,9 +170,9 @@ export default function PlayerLists() {
                     if (p.role === 'team_leader') roles.push({ label: 'Team Leader', color: 'bg-blue-100 text-blue-800 border border-blue-300', icon: <User className="h-3 w-3 mr-1 text-blue-500" /> })
                     if (p.role === 'camper' || (!p.is_admin && p.role !== 'shop_owner' && p.role !== 'team_leader')) roles.push({ label: 'Camper', color: 'bg-green-100 text-green-800 border border-green-300', icon: <User className="h-3 w-3 mr-1 text-green-500" /> })
                     return (
-                      <span key={p.id} className="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-gray-100 dark:bg-gray-700 text-gray-800 dark:text-gray-200 mr-2 transition-colors duration-300">
+                      <span key={p.id} className="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-gray-100 text-gray-800 mr-2">
                         <User className="h-4 w-4 mr-1 text-orange-500" />
-                        {p.full_name} {!p.is_admin && <span className="ml-1 text-xs text-gray-500 dark:text-gray-400">({getGradeDisplayWithNumber(p.grade)}, {p.gender === 'male' ? t('male') : t('female')})</span>}
+                        {p.full_name} {!p.is_admin && <span className="ml-1 text-xs text-gray-500">({getGradeDisplayWithNumber(p.grade)}, {p.gender === 'male' ? t('male') : t('female')})</span>}
                         {roles.map((role, idx) => (
                           <span key={idx} className={`ml-2 inline-flex items-center px-2 py-0.5 rounded-full text-xs font-bold ${role.color}`}>{role.icon}{role.label}</span>
                         ))}
@@ -186,7 +186,7 @@ export default function PlayerLists() {
                      if (p.role === 'team_leader') roles.push({ label: 'Team Leader', color: 'bg-blue-100 text-blue-800 border border-blue-300', icon: <User className="h-3 w-3 mr-1 text-blue-500" /> })
                      if (p.role === 'camper' || (!p.is_admin && p.role !== 'shop_owner' && p.role !== 'team_leader')) roles.push({ label: 'Camper', color: 'bg-green-100 text-green-800 border border-green-300', icon: <User className="h-3 w-3 mr-1 text-green-500" /> })
                      return (
-                       <span key={p.id} className="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-purple-100 dark:bg-purple-900 text-purple-800 dark:text-purple-200 border border-purple-300 dark:border-purple-600 mr-2 transition-colors duration-300">
+                       <span key={p.id} className="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-purple-100 text-purple-800 border border-purple-300 mr-2">
                          <Shield className="h-4 w-4 mr-1 text-purple-500" />
                          {p.full_name}
                          {roles.map((role, idx) => (
