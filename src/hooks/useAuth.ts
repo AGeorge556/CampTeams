@@ -25,11 +25,16 @@ export function useAuth() {
   }, [])
 
   const signUp = async (email: string, password: string) => {
+    // Build a safe, absolute redirect URL for email links
+    const siteUrlEnv = import.meta.env.VITE_SITE_URL as string | undefined
+    const siteUrl = (siteUrlEnv && typeof siteUrlEnv === 'string' ? siteUrlEnv : window.location.origin).replace(/\/$/, '')
+    const redirectTo = `${siteUrl}/auth/callback`
+
     const { data, error } = await supabase.auth.signUp({
       email,
       password,
       options: {
-        emailRedirectTo: `${window.location.origin}`
+        emailRedirectTo: redirectTo
       }
     })
     return { data, error }

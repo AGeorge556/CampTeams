@@ -211,6 +211,10 @@ export interface Translations {
   teamSwitchNotAllowed: string
   genderBalanceLimitReached: string
   failedToSwitchTeams: string
+  noSwitchesLeft: string
+  teamsLocked: string
+  alreadyOnTeam: string
+  teamFull: string
 
   // Bible Verse References
   philippians: string
@@ -520,6 +524,10 @@ export const translations: Record<Language, Translations> = {
     teamSwitchNotAllowed: 'Team switch not allowed. You may have no switches remaining, teams are locked, or the team is full.',
     genderBalanceLimitReached: 'Gender balance limit reached. Teams must maintain equal gender distribution.',
     failedToSwitchTeams: 'Failed to switch teams. Please try again.',
+    noSwitchesLeft: 'You have no team switches left.',
+    teamsLocked: 'Teams are currently locked by admins.',
+    alreadyOnTeam: 'You are already on this team.',
+    teamFull: 'This team is full. Please choose another team.',
 
     // Bible Verse References
     philippians: 'Philippians 4:13',
@@ -828,6 +836,10 @@ export const translations: Record<Language, Translations> = {
     teamSwitchNotAllowed: 'مش مسموح تبديل الفريق. ممكن ميكونش عندك تبديلات متبقية، أو الفرق مقفلة، أو الفريق ممتلئ.',
     genderBalanceLimitReached: 'تم الوصول للحد الأقصى لتوازن الجنس. الفرق لازم تحافظ على توزيع متساوي للجنس.',
     failedToSwitchTeams: 'فشل في تبديل الفرق. حاول تاني.',
+    noSwitchesLeft: 'مافيش تبديلات متبقية ليك.',
+    teamsLocked: 'الفرق مقفولة حالياً من المشرفين.',
+    alreadyOnTeam: 'إنت بالفعل في الفريق ده.',
+    teamFull: 'الفريق مكتمل. اختار فريق تاني من فضلك.',
 
     // Bible Verse References
     philippians: 'فيلبي 4: 13',

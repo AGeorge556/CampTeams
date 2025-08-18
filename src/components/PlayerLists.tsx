@@ -80,22 +80,34 @@ export default function PlayerLists() {
         }
       }
 
-      // Check if switch is allowed
-      const { data: canSwitch, error: validateError } = await supabase
-        .rpc('can_switch_team', {
+      // Server-side validation with explicit reason
+      const { data: serverResult, error: validateError } = await (supabase as any)
+        .rpc('can_switch_team_with_reason', {
           user_id: profile.id,
           new_team: newTeam
-        })
+        }) as { data: { allowed: boolean; reason: string } | null, error: any }
 
       if (validateError) {
         throw validateError
       }
 
-      if (!canSwitch) {
+      if (!serverResult?.allowed) {
+        const reason = (serverResult && typeof serverResult.reason === 'string') ? serverResult.reason : 'unknown'
+        const messages: Record<string, string> = {
+          no_switches_left: t('teamSwitchNotAllowed'),
+          teams_locked: t('teamSwitchNotAllowed'),
+          same_team: t('teamSwitchNotAllowed'),
+          team_full: t('teamSwitchNotAllowed'),
+          grade_cap: t('gradeLimitReached'),
+          gender_team_imbalance: t('genderBalanceLimitReached'),
+          unknown: t('teamSwitchNotAllowed')
+        }
+        const reasonMessage = messages[reason as keyof typeof messages]
+
         addToast({
           type: 'error',
           title: t('cannotSwitchTeams'),
-          message: t('teamSwitchNotAllowed')
+          message: reasonMessage
         })
         return
       }
