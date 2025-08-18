@@ -356,27 +356,27 @@ export default function Dashboard({ onPageChange }: DashboardProps) {
   const isAdminNotParticipating = profile.is_admin && !profile.participate_in_teams
 
   return (
-    <div className="space-y-8">
-      {/* User Info Card */}
-      <div className="bg-white rounded-lg shadow-sm p-6">
+    <div className="space-y-6 sm:space-y-8 mobile-safe-area mobile-scroll-smooth">
+      {/* Enhanced User Info Card */}
+      <div className="bg-white rounded-xl shadow-sm p-4 sm:p-6 border border-gray-100">
         <div className="flex items-center justify-between mb-4">
-          <div>
-            <h2 className="text-2xl font-bold text-gray-900">
+          <div className="flex-1">
+            <h2 className="text-xl sm:text-2xl font-bold text-gray-900 leading-tight">
               {t('welcomeMessageWithName').replace('{name}', profile.full_name.split(' ')[0])}
             </h2>
-            <p className="text-gray-600">
+            <p className="text-gray-600 text-sm sm:text-base mt-1">
               {getGradeDisplayWithNumber(profile.grade)} • {profile.gender === 'male' ? t('male') : t('female')}
             </p>
           </div>
         </div>
 
-        {/* Quick Actions */}
+        {/* Enhanced Quick Actions */}
         <div className="mb-6">
           <h3 className="text-lg font-semibold text-gray-900 mb-4 flex items-center">
             <Activity className="h-5 w-5 mr-2" />
             {t('quickActions')}
           </h3>
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 sm:gap-4">
             {quickActions.filter(action => action.available).map((action) => {
               const Icon = action.icon
               return (
@@ -385,46 +385,71 @@ export default function Dashboard({ onPageChange }: DashboardProps) {
                   onClick={action.action}
                   className={`
                     ${action.color}
-                    w-full min-h-[120px] sm:min-h-[140px] text-white p-4 rounded-lg transition-all duration-200
-                    transform hover:scale-105 active:scale-95
-                    flex flex-col items-center justify-center space-y-3
-                    shadow-md hover:shadow-lg
-                    mobile-touch-feedback
-                    touch-target-lg
+                    w-full min-h-[100px] sm:min-h-[120px] lg:min-h-[140px] 
+                    text-white p-3 sm:p-4 rounded-xl transition-all duration-300
+                    transform hover:scale-105 active:scale-95 focus:scale-105
+                    flex flex-col items-center justify-center space-y-2 sm:space-y-3
+                    shadow-lg hover:shadow-xl focus:shadow-xl
+                    border-0 focus:outline-none focus:ring-4 focus:ring-white focus:ring-opacity-50
+                    touch-manipulation select-none
+                    animate-scale-in
+                    relative overflow-hidden group
                   `}
+                  style={{
+                    minHeight: '60px',
+                    touchAction: 'manipulation'
+                  }}
                 >
-                  <Icon className="h-6 w-6 sm:h-8 sm:w-8" />
-                  <div className="text-center">
-                    <div className="font-medium text-sm sm:text-base">{action.title}</div>
-                    <div className="text-xs sm:text-sm opacity-90 mt-1">{action.description}</div>
+                  {/* Hover effect overlay */}
+                  <div className="absolute inset-0 bg-white bg-opacity-0 group-hover:bg-opacity-10 transition-all duration-300"></div>
+                  
+                  {/* Icon with enhanced styling */}
+                  <div className="relative z-10">
+                    <Icon className="h-6 w-6 sm:h-7 sm:w-7 lg:h-8 lg:w-8 drop-shadow-sm" />
                   </div>
+                  
+                  {/* Text content */}
+                  <div className="relative z-10 text-center space-y-1">
+                    <div className="font-semibold text-sm sm:text-base lg:text-lg leading-tight">
+                      {action.title}
+                    </div>
+                    <div className="text-xs sm:text-sm opacity-90 leading-relaxed px-1">
+                      {action.description}
+                    </div>
+                  </div>
+                  
+                  {/* Ripple effect on mobile */}
+                  <div className="absolute inset-0 bg-white bg-opacity-0 group-active:bg-opacity-20 transition-all duration-150"></div>
                 </button>
               )
             })}
           </div>
         </div>
 
-        {/* Admin Opt-in Section */}
+        {/* Enhanced Admin Opt-in Section */}
         {isAdminNotParticipating && (
-          <div className="mb-6 p-4 bg-blue-50 border border-blue-200 rounded-lg">
-            <div className="flex items-center justify-between">
-              <div>
-                <h3 className="text-lg font-semibold text-blue-900 mb-1">{t('teamAssignment')}</h3>
-                <p className="text-blue-700 text-sm">
+          <div className="mb-6 p-4 sm:p-6 bg-gradient-to-r from-blue-50 to-indigo-50 border border-blue-200 rounded-xl shadow-sm">
+            <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between space-y-3 sm:space-y-0">
+              <div className="flex-1">
+                <h3 className="text-lg font-semibold text-blue-900 mb-1 flex items-center">
+                  <Users className="h-5 w-5 mr-2" />
+                  {t('teamAssignment')}
+                </h3>
+                <p className="text-blue-700 text-sm sm:text-base">
                   {t('teamMembers')}
                 </p>
               </div>
               <button
                 onClick={handleOptInToTeams}
                 disabled={optInLoading}
-                className="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 disabled:opacity-50 disabled:cursor-not-allowed"
+                className="inline-flex items-center justify-center px-6 py-3 border border-transparent text-sm font-semibold rounded-xl text-white bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 focus:outline-none focus:ring-4 focus:ring-blue-500 focus:ring-opacity-50 disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-300 transform hover:scale-105 active:scale-95 shadow-lg hover:shadow-xl touch-manipulation min-h-[48px] min-w-[120px]"
               >
                 {optInLoading ? (
-                  <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white mr-2"></div>
+                  <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-white mr-2"></div>
                 ) : (
-                  <UserPlus className="h-4 w-4 mr-2" />
+                  <UserPlus className="h-5 w-5 mr-2" />
                 )}
-                {t('teams')}
+                <span className="font-medium">{t('teams')}</span>
               </button>
             </div>
           </div>
@@ -439,15 +464,15 @@ export default function Dashboard({ onPageChange }: DashboardProps) {
             </div>
           </div>
         )}
-        <div className="mb-4">
-          <div className="flex items-center justify-between">
-            <span className="text-sm font-medium text-gray-700">
-              {t('teamSwitchesRemaining')}: {profile.switches_remaining ?? 0}
+        <div className="mb-4 p-3 bg-gradient-to-r from-orange-50 to-yellow-50 rounded-lg border border-orange-100">
+          <div className="flex items-center justify-between mb-2">
+            <span className="text-sm font-semibold text-gray-700">
+              {t('teamSwitchesRemaining')}: <span className="text-orange-600 font-bold">{profile.switches_remaining ?? 0}</span>
             </span>
           </div>
-          <div className="w-full bg-gray-200 rounded-full h-2 mt-2">
+          <div className="w-full bg-gray-200 rounded-full h-3 overflow-hidden shadow-inner">
             <div 
-              className="bg-orange-600 h-2 rounded-full transition-all duration-300"
+              className="bg-gradient-to-r from-orange-500 to-orange-600 h-3 rounded-full transition-all duration-500 ease-out shadow-sm"
               style={{ width: `${((profile.switches_remaining ?? 0) / 3) * 100}%` }}
             ></div>
           </div>
@@ -462,32 +487,32 @@ export default function Dashboard({ onPageChange }: DashboardProps) {
             <h3 className="text-xl font-bold text-gray-900">{t('dailyInspiration')}</h3>
             <p className="text-gray-600">{t('motivationalBibleVerse')}</p>
           </div>
-          <div className="flex space-x-2">
+          <div className="flex flex-col sm:flex-row space-y-2 sm:space-y-0 sm:space-x-3">
             {profile.is_admin && (
               <button
                 onClick={generateRandomVerse}
                 disabled={generatingVerse}
-                className="inline-flex items-center px-3 py-2 border border-gray-300 shadow-sm text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-orange-500 disabled:opacity-50"
+                className="inline-flex items-center justify-center px-4 py-3 border border-gray-300 shadow-lg text-sm font-semibold rounded-xl text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-4 focus:ring-orange-500 focus:ring-opacity-50 disabled:opacity-50 transition-all duration-300 transform hover:scale-105 active:scale-95 touch-manipulation min-h-[48px]"
               >
                 {generatingVerse ? (
-                  <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-orange-500 mr-2"></div>
+                  <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-orange-500 mr-2"></div>
                 ) : (
-                  <RefreshCw className="h-4 w-4 mr-2" />
+                  <RefreshCw className="h-5 w-5 mr-2" />
                 )}
-                {t('newVerse')}
+                <span className="font-medium">{t('newVerse')}</span>
               </button>
             )}
             <button
               onClick={downloadVerseImage}
               disabled={downloading || !currentVerse}
-              className="inline-flex items-center px-3 py-2 border border-transparent text-sm font-medium rounded-md text-white bg-orange-600 hover:bg-orange-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-orange-500 disabled:opacity-50"
+              className="inline-flex items-center justify-center px-4 py-3 border border-transparent text-sm font-semibold rounded-xl text-white bg-gradient-to-r from-orange-600 to-red-600 hover:from-orange-700 hover:to-red-700 focus:outline-none focus:ring-4 focus:ring-orange-500 focus:ring-opacity-50 disabled:opacity-50 transition-all duration-300 transform hover:scale-105 active:scale-95 shadow-lg hover:shadow-xl touch-manipulation min-h-[48px]"
             >
               {downloading ? (
-                <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white mr-2"></div>
+                <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-white mr-2"></div>
               ) : (
-                <Download className="h-4 w-4 mr-2" />
+                <Download className="h-5 w-5 mr-2" />
               )}
-              {t('download')}
+              <span className="font-medium">{t('download')}</span>
             </button>
           </div>
         </div>
@@ -544,25 +569,32 @@ export default function Dashboard({ onPageChange }: DashboardProps) {
       {/* Player Lists */}
       <PlayerLists />
 
-      {/* Team Balance Overview */}
-      <div className="bg-white rounded-lg shadow-sm p-4 sm:p-6">
+      {/* Enhanced Team Balance Overview */}
+      <div className="bg-white rounded-xl shadow-sm p-4 sm:p-6 border border-gray-100">
         <h3 className="text-lg font-semibold text-gray-900 mb-4 flex items-center">
-          <BarChart3 className="h-5 w-5 mr-2" />
+          <BarChart3 className="h-5 w-5 mr-2 text-blue-600" />
           {t('teamBalanceOverview')}
         </h3>
-        <div className="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+        <div className="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4">
           {teamBalance.map((team) => {
             const teamKey = team.team as TeamColor
             const teamData = TEAMS[teamKey]
             return (
-              <div key={team.team} className="text-center">
-                <div className={`inline-flex items-center justify-center w-12 h-12 sm:w-16 sm:h-16 rounded-full mb-2 ${teamData.color}`}>
-                  <span className="text-white font-bold text-base sm:text-lg">{team.total_count}</span>
+              <div key={team.team} className="text-center group">
+                <div className={`inline-flex items-center justify-center w-14 h-14 sm:w-16 sm:h-16 lg:w-20 lg:h-20 rounded-full mb-3 transition-all duration-300 transform group-hover:scale-110 shadow-lg ${teamData.color}`}>
+                  <span className="text-white font-bold text-lg sm:text-xl lg:text-2xl drop-shadow-sm">{team.total_count}</span>
                 </div>
-                <h4 className="font-medium text-gray-900 text-sm sm:text-base">{teamData.name}</h4>
-                <p className="text-xs sm:text-sm text-gray-600">
-                  {team.male_count}M / {team.female_count}F
-                </p>
+                <h4 className="font-semibold text-gray-900 text-sm sm:text-base lg:text-lg mb-1">{teamData.name}</h4>
+                <div className="flex justify-center items-center space-x-2 text-xs sm:text-sm text-gray-600">
+                  <span className="flex items-center">
+                    <div className="w-2 h-2 bg-blue-500 rounded-full mr-1"></div>
+                    {team.male_count}M
+                  </span>
+                  <span className="flex items-center">
+                    <div className="w-2 h-2 bg-pink-500 rounded-full mr-1"></div>
+                    {team.female_count}F
+                  </span>
+                </div>
               </div>
             )
           })}
