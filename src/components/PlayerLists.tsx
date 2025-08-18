@@ -4,7 +4,7 @@ import { TEAMS, TeamColor, supabase } from '../lib/supabase'
 import { usePlayers } from '../hooks/usePlayers'
 import { useProfile } from '../hooks/useProfile'
 import { useToast } from './Toast'
-import { getGradeDisplayWithNumber, MAX_PLAYERS_PER_GRADE } from '../lib/utils'
+import { getGradeDisplayWithNumber } from '../lib/utils'
 import Button from './ui/Button'
 import LoadingSpinner from './LoadingSpinner'
 import { useLanguage } from '../contexts/LanguageContext'
@@ -15,72 +15,68 @@ export default function PlayerLists() {
   const { profile, updateProfile } = useProfile()
   const { addToast } = useToast()
   const [switching, setSwitching] = React.useState<string | null>(null)
+  const [maxTeamSize, setMaxTeamSize] = React.useState<number>(25)
+  const [teamsLocked, setTeamsLocked] = React.useState<boolean>(false)
+
+  React.useEffect(() => {
+    // Load camp settings for capacity and lock state
+    ;(async () => {
+      try {
+        const { data, error } = await supabase
+          .from('camp_settings')
+          .select('max_team_size, teams_locked')
+          .limit(1)
+          .maybeSingle()
+        if (!error && data) {
+          if (typeof data.max_team_size === 'number') setMaxTeamSize(data.max_team_size)
+          if (typeof data.teams_locked === 'boolean') setTeamsLocked(data.teams_locked)
+        }
+      } catch (e) {
+        // Ignore; defaults are fine for UI hints
+      }
+    })()
+  }, [])
+
+  const getJoinBlockReason = (teamKey: string): string | null => {
+    if (!profile) return 'You must be signed in.'
+    if (profile.is_admin) return null
+    if (teamsLocked) return 'Team switching is not allowed at this time.'
+    if ((profile.switches_remaining ?? 0) <= 0) return 'You have no switches remaining.'
+
+    const counts: Record<string, number> = {}
+    const teamKeys = Object.keys(TEAMS) as Array<keyof typeof TEAMS>
+    for (const k of teamKeys) {
+      counts[k] = (players[k as keyof typeof players] || []).filter(p => p.participate_in_teams).length
+    }
+
+    const targetCount = counts[teamKey] || 0
+    if (targetCount >= maxTeamSize) return 'This team is already full.'
+
+    const targetPlayers = (players[teamKey] || []).filter(p => p.participate_in_teams)
+    const male = targetPlayers.filter(p => p.gender === 'male').length
+    const female = targetPlayers.filter(p => p.gender === 'female').length
+    const newMale = male + (profile.gender === 'male' ? 1 : 0)
+    const newFemale = female + (profile.gender === 'female' ? 1 : 0)
+    if (Math.abs(newMale - newFemale) > 1) return 'Switch not allowed: Teams must stay gender balanced.'
+
+    // Size balance after move: max - min <= 1
+    const afterCounts = { ...counts }
+    if (profile.current_team) afterCounts[profile.current_team] = Math.max(0, (afterCounts[profile.current_team] || 0) - 1)
+    afterCounts[teamKey] = (afterCounts[teamKey] || 0) + 1
+    const values = Object.values(afterCounts)
+    const maxVal = Math.max(...values)
+    const minVal = Math.min(...values)
+    if (maxVal - minVal > 1) return 'Switch not allowed: Teams must stay balanced in size.'
+
+    return null
+  }
 
   const handleSwitchTeam = async (newTeam: TeamColor) => {
     if (!profile || switching) return
     
     setSwitching(newTeam)
     try {
-      // Check grade limits for the target team
-      const targetTeamPlayers = (players[newTeam] || []).filter(p => p.participate_in_teams)
-      const playersInSameGrade = targetTeamPlayers.filter(p => p.grade === profile.grade)
-      
-      if (playersInSameGrade.length >= MAX_PLAYERS_PER_GRADE) {
-        addToast({
-          type: 'error',
-          title: t('cannotSwitchTeams'),
-          message: `Cannot switch to ${TEAMS[newTeam].name} team. Maximum of ${MAX_PLAYERS_PER_GRADE} players per grade (${getGradeDisplayWithNumber(profile.grade)}) has been reached.`
-        })
-        return
-      }
-
-      // Check gender balance for the target team (difference ≤ 2)
-      const maleCount = targetTeamPlayers.filter(p => p.gender === 'male').length
-      const femaleCount = targetTeamPlayers.filter(p => p.gender === 'female').length
-      const newMaleCount = profile.gender === 'male' ? maleCount + 1 : maleCount
-      const newFemaleCount = profile.gender === 'female' ? femaleCount + 1 : femaleCount
-      if (Math.abs(newMaleCount - newFemaleCount) > 2) {
-        addToast({
-          type: 'error',
-          title: t('cannotSwitchTeams'),
-          message: t('genderBalanceLimitReached')
-        })
-        return
-      }
-
-      // Global near-even distribution: user's gender should not exceed min count + 1 across teams
-      const teams = Object.keys(TEAMS)
-      const countsByTeam = teams.reduce<Record<string, { male: number; female: number }>>((acc, key) => {
-        const list = (players[key as keyof typeof players] || []).filter(p => p.participate_in_teams)
-        acc[key] = {
-          male: list.filter(p => p.gender === 'male').length,
-          female: list.filter(p => p.gender === 'female').length
-        }
-        return acc
-      }, {})
-      const minMale = Math.min(...teams.map(k => countsByTeam[k].male))
-      const minFemale = Math.min(...teams.map(k => countsByTeam[k].female))
-      if (profile.gender === 'male') {
-        if (newMaleCount > minMale + 1) {
-          addToast({
-            type: 'error',
-            title: t('cannotSwitchTeams'),
-            message: t('teamSwitchNotAllowed')
-          })
-          return
-        }
-      } else {
-        if (newFemaleCount > minFemale + 1) {
-          addToast({
-            type: 'error',
-            title: t('cannotSwitchTeams'),
-            message: t('teamSwitchNotAllowed')
-          })
-          return
-        }
-      }
-
-      // Server-side validation with explicit reason
+      // Server-side validation with explicit reason only (single authoritative source)
       const { data: serverResult, error: validateError } = await (supabase as any)
         .rpc('can_switch_team_with_reason', {
           user_id: profile.id,
@@ -97,26 +93,32 @@ export default function PlayerLists() {
         
         let errorMessage = ''
         switch (reason) {
+          case 'switch_limit':
           case 'no_switches_left':
-            errorMessage = `You have used all ${details.max_switches} allowed team switches.`
+            errorMessage = 'You have no switches remaining.'
             break
           case 'teams_locked':
-            errorMessage = details.message
+            errorMessage = 'Team switching is not allowed at this time.'
             break
-          case 'same_team':
-            errorMessage = `You are already in the ${TEAMS[details.current_team].name} team.`
+          case 'same_team': {
+            const teamKey = (details.current_team ?? '') as keyof typeof TEAMS
+            const teamName = teamKey && TEAMS[teamKey] ? TEAMS[teamKey].name : 'this'
+            errorMessage = `You are already in the ${teamName} team.`
             break
+          }
+          case 'team_full':
+            errorMessage = 'This team is already full.'
+            break
+          case 'gender_imbalance':
+          case 'gender_team_imbalance':
+            errorMessage = 'Switch not allowed: Teams must stay gender balanced.'
+            break
+          case 'size_imbalance':
           case 'team_balance':
-            errorMessage = `This team already has ${details.target_size} players (average is ${details.avg_size}). Please consider joining a smaller team.`
+            errorMessage = 'Switch not allowed: Teams must stay balanced in size.'
             break
           case 'grade_cap':
-            errorMessage = `This team already has ${details.current_count} players from grade ${getGradeDisplayWithNumber(details.grade)}. Maximum allowed is ${details.max_allowed}.`
-            break
-          case 'gender_team_imbalance':
-            errorMessage = `Current team gender ratio is ${details.current_male}:${details.current_female} (M:F). Your switch would make it ${details.new_male}:${details.new_female}, exceeding the allowed difference of ${details.max_difference}.`
-            if (details.team_size_override) {
-              errorMessage += ' However, you can still join if this team needs more players.'
-            }
+            errorMessage = `This team already has too many players from grade ${getGradeDisplayWithNumber(details.grade)}.`
             break
           default:
             errorMessage = 'Unable to switch teams at this time. Please try again later.'
@@ -126,20 +128,12 @@ export default function PlayerLists() {
           type: 'error',
           title: t('cannotSwitchTeams'),
           message: errorMessage,
-          duration: 5000 // Give users more time to read the detailed message
+          duration: 4000
         })
         return
       }
 
-      if (serverResult.details?.override_reason === 'small_team_override') {
-        // Show an informative message about the override
-        addToast({
-          type: 'info',
-          title: 'Team Balance Notice',
-          message: 'Some restrictions were relaxed because this team needs more players.',
-          duration: 3000
-        })
-      }
+      // No special overrides in the new rules
 
       // Record the switch
       const { error: switchError } = await supabase
@@ -222,14 +216,16 @@ export default function PlayerLists() {
                       </div>
                     )}
                   </div>
-                  {profile && profile.current_team !== teamKey && (profile.switches_remaining ?? 0) > 0 && profile.participate_in_teams && (
+                  {profile && profile.current_team !== teamKey && profile.participate_in_teams && (
                     <Button
                       onClick={() => handleSwitchTeam(teamKey as TeamColor)}
                       loading={switching === teamKey}
                       icon={<ArrowRight />}
                       variant="ghost"
                       size="sm"
-                      className="bg-white bg-opacity-20 hover:bg-opacity-30 text-white border-white"
+                      className="bg-white bg-opacity-20 hover:bg-opacity-30 text-white border-white disabled:opacity-60 disabled:cursor-not-allowed"
+                      disabled={Boolean(getJoinBlockReason(teamKey))}
+                      title={getJoinBlockReason(teamKey) || ''}
                     >
                       {t('joinTeam')}
                     </Button>

@@ -1,14 +1,14 @@
 import React, { useState, useEffect, useRef } from 'react'
-import { Users, Shield, BarChart3, Sun, Star, Flame, Trees, Mountain, UserPlus, Download, RefreshCw, Calendar, Trophy, Settings, Bell, Activity, Camera } from 'lucide-react'
+import { Users, BarChart3, Sun, Star, Flame, Trees, Mountain, UserPlus, Download, RefreshCw, Calendar, Trophy, Activity, Camera } from 'lucide-react'
 import { useProfile } from '../hooks/useProfile'
 import { useTeamBalance } from '../hooks/useTeamBalance'
-import { TEAMS, TeamColor, supabase } from '../lib/supabase'
+import { TEAMS, TeamColor } from '../lib/supabase'
 import AdminPanel from './AdminPanel'
 import PlayerLists from './PlayerLists'
 import CountdownTimer from './CountdownTimer'
 import Scoreboard from './Scoreboard'
 import { useLanguage } from '../contexts/LanguageContext'
-import { Skeleton, SkeletonCard } from './LoadingSpinner'
+import { SkeletonCard } from './LoadingSpinner'
 
 import { getGradeDisplayWithNumber } from '../lib/utils'
 import { useToast } from './Toast'
@@ -38,13 +38,11 @@ export default function Dashboard({ onPageChange }: DashboardProps) {
   const { teamBalance } = useTeamBalance()
   const { addToast } = useToast()
   const { t } = useLanguage()
-  const [loading, setLoading] = useState(false)
   const [optInLoading, setOptInLoading] = useState(false)
   const [currentVerse, setCurrentVerse] = useState<BibleVerse | null>(null)
   const [backgroundImage, setBackgroundImage] = useState<string>('')
   const [generatingVerse, setGeneratingVerse] = useState(false)
   const [downloading, setDownloading] = useState(false)
-  const [showQuickActions, setShowQuickActions] = useState(false)
   const verseRef = useRef<HTMLDivElement>(null)
 
   // Quick Actions
@@ -310,37 +308,7 @@ export default function Dashboard({ onPageChange }: DashboardProps) {
     }
   }
 
-  const handleSwitchTeam = async (newTeam: TeamColor) => {
-    if (!profile) return
-
-    setLoading(true)
-    try {
-      const { error } = await supabase.rpc('can_switch_team', {
-        user_id: profile.id,
-        new_team: newTeam
-      })
-
-      if (error) throw error
-
-      addToast({
-        type: 'success',
-        title: t('teamSwitchSuccessful'),
-        message: `${t('successfullyJoinedTeam')} ${TEAMS[newTeam].name} team!`
-      })
-
-      // Refresh the page to update the UI
-      window.location.reload()
-    } catch (error: any) {
-      console.error('Error switching team:', error)
-      addToast({
-        type: 'error',
-        title: t('cannotSwitchTeams'),
-        message: t('teamSwitchNotAllowed')
-      })
-    } finally {
-      setLoading(false)
-    }
-  }
+  // Team switching is handled within PlayerLists to avoid duplicate logic here
 
   const handleOptInToTeams = async () => {
     if (!profile) return
