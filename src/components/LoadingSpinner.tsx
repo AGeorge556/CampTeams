@@ -19,7 +19,7 @@ export const Skeleton: React.FC<SkeletonProps> = ({ className = '', lines = 1, h
       {Array.from({ length: lines }).map((_, i) => (
         <div
           key={i}
-          className={`bg-gray-200 rounded ${height} mb-2 ${i === lines - 1 ? 'w-3/4' : 'w-full'}`}
+          className={`bg-gray-200 dark:bg-gray-700 rounded ${height} mb-2 ${i === lines - 1 ? 'w-3/4' : 'w-full'} transition-colors duration-300`}
         />
       ))}
     </div>
@@ -27,18 +27,18 @@ export const Skeleton: React.FC<SkeletonProps> = ({ className = '', lines = 1, h
 }
 
 export const SkeletonCard: React.FC = () => (
-  <div className="bg-white rounded-lg shadow-sm p-6 animate-pulse">
+  <div className="bg-white dark:bg-gray-800 rounded-lg shadow-sm p-6 animate-pulse transition-colors duration-300">
     <div className="flex items-center space-x-4 mb-4">
-      <div className="w-12 h-12 bg-gray-200 rounded-full"></div>
+      <div className="w-12 h-12 bg-gray-200 dark:bg-gray-700 rounded-full transition-colors duration-300"></div>
       <div className="flex-1">
-        <div className="h-4 bg-gray-200 rounded w-3/4 mb-2"></div>
-        <div className="h-3 bg-gray-200 rounded w-1/2"></div>
+        <div className="h-4 bg-gray-200 dark:bg-gray-700 rounded w-3/4 mb-2 transition-colors duration-300"></div>
+        <div className="h-3 bg-gray-200 dark:bg-gray-700 rounded w-1/2 transition-colors duration-300"></div>
       </div>
     </div>
     <div className="space-y-3">
-      <div className="h-4 bg-gray-200 rounded"></div>
-      <div className="h-4 bg-gray-200 rounded w-5/6"></div>
-      <div className="h-4 bg-gray-200 rounded w-4/6"></div>
+      <div className="h-4 bg-gray-200 dark:bg-gray-700 rounded transition-colors duration-300"></div>
+      <div className="h-4 bg-gray-200 dark:bg-gray-700 rounded w-5/6 transition-colors duration-300"></div>
+      <div className="h-4 bg-gray-200 dark:bg-gray-700 rounded w-4/6 transition-colors duration-300"></div>
     </div>
   </div>
 )
@@ -69,18 +69,18 @@ export default function LoadingSpinner({
         return <Skeleton lines={3} />
       default:
         return (
-          <div className={`animate-spin rounded-full border-2 border-gray-300 border-t-orange-500 ${sizeClasses[size]}`}></div>
+          <div className={`animate-spin rounded-full border-2 border-gray-300 dark:border-gray-600 border-t-orange-500 ${sizeClasses[size]} transition-colors duration-300`}></div>
         )
     }
   }
 
   if (fullScreen) {
     return (
-      <div className="fixed inset-0 bg-white bg-opacity-90 flex items-center justify-center z-50">
+      <div className="fixed inset-0 bg-white dark:bg-gray-900 bg-opacity-90 dark:bg-opacity-90 flex items-center justify-center z-50 transition-colors duration-300">
         <div className="text-center">
           {renderLoader()}
           {text && (
-            <p className="mt-4 text-gray-600 font-medium">{text}</p>
+            <p className="mt-4 text-gray-600 dark:text-gray-300 font-medium transition-colors duration-300">{text}</p>
           )}
         </div>
       </div>
@@ -92,7 +92,7 @@ export default function LoadingSpinner({
       <div className="text-center">
         {renderLoader()}
         {text && (
-          <p className="mt-2 text-gray-600 text-sm">{text}</p>
+          <p className="mt-2 text-gray-600 dark:text-gray-300 text-sm transition-colors duration-300">{text}</p>
         )}
       </div>
     </div>
