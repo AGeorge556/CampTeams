@@ -178,5 +178,4 @@ export function useTeamBalancing() {
   }
 }
 
-// Import TEAMS from supabase
-const { TEAMS } = require('../lib/supabase')
+import { TEAMS } from '../lib/supabase'
