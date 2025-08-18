@@ -98,35 +98,47 @@ export default function PlayerLists() {
         let errorMessage = ''
         switch (reason) {
           case 'no_switches_left':
-            errorMessage = `You have used all ${details.max_switches} team switches allowed.`
+            errorMessage = `You have used all ${details.max_switches} allowed team switches.`
             break
           case 'teams_locked':
-            errorMessage = details.message || 'Team switching is currently locked.'
+            errorMessage = details.message
             break
           case 'same_team':
             errorMessage = `You are already in the ${TEAMS[details.current_team].name} team.`
             break
-          case 'team_full':
-            errorMessage = `The team is full (${details.current_size}/${details.max_size} players).`
+          case 'team_balance':
+            errorMessage = `This team already has ${details.target_size} players (average is ${details.avg_size}). Please consider joining a smaller team.`
             break
           case 'grade_cap':
-            errorMessage = `Maximum number of players (${details.max_allowed}) from grade ${getGradeDisplayWithNumber(details.grade)} has been reached in this team.`
+            errorMessage = `This team already has ${details.current_count} players from grade ${getGradeDisplayWithNumber(details.grade)}. Maximum allowed is ${details.max_allowed}.`
             break
           case 'gender_team_imbalance':
-            const currentRatio = `${details.current_male}:${details.current_female}`
-            const newRatio = `${details.new_male}:${details.new_female}`
-            errorMessage = `Cannot switch teams as it would create a gender imbalance. Current ratio is ${currentRatio} (M:F), and switching would make it ${newRatio}. The maximum allowed difference is ${details.max_difference}.`
+            errorMessage = `Current team gender ratio is ${details.current_male}:${details.current_female} (M:F). Your switch would make it ${details.new_male}:${details.new_female}, exceeding the allowed difference of ${details.max_difference}.`
+            if (details.team_size_override) {
+              errorMessage += ' However, you can still join if this team needs more players.'
+            }
             break
           default:
-            errorMessage = 'Team switching is not allowed at this time.'
+            errorMessage = 'Unable to switch teams at this time. Please try again later.'
         }
 
         addToast({
           type: 'error',
           title: t('cannotSwitchTeams'),
-          message: errorMessage
+          message: errorMessage,
+          duration: 5000 // Give users more time to read the detailed message
         })
         return
+      }
+
+      if (serverResult.details?.override_reason === 'small_team_override') {
+        // Show an informative message about the override
+        addToast({
+          type: 'info',
+          title: 'Team Balance Notice',
+          message: 'Some restrictions were relaxed because this team needs more players.',
+          duration: 3000
+        })
       }
 
       // Record the switch
