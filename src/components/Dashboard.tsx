@@ -4,6 +4,7 @@ import { useProfile } from '../hooks/useProfile'
 import { useTeamBalance } from '../hooks/useTeamBalance'
 import { TEAMS, TeamColor } from '../lib/supabase'
 import AdminPanel from './AdminPanel'
+import AdminTeamManagement from './AdminTeamManagement'
 import PlayerLists from './PlayerLists'
 import CountdownTimer from './CountdownTimer'
 import Scoreboard from './Scoreboard'
@@ -570,7 +571,10 @@ export default function Dashboard({ onPageChange }: DashboardProps) {
 
       {/* Admin Panel */}
       {profile.is_admin && (
-        <AdminPanel />
+        <>
+          <AdminPanel />
+          <AdminTeamManagement />
+        </>
       )}
     </div>
   )

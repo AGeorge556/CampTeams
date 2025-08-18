@@ -215,6 +215,11 @@ export interface Translations {
   teamsLocked: string
   alreadyOnTeam: string
   teamFull: string
+  teamBalanceSummary: string
+  adminTeamManagement: string
+  adminOverride: string
+  playerMovedSuccessfully: string
+  failedToMovePlayer: string
 
   // Bible Verse References
   philippians: string
@@ -528,6 +533,11 @@ export const translations: Record<Language, Translations> = {
     teamsLocked: 'Teams are currently locked by admins.',
     alreadyOnTeam: 'You are already on this team.',
     teamFull: 'This team is full. Please choose another team.',
+    teamBalanceSummary: 'Team Balance Summary',
+    adminTeamManagement: 'Admin Team Management',
+    adminOverride: 'Admin Override',
+    playerMovedSuccessfully: 'Player moved successfully',
+    failedToMovePlayer: 'Failed to move player',
 
     // Bible Verse References
     philippians: 'Philippians 4:13',
@@ -840,6 +850,11 @@ export const translations: Record<Language, Translations> = {
     teamsLocked: 'الفرق مقفولة حالياً من المشرفين.',
     alreadyOnTeam: 'إنت بالفعل في الفريق ده.',
     teamFull: 'الفريق مكتمل. اختار فريق تاني من فضلك.',
+    teamBalanceSummary: 'ملخص توازن الفرق',
+    adminTeamManagement: 'إدارة الفرق للمشرف',
+    adminOverride: 'تجاوز المشرف',
+    playerMovedSuccessfully: 'تم نقل اللاعب بنجاح',
+    failedToMovePlayer: 'فشل في نقل اللاعب',
 
     // Bible Verse References
     philippians: 'فيلبي 4: 13',

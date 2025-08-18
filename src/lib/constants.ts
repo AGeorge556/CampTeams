@@ -4,9 +4,14 @@ export const APP_VERSION = '1.0.0'
 
 // Camp Configuration
 export const CAMP_START_DATE = '2025-08-28T00:00:00'
-export const MAX_TEAM_SIZE = 25
+export const MAX_TEAM_SIZE = 50
 export const MAX_SWITCHES_PER_USER = 3
 export const MAX_PLAYERS_PER_GRADE = 4
+
+// Team Balancing Configuration
+export const MAX_TEAM_SIZE_DIFFERENCE = 1 // Teams should stay within 1 player difference
+export const MAX_GENDER_DIFFERENCE_WITHIN_TEAM = 2 // Max difference between males/females within a team
+export const MAX_GENDER_DIFFERENCE_ACROSS_TEAMS = 1 // Max difference between teams for same gender
 
 
 // Grade Configuration

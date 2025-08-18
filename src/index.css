@@ -7,43 +7,6 @@
 
 /* Mobile-first base styles */
 @layer base {
-  /* Theme tokens */
-  :root {
-    --app-bg: #f9fafb;
-    --bg: #ffffff;
-    --text: #0f172a;
-    --muted: #64748b;
-    --card-bg: #ffffff;
-    --card-border: #e5e7eb;
-    --link: #1d4ed8;
-    --link-hover: #2563eb;
-    --button-bg: #111827;
-    --button-text: #ffffff;
-    --nav-bg: #ffffff;
-    --footer-bg: #ffffff;
-  }
-
-  [data-theme="dark"] {
-    --app-bg: #0b1220;
-    --bg: #0f172a;
-    --text: #e5e7eb;
-    --muted: #94a3b8;
-    --card-bg: #111827;
-    --card-border: #1f2937;
-    --link: #93c5fd;
-    --link-hover: #bfdbfe;
-    --button-bg: #334155;
-    --button-text: #e5e7eb;
-    --nav-bg: #0f172a;
-    --footer-bg: #0b1220;
-  }
-
-  html, body {
-    background-color: var(--app-bg);
-    color: var(--text);
-    transition: background-color 0.4s ease, color 0.4s ease;
-  }
-
   html {
     -webkit-text-size-adjust: 100%;
     -moz-text-size-adjust: 100%;
@@ -80,109 +43,6 @@
     outline-offset: 2px;
     border-radius: 0.375rem;
   }
-}
-
-/* Global dark overrides for common utilities */
-[data-theme="dark"] .bg-white { background-color: var(--card-bg) !important; }
-[data-theme="dark"] .bg-gray-50 { background-color: var(--bg) !important; }
-[data-theme="dark"] .bg-gray-100 { background-color: var(--bg) !important; }
-[data-theme="dark"] .bg-gray-200 { background-color: var(--card-bg) !important; }
-[data-theme="dark"] .bg-slate-50 { background-color: var(--bg) !important; }
-[data-theme="dark"] .bg-slate-100 { background-color: var(--bg) !important; }
-[data-theme="dark"] .bg-slate-200 { background-color: var(--card-bg) !important; }
-[data-theme="dark"] .bg-orange-50 { background-color: var(--bg) !important; }
-[data-theme="dark"] .bg-blue-50 { background-color: var(--bg) !important; }
-[data-theme="dark"] .bg-green-50 { background-color: var(--bg) !important; }
-[data-theme="dark"] .bg-purple-50 { background-color: var(--bg) !important; }
-[data-theme="dark"] .bg-yellow-50 { background-color: var(--bg) !important; }
-[data-theme="dark"] .bg-red-50 { background-color: var(--bg) !important; }
-[data-theme="dark"] .text-gray-900,
-[data-theme="dark"] .text-gray-800 { color: var(--text) !important; }
-[data-theme="dark"] .text-gray-700,
-[data-theme="dark"] .text-gray-600,
-[data-theme="dark"] .text-gray-500,
-[data-theme="dark"] .text-gray-400 { color: var(--muted) !important; }
-[data-theme="dark"] .border-gray-200,
-[data-theme="dark"] .border-gray-100,
-[data-theme="dark"] .border-gray-300,
-[data-theme="dark"] .border-gray-400,
-[data-theme="dark"] .border-blue-200,
-[data-theme="dark"] .border-purple-200,
-[data-theme="dark"] .border-green-200,
-[data-theme="dark"] .border-yellow-200,
-[data-theme="dark"] .border-red-200,
-[data-theme="dark"] .border-orange-200 { border-color: var(--card-border) !important; }
-[data-theme="dark"] header { background-color: var(--nav-bg) !important; }
-[data-theme="dark"] footer { background-color: var(--footer-bg) !important; }
-[data-theme="dark"] a { color: var(--link); }
-[data-theme="dark"] a:hover { color: var(--link-hover); }
-
-/* Inputs, selects, textareas */
-[data-theme="dark"] input,
-[data-theme="dark"] select,
-[data-theme="dark"] textarea {
-  background-color: var(--card-bg) !iant; /* keep typo for patch? */
-  background-color: var(--card-bg) !important;
-  color: var(--text) !important;
-  border-color: var(--card-border) !important;
-}
-
-/* Generic cards/containers often styled with white bg */
-[data-theme="dark"] .card-mobile,
-[data-theme="dark"] .modal-content-mobile,
-[data-theme="dark"] .nav-mobile,
-[data-theme="dark"] .bg-white.rounded-lg,
-[data-theme="dark"] .bg-white.rounded-b-lg,
-[data-theme="dark"] .bg-white.rounded-mobile,
-[data-theme="dark"] .bg-white.rounded-mobile-lg,
-[data-theme="dark"] .bg-white.rounded-mobile-xl {
-  background-color: var(--card-bg) !important;
-}
-
-/* Buttons */
-[data-theme="dark"] .btn-mobile-secondary { background-color: #475569 !important; }
-[data-theme="dark"] .btn-mobile-outline {
-  background-color: transparent !important;
-  border-color: var(--card-border) !important;
-  color: var(--text) !important;
-}
-
-/* Table rows and hover */
-[data-theme="dark"] tr,
-[data-theme="dark"] th,
-[data-theme="dark"] td {
-  background-color: var(--bg) !important;
-  color: var(--text) !important;
-  border-color: var(--card-border) !important;
-}
-
-/* Replace gradient background on layout containers in dark theme */
-[data-theme="dark"] .bg-gradient-to-br.from-orange-50.to-yellow-50 {
-  background: var(--app-bg) !important;
-  background-image: none !important;
-}
-
-/* Generic gradient suppressor in dark mode */
-[data-theme="dark"] .bg-gradient-to-r,
-[data-theme="dark"] .bg-gradient-to-l,
-[data-theme="dark"] .bg-gradient-to-t,
-[data-theme="dark"] .bg-gradient-to-b,
-[data-theme="dark"] .bg-gradient-to-tr,
-[data-theme="dark"] .bg-gradient-to-tl,
-[data-theme="dark"] .bg-gradient-to-br,
-[data-theme="dark"] .bg-gradient-to-bl {
-  background: var(--app-bg) !important;
-  background-image: none !important;
-}
-
-/* Scoreboard/analytics sections that may use light backgrounds */
-[data-theme="dark"] .bg-yellow-100,
-[data-theme="dark"] .bg-orange-100,
-[data-theme="dark"] .bg-blue-100,
-[data-theme="dark"] .bg-green-100,
-[data-theme="dark"] .bg-purple-100,
-[data-theme="dark"] .bg-red-100 {
-  background-color: var(--card-bg) !important;
 }
 
 /* RTL Support */
@@ -470,7 +330,7 @@
 
 /* Smooth transitions for all interactive elements */
 * {
-  transition: color 0.4s ease, background-color 0.4s ease, border-color 0.4s ease;
+  transition: color 0.2s ease, background-color 0.2s ease, border-color 0.2s ease;
 }
 
 /* Mobile-specific improvements */
