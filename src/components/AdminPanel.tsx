@@ -1,68 +1,69 @@
-import React, { useState, useEffect } from 'react'
-import { Shield, Users, Settings, Calendar, Download, UserX, UserCheck, Trophy, Zap, Camera } from 'lucide-react'
-import ScoreboardAdmin from './ScoreboardAdmin'
-import { supabase, Profile, TEAMS, TeamColor } from '../lib/supabase'
-import { useTeamBalance } from '../hooks/useTeamBalance'
-import { useOilExtractionVisibility } from '../hooks/useOilExtractionVisibility'
-import { useGalleryVisibility } from '../hooks/useGalleryVisibility'
-import { useLanguage } from '../contexts/LanguageContext'
-import { getGradeDisplayWithNumber } from '../lib/utils'
+import { useState, useEffect } from 'react';
+import { Shield, Users, Settings, Download, Trophy, Zap, Camera } from 'lucide-react';
+import ScoreboardAdmin from './ScoreboardAdmin';
+import { supabase, Profile, TEAMS, TeamColor } from '../lib/supabase';
+import { useOilExtractionVisibility } from '../hooks/useOilExtractionVisibility';
+import { useGalleryVisibility } from '../hooks/useGalleryVisibility';
+import { useLanguage } from '../contexts/LanguageContext';
+import { getGradeDisplayWithNumber } from '../lib/utils';
 
 interface SportSelection {
-  sport_id: string
-  sport_name: string
-  participants: Profile[]
+  sport_id: string;
+  sport_name: string;
+  participants: Profile[];
 }
 
+const getTeamProperty = (teamKey: keyof typeof TEAMS, property: keyof typeof TEAMS[keyof typeof TEAMS]) => {
+  return TEAMS[teamKey][property];
+};
+
 export default function AdminPanel() {
-  const { teamBalance } = useTeamBalance()
-  const { oilExtractionVisible, toggleOilExtractionVisibility, loading: oilVisibilityLoading } = useOilExtractionVisibility()
-  const { galleryVisible, toggleGalleryVisibility, loading: galleryVisibilityLoading } = useGalleryVisibility()
-  const { t } = useLanguage()
-  const [profiles, setProfiles] = useState<Profile[]>([])
-  const [campSettings, setCampSettings] = useState<any>(null)
-  const [sportSelections, setSportSelections] = useState<SportSelection[]>([])
-  const [loading, setLoading] = useState(false)
-  const [selectedTeam, setSelectedTeam] = useState<TeamColor | 'all'>('all')
-  const [activeTab, setActiveTab] = useState<'participants' | 'sports' | 'roles'>('participants')
+  const { oilExtractionVisible, toggleOilExtractionVisibility, loading: oilVisibilityLoading } = useOilExtractionVisibility();
+  const { galleryVisible, toggleGalleryVisibility, loading: galleryVisibilityLoading } = useGalleryVisibility();
+  const { t } = useLanguage();
+  const [profiles, setProfiles] = useState<Profile[]>([]);
+  const [campSettings, setCampSettings] = useState<any>(null);
+  const [sportSelections, setSportSelections] = useState<SportSelection[]>([]);
+  const [loading, setLoading] = useState(false);
+  const [selectedTeam, setSelectedTeam] = useState<TeamColor | 'all'>('all');
+  const [activeTab, setActiveTab] = useState<'participants' | 'sports' | 'roles'>('participants');
 
   useEffect(() => {
-    fetchProfiles()
-    fetchCampSettings()
-    fetchSportSelections()
-  }, [])
+    fetchProfiles();
+    fetchCampSettings();
+    fetchSportSelections();
+  }, []);
 
   const fetchProfiles = async () => {
     try {
       const { data, error } = await supabase
         .from('profiles')
         .select('*')
-        .order('created_at', { ascending: false })
-      
-      if (error) throw error
-      setProfiles(data || [])
+        .order('created_at', { ascending: false });
+
+      if (error) throw error;
+      setProfiles(data || []);
     } catch (error) {
-      console.error('Error fetching profiles:', error)
+      console.error('Error fetching profiles:', error);
     }
-  }
+  };
 
   const fetchCampSettings = async () => {
     try {
       const { data, error } = await supabase
         .from('camp_settings')
         .select('*')
-        .single()
-      
-      if (error) throw error
-      setCampSettings(data)
+        .single();
+
+      if (error) throw error;
+      setCampSettings(data);
     } catch (error) {
-      console.error('Error fetching camp settings:', error)
+      console.error('Error fetching camp settings:', error);
     }
-  }
+  };
 
   const fetchSportSelections = async () => {
     try {
-      // Get all sport selections with user profiles
       const { data: selections, error: selectionsError } = await supabase
         .from('user_sport_selections')
         .select(`
@@ -75,135 +76,146 @@ export default function AdminPanel() {
             current_team,
             is_admin
           )
-        `)
+        `);
 
-      if (selectionsError) throw selectionsError
+      if (selectionsError) throw selectionsError;
 
-      // Group by sport
-      const sportMap = new Map<string, SportSelection>()
-      
-      selections?.forEach(selection => {
-        const sportId = selection.sport_id
-        const profile = selection.profiles as any
-        
+      const sportMap = new Map<string, SportSelection>();
+
+      selections?.forEach((selection) => {
+        const sportId = selection.sport_id;
+        const profile = selection.profiles as any;
+
         if (!sportMap.has(sportId)) {
           sportMap.set(sportId, {
             sport_id: sportId,
             sport_name: getSportDisplayName(sportId),
-            participants: []
-          })
+            participants: [],
+          });
         }
-        
-        sportMap.get(sportId)!.participants.push(profile)
-      })
 
-      setSportSelections(Array.from(sportMap.values()))
+        sportMap.get(sportId)!.participants.push(profile);
+      });
+
+      setSportSelections(Array.from(sportMap.values()));
     } catch (error) {
-      console.error('Error fetching sport selections:', error)
+      console.error('Error fetching sport selections:', error);
     }
-  }
+  };
 
   const getSportDisplayName = (sportId: string): string => {
     const sportNames: Record<string, string> = {
-      'soccer': 'Soccer ⚽',
-      'dodgeball': 'Dodgeball 🏐',
-      'chairball': 'Chairball 🪑',
+      soccer: 'Soccer ⚽',
+      dodgeball: 'Dodgeball 🏐',
+      chairball: 'Chairball 🪑',
       'big-game': 'Big Game 🎯',
-      'pool-time': 'Pool Time 🏊'
-    }
-    return sportNames[sportId] || sportId
-  }
+      'pool-time': 'Pool Time 🏊',
+    };
+    return sportNames[sportId] || sportId;
+  };
 
   const toggleTeamsLock = async () => {
-    if (!campSettings) return
-    
-    setLoading(true)
+    if (!campSettings) return;
+
+    setLoading(true);
     try {
       const { error } = await supabase
         .from('camp_settings')
         .update({
           teams_locked: !campSettings.teams_locked,
-          lock_date: !campSettings.teams_locked ? new Date().toISOString() : null
+          lock_date: !campSettings.teams_locked ? new Date().toISOString() : null,
         })
-        .eq('id', campSettings.id)
-      
-      if (error) throw error
-      
-      await fetchCampSettings()
+        .eq('id', campSettings.id);
+
+      if (error) throw error;
+
+      await fetchCampSettings();
     } catch (error) {
-      console.error('Error toggling teams lock:', error)
+      console.error('Error toggling teams lock:', error);
     } finally {
-      setLoading(false)
+      setLoading(false);
     }
-  }
+  };
 
   const reassignUser = async (userId: string, newTeam: TeamColor) => {
     try {
       const { error } = await supabase
         .from('profiles')
         .update({ current_team: newTeam })
-        .eq('id', userId)
-      
-      if (error) throw error
-      
-      await fetchProfiles()
+        .eq('id', userId);
+
+      if (error) throw error;
+
+      await fetchProfiles();
     } catch (error) {
-      console.error('Error reassigning user:', error)
+      console.error('Error reassigning user:', error);
     }
-  }
+  };
 
   const updateUserRole = async (userId: string, newRole: string) => {
     try {
       const { error } = await supabase
         .from('profiles')
         .update({ role: newRole })
-        .eq('id', userId)
-      
-      if (error) throw error
-      
-      await fetchProfiles()
+        .eq('id', userId);
+
+      if (error) throw error;
+
+      await fetchProfiles();
     } catch (error) {
-      console.error('Error updating user role:', error)
+      console.error('Error updating user role:', error);
     }
-  }
+  };
 
   const exportRoster = () => {
-    const csvContent = "data:text/csv;charset=utf-8," + 
-      "Name,Grade,Gender,Team,Switches Remaining,Join Date\n" +
-      profiles.map(p => 
-        `"${p.full_name}",${p.grade},${p.gender},${p.current_team || 'Unassigned'},${p.switches_remaining},${new Date(p.created_at).toLocaleDateString()}`
-      ).join("\n")
-    
-    const encodedUri = encodeURI(csvContent)
-    const link = document.createElement("a")
-    link.setAttribute("href", encodedUri)
-    link.setAttribute("download", "camp_roster.csv")
-    document.body.appendChild(link)
-    link.click()
-    document.body.removeChild(link)
-  }
+    const csvContent =
+      'data:text/csv;charset=utf-8,' +
+      'Name,Grade,Gender,Team,Switches Remaining,Join Date\n' +
+      profiles
+        .map(
+          (p) =>
+            `"${p.full_name}",${p.grade},${p.gender},${p.current_team || 'Unassigned'},${p.switches_remaining},${
+              p.created_at ? new Date(p.created_at).toLocaleDateString() : 'N/A'
+            }`
+        )
+        .join('\n');
+
+    const encodedUri = encodeURI(csvContent);
+    const link = document.createElement('a');
+    link.setAttribute('href', encodedUri);
+    link.setAttribute('download', 'camp_roster.csv');
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+  };
 
   const exportSportSelections = () => {
-    const csvContent = "data:text/csv;charset=utf-8," + 
-      "Sport,Name,Grade,Gender,Team,Admin\n" +
-      sportSelections.flatMap(sport => 
-        sport.participants.map(p => 
-          `"${sport.sport_name}","${p.full_name}",${p.grade},${p.gender},${p.current_team || 'Unassigned'},${p.is_admin ? 'Yes' : 'No'}`
+    const csvContent =
+      'data:text/csv;charset=utf-8,' +
+      'Sport,Name,Grade,Gender,Team,Admin\n' +
+      sportSelections
+        .flatMap((sport) =>
+          sport.participants.map(
+            (p) =>
+              `"${sport.sport_name}","${p.full_name}",${p.grade},${p.gender},${p.current_team || 'Unassigned'},${
+                p.is_admin ? 'Yes' : 'No'
+              }`
+          )
         )
-      ).join("\n")
-    
-    const encodedUri = encodeURI(csvContent)
-    const link = document.createElement("a")
-    link.setAttribute("href", encodedUri)
-    link.setAttribute("download", "sport_selections.csv")
-    document.body.appendChild(link)
-    link.click()
-    document.body.removeChild(link)
-  }
+        .join('\n');
+
+    const encodedUri = encodeURI(csvContent);
+    const link = document.createElement('a');
+    link.setAttribute('href', encodedUri);
+    link.setAttribute('download', 'sport_selections.csv');
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+  };
 
   const filteredProfiles = selectedTeam === 'all' 
     ? profiles 
-    : profiles.filter(p => p.current_team === selectedTeam)
+    : profiles.filter((p) => p.current_team === selectedTeam);
 
   return (
     <div className="space-y-8">
@@ -427,11 +439,13 @@ export default function AdminPanel() {
                       {profile.gender}
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                      {profile.current_team ? (
-                        <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${
-                          TEAMS[profile.current_team].lightColor
-                        } ${TEAMS[profile.current_team].textColor}`}>
-                          {TEAMS[profile.current_team].name}
+                      {profile.current_team && TEAMS[profile.current_team as keyof typeof TEAMS] ? (
+                        <span
+                          className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${
+                            getTeamProperty(profile.current_team as keyof typeof TEAMS, 'lightColor')
+                          } ${getTeamProperty(profile.current_team as keyof typeof TEAMS, 'textColor')}`}
+                        >
+                          {getTeamProperty(profile.current_team as keyof typeof TEAMS, 'name')}
                         </span>
                       ) : (
                         <span className="text-gray-400">Unassigned</span>
@@ -595,5 +609,5 @@ export default function AdminPanel() {
         </div>
       ) : null}
     </div>
-  )
+  );
 }
