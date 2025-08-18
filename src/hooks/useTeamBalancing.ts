@@ -69,29 +69,8 @@ export function useTeamBalancing() {
       return { canAccept: false, reason: 'Team is at maximum capacity' }
     }
 
-    // Project a join into the target team and verify balances across teams
-    const projected = teamBalances.map(b => ({ ...b }))
-    const projIdx = projected.findIndex(b => b.team === teamKey)
-    if (projIdx >= 0) {
-      projected[projIdx].total_count += 1
-      if (userGender === 'male') projected[projIdx].male_count += 1
-      else projected[projIdx].female_count += 1
-    }
-
-    const sizes = projected.map(b => b.total_count)
-    if (Math.max(...sizes) - Math.min(...sizes) > MAX_TEAM_SIZE_DIFFERENCE) {
-      return { canAccept: false, reason: 'Team size balance would be disrupted' }
-    }
-
-    const maleCounts = projected.map(b => b.male_count)
-    if (Math.max(...maleCounts) - Math.min(...maleCounts) > MAX_GENDER_DIFFERENCE_ACROSS_TEAMS) {
-      return { canAccept: false, reason: 'Gender balance would be disrupted' }
-    }
-
-    const femaleCounts = projected.map(b => b.female_count)
-    if (Math.max(...femaleCounts) - Math.min(...femaleCounts) > MAX_GENDER_DIFFERENCE_ACROSS_TEAMS) {
-      return { canAccept: false, reason: 'Gender balance would be disrupted' }
-    }
+    // Only check absolute team size limit (24 players max)
+    // Remove overly restrictive balancing rules that prevent reasonable team growth
 
     // Check grade limit (max 4 players per grade per team)
     if (profile) {
@@ -131,36 +110,8 @@ export function useTeamBalancing() {
       return { canSwitch: false, reason: acceptCheck.reason }
     }
 
-    // Project the move across all teams and verify final distribution
-    const projected = teamBalances.map(b => ({ ...b }))
-    const fromIdx = projected.findIndex(b => b.team === fromTeam)
-    const toIdx = projected.findIndex(b => b.team === newTeam)
-
-    if (toIdx >= 0) {
-      projected[toIdx].total_count += 1
-      if (userGender === 'male') projected[toIdx].male_count += 1
-      else projected[toIdx].female_count += 1
-    }
-    if (fromIdx >= 0) {
-      projected[fromIdx].total_count = Math.max(0, projected[fromIdx].total_count - 1)
-      if (userGender === 'male') projected[fromIdx].male_count = Math.max(0, projected[fromIdx].male_count - 1)
-      else projected[fromIdx].female_count = Math.max(0, projected[fromIdx].female_count - 1)
-    }
-
-    const sizes = projected.map(b => b.total_count)
-    if (Math.max(...sizes) - Math.min(...sizes) > MAX_TEAM_SIZE_DIFFERENCE && !profile.is_admin) {
-      return { canSwitch: false, reason: 'Team balance must be maintained' }
-    }
-
-    const maleCounts = projected.map(b => b.male_count)
-    if (Math.max(...maleCounts) - Math.min(...maleCounts) > MAX_GENDER_DIFFERENCE_ACROSS_TEAMS && !profile.is_admin) {
-      return { canSwitch: false, reason: 'Gender balance must be maintained' }
-    }
-
-    const femaleCounts = projected.map(b => b.female_count)
-    if (Math.max(...femaleCounts) - Math.min(...femaleCounts) > MAX_GENDER_DIFFERENCE_ACROSS_TEAMS && !profile.is_admin) {
-      return { canSwitch: false, reason: 'Gender balance must be maintained' }
-    }
+    // Only check if the target team would exceed 24 players
+    // Remove overly restrictive balancing rules that prevent reasonable team switching
 
     return { canSwitch: true, reason: 'Switch allowed' }
   }
