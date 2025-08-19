@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import { Shield, Users, Settings, Download, Trophy, Zap, Camera } from 'lucide-react';
 import ScoreboardAdmin from './ScoreboardAdmin';
 import { supabase, Profile, TEAMS, TeamColor } from '../lib/supabase';
+import { CampSettings } from '../lib/types';
 import { useOilExtractionVisibility } from '../hooks/useOilExtractionVisibility';
 import { useGalleryVisibility } from '../hooks/useGalleryVisibility';
 import { useLanguage } from '../contexts/LanguageContext';
@@ -22,11 +23,12 @@ export default function AdminPanel() {
   const { galleryVisible, toggleGalleryVisibility, loading: galleryVisibilityLoading } = useGalleryVisibility();
   const { t } = useLanguage();
   const [profiles, setProfiles] = useState<Profile[]>([]);
-  const [campSettings, setCampSettings] = useState<any>(null);
+  const [campSettings, setCampSettings] = useState<CampSettings | null>(null);
   const [sportSelections, setSportSelections] = useState<SportSelection[]>([]);
   const [loading, setLoading] = useState(false);
   const [selectedTeam, setSelectedTeam] = useState<TeamColor | 'all'>('all');
   const [activeTab, setActiveTab] = useState<'participants' | 'sports' | 'roles'>('participants');
+  const [lockedTeams, setLockedTeams] = useState<string[]>([]);
 
   useEffect(() => {
     fetchProfiles();
@@ -56,9 +58,50 @@ export default function AdminPanel() {
         .single();
 
       if (error) throw error;
-      setCampSettings(data);
+      // Cast the data to include locked_teams with proper typing and default values
+      const settingsData: CampSettings = {
+        id: data.id,
+        teams_locked: data.teams_locked || false,
+        lock_date: data.lock_date,
+        max_team_size: data.max_team_size || 50,
+        locked_teams: Array.isArray((data as any).locked_teams) ? (data as any).locked_teams : [],
+        gallery_visible: data.gallery_visible || false,
+        oil_extraction_visible: data.oil_extraction_visible || false,
+        camp_start_date: data.camp_start_date,
+        created_at: data.created_at,
+        updated_at: data.updated_at
+      };
+      
+      setCampSettings(settingsData);
+      setLockedTeams(settingsData.locked_teams);
     } catch (error) {
       console.error('Error fetching camp settings:', error);
+    }
+  };
+
+  const toggleTeamLock = async (teamColor: TeamColor) => {
+    if (!campSettings) return;
+    
+    setLoading(true);
+    try {
+      const newLockedTeams = lockedTeams.includes(teamColor)
+        ? lockedTeams.filter(t => t !== teamColor)
+        : [...lockedTeams, teamColor];
+
+      const { error } = await supabase
+        .from('camp_settings')
+        .update({
+          locked_teams: newLockedTeams
+        } as Partial<CampSettings>)
+        .eq('id', campSettings.id);
+
+      if (error) throw error;
+      setLockedTeams(newLockedTeams);
+      await fetchCampSettings();
+    } catch (error) {
+      console.error('Error toggling team lock:', error);
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -398,14 +441,43 @@ export default function AdminPanel() {
                   <option key={key} value={key}>{team.name}</option>
                 ))}
               </select>
-              <button
-                onClick={exportRoster}
-                className="inline-flex items-center px-3 py-2 border border-gray-300 shadow-sm text-sm leading-4 font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
-              >
-                <Download className="h-4 w-4 mr-2" />
-                Export CSV
-              </button>
+              <div className="flex space-x-2">
+                <button
+                  onClick={exportRoster}
+                  className="inline-flex items-center px-3 py-2 border border-gray-300 shadow-sm text-sm leading-4 font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
+                >
+                  <Download className="h-4 w-4 mr-2" />
+                  Export CSV
+                </button>
+              </div>
             </div>
+          </div>
+          
+          {/* Team Lock Controls */}
+          <div className="mt-4 grid grid-cols-2 md:grid-cols-4 gap-4">
+            {Object.entries(TEAMS).map(([key, team]) => (
+              <div key={key} className="relative">
+                <div className={`p-4 rounded-lg ${team.lightColor} border ${lockedTeams.includes(key) ? 'border-red-500' : 'border-transparent'}`}>
+                  <div className="flex items-center justify-between">
+                    <span className={`font-medium ${team.textColor}`}>{team.name}</span>
+                    <button
+                      onClick={() => toggleTeamLock(key as TeamColor)}
+                      disabled={loading}
+                      className={`ml-2 inline-flex items-center px-2 py-1 border ${
+                        lockedTeams.includes(key)
+                          ? 'border-red-500 text-red-700 hover:bg-red-50'
+                          : 'border-green-500 text-green-700 hover:bg-green-50'
+                      } text-sm font-medium rounded-md focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-purple-500 disabled:opacity-50`}
+                    >
+                      {lockedTeams.includes(key) ? 'Unlock' : 'Lock'}
+                    </button>
+                  </div>
+                  <p className="text-sm text-gray-500 mt-1">
+                    {lockedTeams.includes(key) ? 'No new joins allowed' : 'Open for new players'}
+                  </p>
+                </div>
+              </div>
+            ))}
           </div>
           
           <div className="overflow-x-auto">

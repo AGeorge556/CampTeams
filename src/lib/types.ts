@@ -87,6 +87,19 @@ export const SESSION_TYPE_COLORS: Record<SessionType, string> = {
   other: 'bg-gray-100 text-gray-800'
 }
 
+export interface CampSettings {
+  id: string;
+  teams_locked: boolean;
+  lock_date: string | null;
+  max_team_size: number;
+  locked_teams: string[];
+  gallery_visible: boolean | null;
+  oil_extraction_visible: boolean | null;
+  camp_start_date: string | null;
+  created_at: string | null;
+  updated_at: string | null;
+}
+
 // Oil Extraction Game Types
 export type UserRole = 'admin' | 'shop_owner' | 'team_leader' | 'camper'
 
