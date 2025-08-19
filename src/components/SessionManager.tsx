@@ -42,7 +42,7 @@ export default function SessionManager({ onSessionCreated }: SessionManagerProps
         .order('start_time', { ascending: false })
 
       if (error) throw error
-      setSessions(data || [])
+      setSessions(data as unknown as CampSession[])
     } catch (error) {
       console.error('Error loading sessions:', error)
       addToast({
@@ -92,7 +92,7 @@ export default function SessionManager({ onSessionCreated }: SessionManagerProps
           title: 'Success',
           message: 'Session created successfully'
         })
-        onSessionCreated?.(data)
+        onSessionCreated?.(data as unknown as CampSession)
       }
 
       resetForm()
