@@ -2,6 +2,7 @@ import React, { useEffect } from 'react'
 import { X, ChevronLeft, ChevronRight, Download, User, Calendar, MessageCircle } from 'lucide-react'
 import { GalleryPhoto } from '../lib/types'
 import { useLanguage } from '../contexts/LanguageContext'
+import { Translations } from '../lib/languages'
 
 interface PhotoModalProps {
   photo: GalleryPhoto
@@ -76,12 +77,12 @@ export default function PhotoModal({
       <div className="relative max-w-4xl max-h-full w-full h-full flex flex-col">
         {/* Header */}
         <div className="flex items-center justify-between p-3 sm:p-4 bg-black bg-opacity-50 text-white">
-          <h2 className="text-base sm:text-lg font-semibold">{isVideo ? t('videoPreview') : t('photoPreview')}</h2>
+          <h2 className="text-base sm:text-lg font-semibold">{isVideo ? t('videoPreview' as keyof Translations) : t('photoPreview' as keyof Translations)}</h2>
           <div className="flex items-center space-x-2">
             <button
               onClick={handleDownload}
               className="p-2 sm:p-2.5 hover:bg-white hover:bg-opacity-20 rounded-full transition-colors touch-target"
-              title={isVideo ? t('downloadVideo') : t('downloadPhoto')}
+              title={isVideo ? t('downloadVideo' as keyof Translations) : t('downloadPhoto' as keyof Translations)}
             >
               <Download className="h-4 w-4 sm:h-5 sm:w-5" />
             </button>
@@ -102,7 +103,7 @@ export default function PhotoModal({
             <button
               onClick={onPrevious}
               className="absolute left-2 sm:left-4 top-1/2 transform -translate-y-1/2 bg-black bg-opacity-50 text-white p-2.5 sm:p-3 rounded-full hover:bg-opacity-70 transition-colors z-10 touch-target"
-              title={isVideo ? t('previousVideo') : t('previousPhoto')}
+              title={isVideo ? t('previousVideo' as keyof Translations) : t('previousPhoto' as keyof Translations)}
             >
               <ChevronLeft className="h-5 w-5 sm:h-6 sm:w-6" />
             </button>
@@ -112,7 +113,7 @@ export default function PhotoModal({
             <button
               onClick={onNext}
               className="absolute right-2 sm:right-4 top-1/2 transform -translate-y-1/2 bg-black bg-opacity-50 text-white p-2.5 sm:p-3 rounded-full hover:bg-opacity-70 transition-colors z-10 touch-target"
-              title={isVideo ? t('nextVideo') : t('nextPhoto')}
+              title={isVideo ? t('nextVideo' as keyof Translations) : t('nextPhoto' as keyof Translations)}
             >
               <ChevronRight className="h-5 w-5 sm:h-6 sm:w-6" />
             </button>

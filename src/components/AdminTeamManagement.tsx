@@ -176,7 +176,7 @@ export default function AdminTeamManagement() {
                               disabled={!teamAcceptance.canAccept || isMoving}
                               icon={teamAcceptance.canAccept ? <ArrowRight /> : <AlertTriangle />}
                               variant="ghost"
-                              size="xs"
+                              size="sm"
                               className={`${
                                 teamAcceptance.canAccept 
                                   ? 'hover:bg-blue-100 text-blue-600' 
