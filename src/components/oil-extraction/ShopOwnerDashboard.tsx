@@ -41,27 +41,27 @@ export default function ShopOwnerDashboard() {
   return (
     <div className="space-y-8">
       {/* Game Status */}
-      <div className="bg-white rounded-lg shadow p-6">
-        <h2 className="text-xl font-semibold text-gray-900 mb-4">Game Status</h2>
+      <div className="bg-[var(--color-card-bg)] rounded-lg shadow p-6 border border-[var(--color-border)]">
+        <h2 className="text-xl font-semibold text-[var(--color-text)] mb-4">Game Status</h2>
         {activeSession ? (
           <div className="p-4 bg-green-50 border border-green-200 rounded-lg">
             <div className="flex items-center">
               <div className="w-3 h-3 bg-green-500 rounded-full mr-3 animate-pulse" />
               <div>
-                <h3 className="font-medium text-green-900">Game Active</h3>
-                <p className="text-sm text-green-700">
+                <h3 className="font-medium text-[var(--color-text)]">Game Active</h3>
+                <p className="text-sm text-[var(--color-text-muted)]">
                   Session ends: {new Date(activeSession.end_time).toLocaleString()}
                 </p>
               </div>
             </div>
           </div>
         ) : (
-          <div className="p-4 bg-gray-50 border border-gray-200 rounded-lg">
+          <div className="p-4 bg-[var(--color-card-bg)] border border-[var(--color-border)] rounded-lg">
             <div className="flex items-center">
-              <div className="w-3 h-3 bg-gray-500 rounded-full mr-3" />
+              <div className="w-3 h-3 bg-[var(--color-accent-muted)] rounded-full mr-3" />
               <div>
-                <h3 className="font-medium text-gray-900">Game Inactive</h3>
-                <p className="text-sm text-gray-700">No active game session</p>
+                <h3 className="font-medium text-[var(--color-text)]">Game Inactive</h3>
+                <p className="text-sm text-[var(--color-text-muted)]">No active game session</p>
               </div>
             </div>
           </div>
@@ -69,7 +69,7 @@ export default function ShopOwnerDashboard() {
       </div>
 
       {/* Shop Management */}
-      <div className="bg-white rounded-lg shadow p-6">
+      <div className="bg-[var(--color-card-bg)] rounded-lg shadow p-6 border border-[var(--color-border)]">
         <h2 className="text-xl font-semibold text-gray-900 mb-6">Shop Management</h2>
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
           {/* Team Wallets */}
@@ -230,4 +230,4 @@ export default function ShopOwnerDashboard() {
       </div>
     </div>
   )
-} 
+}

@@ -1,4 +1,4 @@
-import React, { Component, ErrorInfo, ReactNode } from 'react'
+import { Component, ErrorInfo, ReactNode } from 'react'
 import { AlertTriangle, RefreshCw, Home } from 'lucide-react'
 
 interface Props {
@@ -40,15 +40,15 @@ export default class ErrorBoundary extends Component<Props, State> {
       }
 
       return (
-        <div className="min-h-screen bg-gradient-to-br from-orange-50 to-yellow-50 flex items-center justify-center px-4">
-          <div className="max-w-md w-full text-center">
+        <div className="min-h-screen bg-[var(--color-bg)] flex items-center justify-center px-4">
+          <div className="max-w-md w-full text-center bg-[var(--color-card-bg)] rounded-lg p-6 border border-[var(--color-border)]">
             <div className="mb-6">
               <AlertTriangle className="h-16 w-16 text-orange-500 mx-auto" />
             </div>
-            <h1 className="text-2xl font-bold text-gray-900 mb-4">
+            <h1 className="text-2xl font-bold text-[var(--color-text)] mb-4">
               Oops! Something went wrong
             </h1>
-            <p className="text-gray-600 mb-6">
+            <p className="text-[var(--color-text-muted)] mb-6">
               We encountered an unexpected error. Please try refreshing the page or contact support if the problem persists.
             </p>
             <div className="space-y-3">
@@ -61,7 +61,7 @@ export default class ErrorBoundary extends Component<Props, State> {
               </button>
               <button
                 onClick={this.handleGoHome}
-                className="w-full inline-flex items-center justify-center px-4 py-2 border border-gray-300 text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-orange-500"
+                className="w-full inline-flex items-center justify-center px-4 py-2 border border-[var(--color-border)] text-sm font-medium rounded-md text-[var(--color-text)] bg-[var(--color-bg)] hover:bg-[var(--color-bg-muted)] focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-orange-500"
               >
                 <Home className="h-4 w-4 mr-2" />
                 Go Home
@@ -69,10 +69,10 @@ export default class ErrorBoundary extends Component<Props, State> {
             </div>
             {process.env.NODE_ENV === 'development' && this.state.error && (
               <details className="mt-6 text-left">
-                <summary className="text-sm font-medium text-gray-700 cursor-pointer">
+                <summary className="text-sm font-medium text-[var(--color-text-muted)] cursor-pointer">
                   Error Details (Development)
                 </summary>
-                <pre className="mt-2 text-xs text-gray-500 bg-gray-100 p-2 rounded overflow-auto">
+                <pre className="mt-2 text-xs text-[var(--color-text-muted)] bg-[var(--color-bg-muted)] p-2 rounded overflow-auto">
                   {this.state.error.toString()}
                 </pre>
               </details>
@@ -84,4 +84,4 @@ export default class ErrorBoundary extends Component<Props, State> {
 
     return this.props.children
   }
-} 
+}

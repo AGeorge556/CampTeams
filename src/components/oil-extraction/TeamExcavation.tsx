@@ -46,12 +46,12 @@ export default function TeamExcavation({ onPageChange }: TeamExcavationProps) {
   // Check if user is team leader
   if (!profile || profile.role !== 'team_leader') {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-orange-50 to-yellow-50 flex items-center justify-center">
-        <div className="bg-white rounded-lg shadow-lg p-8 max-w-md w-full mx-4">
+      <div className="min-h-screen bg-[var(--color-bg)] flex items-center justify-center">
+        <div className="bg-[var(--color-card-bg)] rounded-lg shadow-lg p-8 max-w-md w-full mx-4 border border-[var(--color-border)]">
           <div className="text-center">
             <AlertTriangle className="h-12 w-12 text-red-500 mx-auto mb-4" />
-            <h2 className="text-2xl font-bold text-gray-900 mb-2">Access Denied</h2>
-            <p className="text-gray-600">
+            <h2 className="text-2xl font-bold text-[var(--color-text)] mb-2">Access Denied</h2>
+            <p className="text-[var(--color-text-muted)]">
               Only team leaders can access the excavation site.
             </p>
           </div>
@@ -103,8 +103,8 @@ export default function TeamExcavation({ onPageChange }: TeamExcavationProps) {
 
     if (!square) {
       return (
-        <div className="w-12 h-12 sm:w-16 sm:h-16 bg-gray-200 rounded-lg flex items-center justify-center">
-          <div className="text-gray-400 text-xs">?</div>
+        <div className="w-12 h-12 sm:w-16 sm:h-16 bg-[var(--color-bg-muted)] rounded-lg flex items-center justify-center">
+          <div className="text-[var(--color-text-muted)] text-xs">?</div>
         </div>
       )
     }
@@ -112,7 +112,7 @@ export default function TeamExcavation({ onPageChange }: TeamExcavationProps) {
     if (square.is_excavated) {
       return (
         <div className={`w-12 h-12 sm:w-16 sm:h-16 rounded-lg flex items-center justify-center border-2 ${
-          square.excavated_by_team ? TEAM_COLORS[square.excavated_by_team] : 'bg-gray-100'
+          square.excavated_by_team ? TEAM_COLORS[square.excavated_by_team] : 'bg-[var(--color-bg-muted)]'
         }`}>
           <div className={`px-1 sm:px-2 py-1 rounded text-xs font-medium ${OIL_QUALITY_COLORS[square.quality as OilQuality]}`}>
             <span className="hidden sm:inline">{OIL_QUALITY_LABELS[square.quality as OilQuality]}</span>
@@ -127,9 +127,9 @@ export default function TeamExcavation({ onPageChange }: TeamExcavationProps) {
         onClick={() => handleExcavate(row, col)}
         disabled={!canExcavate || isExcavating}
         className={`w-12 h-12 sm:w-16 sm:h-16 rounded-lg border-2 border-dashed transition-all ${
-          canExcavate 
-            ? 'border-gray-400 hover:border-gray-600 hover:bg-gray-50' 
-            : 'border-gray-300 bg-gray-100 cursor-not-allowed'
+          canExcavate
+            ? 'border-[var(--color-border)] hover:border-[var(--color-text)] hover:bg-[var(--color-bg-muted)]'
+            : 'border-[var(--color-border)] bg-[var(--color-bg-muted)] cursor-not-allowed'
         } ${isExcavating ? 'animate-pulse' : ''}`}
       >
         {isExcavating ? (
@@ -138,7 +138,7 @@ export default function TeamExcavation({ onPageChange }: TeamExcavationProps) {
           </div>
         ) : (
           <div className="flex items-center justify-center">
-            <MapPin className="h-4 w-4 sm:h-6 sm:w-6 text-gray-400" />
+            <MapPin className="h-4 w-4 sm:h-6 sm:w-6 text-[var(--color-text-muted)]" />
           </div>
         )}
       </button>
@@ -151,12 +151,12 @@ export default function TeamExcavation({ onPageChange }: TeamExcavationProps) {
 
   if (!activeSession) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-orange-50 to-yellow-50 flex items-center justify-center">
-        <div className="bg-white rounded-lg shadow-lg p-8 max-w-md w-full mx-4">
+      <div className="min-h-screen bg-[var(--color-bg)] flex items-center justify-center">
+        <div className="bg-[var(--color-card-bg)] rounded-lg shadow-lg p-8 max-w-md w-full mx-4 border border-[var(--color-border)]">
           <div className="text-center">
             <XCircle className="h-12 w-12 text-red-500 mx-auto mb-4" />
-            <h2 className="text-2xl font-bold text-gray-900 mb-2">No Active Session</h2>
-            <p className="text-gray-600">
+            <h2 className="text-2xl font-bold text-[var(--color-text)] mb-2">No Active Session</h2>
+            <p className="text-[var(--color-text-muted)]">
               There is no active game session. Please wait for an admin to start a session.
             </p>
           </div>
@@ -166,20 +166,20 @@ export default function TeamExcavation({ onPageChange }: TeamExcavationProps) {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-orange-50 to-yellow-50">
+    <div className="min-h-screen bg-[var(--color-bg)]">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         {/* Header */}
         <div className="mb-8">
           <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
             <div>
-              <h1 className="text-2xl sm:text-3xl font-bold text-gray-900">Oil Excavation Site</h1>
-              <p className="text-gray-600 mt-2 text-sm sm:text-base">
+              <h1 className="text-2xl sm:text-3xl font-bold text-[var(--color-text)]">Oil Excavation Site</h1>
+              <p className="text-[var(--color-text-muted)] mt-2 text-sm sm:text-base">
                 Shared excavation grid - compete with other teams to find the best oil!
               </p>
             </div>
             <button
               onClick={() => onPageChange?.('oil-extraction')}
-              className="inline-flex items-center px-4 py-2 border border-gray-300 text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-orange-500 w-full sm:w-auto justify-center"
+              className="inline-flex items-center px-4 py-2 border border-[var(--color-border)] text-sm font-medium rounded-md text-[var(--color-text)] bg-[var(--color-card-bg)] hover:bg-[var(--color-bg-muted)] focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-orange-500 w-full sm:w-auto justify-center"
             >
               ← Back to Game
             </button>
@@ -188,13 +188,13 @@ export default function TeamExcavation({ onPageChange }: TeamExcavationProps) {
 
         {/* Team Status */}
         <div className="mb-8">
-          <div className="bg-white rounded-lg shadow p-6">
+          <div className="bg-[var(--color-card-bg)] rounded-lg shadow p-6 border border-[var(--color-border)]">
             <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
               <div className="flex items-center">
-                <div className={`w-8 h-8 rounded-full ${TEAM_COLORS[profile.current_team!]} mr-3`} />
+                <div className={`w-8 h-8 rounded-full ${TEAM_COLORS[profile.current_team! as keyof typeof TEAM_COLORS]} mr-3`} />
                 <div>
-                  <h2 className="text-xl font-semibold text-gray-900">{TEAM_NAMES[profile.current_team!]}</h2>
-                  <p className="text-gray-600">Team Leader</p>
+                  <h2 className="text-xl font-semibold text-[var(--color-text)]">{TEAM_NAMES[profile.current_team! as keyof typeof TEAM_NAMES]}</h2>
+                  <p className="text-[var(--color-text-muted)]">Team Leader</p>
                 </div>
               </div>
               <div className="text-center sm:text-right">
@@ -204,7 +204,7 @@ export default function TeamExcavation({ onPageChange }: TeamExcavationProps) {
                     {teamWallet?.coins.toLocaleString() || 0}
                   </span>
                 </div>
-                <p className="text-sm text-gray-500">Available Coins</p>
+                <p className="text-sm text-[var(--color-text-muted)]">Available Coins</p>
                 {!canExcavate && (
                   <p className="text-sm text-red-500">Need 100+ coins to excavate</p>
                 )}
@@ -215,18 +215,18 @@ export default function TeamExcavation({ onPageChange }: TeamExcavationProps) {
 
         {/* Team Wallet Details */}
         <div className="mb-8">
-          <div className="bg-white rounded-lg shadow p-6">
-            <h2 className="text-xl font-semibold text-gray-900 mb-6">Your Team's Wallet</h2>
+          <div className="bg-[var(--color-card-bg)] rounded-lg shadow p-6 border border-[var(--color-border)]">
+            <h2 className="text-xl font-semibold text-[var(--color-text)] mb-6">Your Team's Wallet</h2>
             
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-              <div className="text-center p-6 border rounded-lg bg-orange-50">
+              <div className="text-center p-6 border rounded-lg bg-[var(--color-card-bg)]">
                 <Coins className="h-8 w-8 text-orange-600 mx-auto mb-2" />
-                <h3 className="text-lg font-semibold text-gray-900">Coins</h3>
+                <h3 className="text-lg font-semibold text-[var(--color-text)]">Coins</h3>
                 <div className="text-3xl font-bold text-orange-600">
                   {teamWallet?.coins || 0}
                 </div>
-                <p className="text-sm text-gray-600 mt-2">Used for playing the game</p>
-                <div className="text-xs text-gray-500 mt-2">
+                <p className="text-sm text-[var(--color-text-muted)] mt-2">Used for playing the game</p>
+                <div className="text-xs text-[var(--color-text-muted)] mt-2">
                   • Start with 0 coins<br/>
                   • Added by admins via real-life mini-games<br/>
                   • Used for excavation (100 per square)<br/>
@@ -235,14 +235,14 @@ export default function TeamExcavation({ onPageChange }: TeamExcavationProps) {
                 </div>
               </div>
               
-              <div className="text-center p-6 border rounded-lg bg-green-50">
+              <div className="text-center p-6 border rounded-lg bg-[var(--color-card-bg)]">
                 <TrendingUp className="h-8 w-8 text-green-600 mx-auto mb-2" />
-                <h3 className="text-lg font-semibold text-gray-900">Net Worth</h3>
+                <h3 className="text-lg font-semibold text-[var(--color-text)]">Net Worth</h3>
                 <div className="text-3xl font-bold text-green-600">
                   {teamWallet?.net_worth || 0}
                 </div>
-                <p className="text-sm text-gray-600 mt-2">Used to win the game</p>
-                <div className="text-xs text-gray-500 mt-2">
+                <p className="text-sm text-[var(--color-text-muted)] mt-2">Used to win the game</p>
+                <div className="text-xs text-[var(--color-text-muted)] mt-2">
                   • Start with 0 net worth<br/>
                   • Earned ONLY by selling oil barrels<br/>
                   • NOT affected by spending coins<br/>
@@ -255,8 +255,8 @@ export default function TeamExcavation({ onPageChange }: TeamExcavationProps) {
 
         {/* Excavation Grid */}
         <div className="mb-8">
-          <div className="bg-white rounded-lg shadow p-6">
-            <h2 className="text-xl font-semibold text-gray-900 mb-6">Excavation Grid</h2>
+          <div className="bg-[var(--color-card-bg)] rounded-lg shadow p-6 border border-[var(--color-border)]">
+            <h2 className="text-xl font-semibold text-[var(--color-text)] mb-6">Excavation Grid</h2>
             
             <div className="flex justify-center overflow-x-auto">
               <div className="grid grid-cols-6 gap-1 sm:gap-2">
@@ -273,13 +273,13 @@ export default function TeamExcavation({ onPageChange }: TeamExcavationProps) {
             {/* Grid Legend */}
             <div className="mt-6 flex flex-wrap justify-center gap-2 sm:gap-4">
               <div className="flex items-center">
-                <div className="w-3 h-3 sm:w-4 sm:h-4 bg-gray-200 rounded mr-1 sm:mr-2"></div>
-                <span className="text-xs sm:text-sm text-gray-600">Unexcavated</span>
+                <div className="w-3 h-3 sm:w-4 sm:h-4 bg-[var(--color-bg-muted)] rounded mr-1 sm:mr-2"></div>
+                <span className="text-xs sm:text-sm text-[var(--color-text-muted)]">Unexcavated</span>
               </div>
               {(['common', 'rare', 'epic', 'legendary', 'mythic'] as OilQuality[]).map(quality => (
                 <div key={quality} className="flex items-center">
                   <div className={`w-3 h-3 sm:w-4 sm:h-4 rounded mr-1 sm:mr-2 ${OIL_QUALITY_COLORS[quality]}`}></div>
-                  <span className="text-xs sm:text-sm text-gray-600">
+                  <span className="text-xs sm:text-sm text-[var(--color-text-muted)]">
                     <span className="hidden sm:inline">{OIL_QUALITY_LABELS[quality]}</span>
                     <span className="sm:hidden">{OIL_QUALITY_LABELS[quality].charAt(0)}</span>
                   </span>
@@ -291,26 +291,26 @@ export default function TeamExcavation({ onPageChange }: TeamExcavationProps) {
 
         {/* Team Inventory */}
         <div className="mb-8">
-          <div className="bg-white rounded-lg shadow p-6">
-            <h2 className="text-xl font-semibold text-gray-900 mb-6">Your Team's Inventory</h2>
-            
+          <div className="bg-[var(--color-card-bg)] rounded-lg shadow p-6 border border-[var(--color-border)]">
+            <h2 className="text-xl font-semibold text-[var(--color-text)] mb-6">Your Team's Inventory</h2>
+
             {teamInventory.length > 0 ? (
               <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 gap-3 sm:gap-4">
                 {teamInventory.map((item) => (
-                  <div key={item.quality} className="text-center p-3 sm:p-4 border rounded-lg">
+                  <div key={item.quality} className="text-center p-3 sm:p-4 border rounded-lg bg-[var(--color-card-bg)]">
                     <div className={`inline-flex items-center px-2 sm:px-3 py-1 rounded-full text-xs sm:text-sm font-medium mb-2 ${OIL_QUALITY_COLORS[item.quality]}`}>
                       <span className="hidden sm:inline">{OIL_QUALITY_LABELS[item.quality]}</span>
                       <span className="sm:hidden">{OIL_QUALITY_LABELS[item.quality].charAt(0)}</span>
                     </div>
-                    <div className="text-xl sm:text-2xl font-bold text-gray-900">{item.quantity}</div>
-                    <div className="text-xs sm:text-sm text-gray-500">barrels</div>
+                    <div className="text-xl sm:text-2xl font-bold text-[var(--color-text)]">{item.quantity}</div>
+                    <div className="text-xs sm:text-sm text-[var(--color-text-muted)]">barrels</div>
                   </div>
                 ))}
               </div>
             ) : (
               <div className="text-center py-8">
-                <Package className="h-12 w-12 text-gray-400 mx-auto mb-4" />
-                <p className="text-gray-500">No oil collected yet</p>
+                <Package className="h-12 w-12 text-[var(--color-text-muted)] mx-auto mb-4" />
+                <p className="text-[var(--color-text-muted)]">No oil collected yet</p>
               </div>
             )}
           </div>
@@ -318,19 +318,19 @@ export default function TeamExcavation({ onPageChange }: TeamExcavationProps) {
 
         {/* Hints Shop */}
         <div className="mb-8">
-          <div className="bg-white rounded-lg shadow p-6">
-            <h2 className="text-xl font-semibold text-gray-900 mb-6">Hints Shop</h2>
+          <div className="bg-[var(--color-card-bg)] rounded-lg shadow p-6 border border-[var(--color-border)]">
+            <h2 className="text-xl font-semibold text-[var(--color-text)] mb-6">Hints Shop</h2>
             
             {hintsLoading ? (
               <div className="text-center py-8">
                 <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-orange-600 mx-auto"></div>
-                <p className="text-gray-500 mt-2">Loading hints...</p>
+                <p className="text-[var(--color-text-muted)] mt-2">Loading hints...</p>
               </div>
             ) : (
               <div className="space-y-6">
                 {/* Available Hints */}
                 <div>
-                  <h3 className="text-lg font-medium text-gray-900 mb-4">Available Hints</h3>
+                  <h3 className="text-lg font-medium text-[var(--color-text)] mb-4">Available Hints</h3>
                   {getAvailableHints().length > 0 ? (
                     <div className="grid grid-cols-1 gap-4">
                       {getAvailableHints().map((hint) => (
@@ -338,11 +338,11 @@ export default function TeamExcavation({ onPageChange }: TeamExcavationProps) {
                           <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between mb-3 gap-2">
                             <div className="flex items-center">
                               <Lightbulb className="h-5 w-5 text-yellow-500 mr-2" />
-                              <span className="font-medium text-gray-900">Hint</span>
+                              <span className="font-medium text-[var(--color-text)]">Hint</span>
                             </div>
                             <div className="text-center sm:text-right">
                               <div className="text-lg font-bold text-orange-600">{hint.cost}</div>
-                              <div className="text-sm text-gray-500">coins</div>
+                              <div className="text-sm text-[var(--color-text-muted)]">coins</div>
                             </div>
                           </div>
                           
@@ -355,7 +355,7 @@ export default function TeamExcavation({ onPageChange }: TeamExcavationProps) {
                           )}
                           
                           <div className="mb-4">
-                            <p className="text-gray-600 text-sm">
+                            <p className="text-[var(--color-text-muted)] text-sm">
                               {hint.hint_text.length > 100 
                                 ? `${hint.hint_text.substring(0, 100)}...` 
                                 : hint.hint_text
@@ -400,8 +400,8 @@ export default function TeamExcavation({ onPageChange }: TeamExcavationProps) {
                     </div>
                   ) : (
                     <div className="text-center py-8">
-                      <Lightbulb className="h-12 w-12 text-gray-400 mx-auto mb-4" />
-                      <p className="text-gray-500">No hints available</p>
+                      <Lightbulb className="h-12 w-12 text-[var(--color-text-muted)] mx-auto mb-4" />
+                      <p className="text-[var(--color-text-muted)]">No hints available</p>
                     </div>
                   )}
                 </div>
@@ -409,34 +409,34 @@ export default function TeamExcavation({ onPageChange }: TeamExcavationProps) {
                 {/* Purchased Hints */}
                 {getPurchasedHints().length > 0 && (
                   <div>
-                    <h3 className="text-lg font-medium text-gray-900 mb-4">Your Purchased Hints</h3>
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                      {getPurchasedHints().map((hint) => (
-                        <div key={hint.id} className="border rounded-lg p-4 bg-green-50">
-                          <div className="flex items-start justify-between mb-3">
-                            <div className="flex items-center">
-                              <CheckCircle className="h-5 w-5 text-green-500 mr-2" />
-                              <span className="font-medium text-gray-900">Purchased</span>
+                    <h3 className="text-lg font-medium text-[var(--color-text)] mb-4">Your Purchased Hints</h3>
+                      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        {getPurchasedHints().map((hint) => (
+                          <div key={hint.id} className="border rounded-lg p-4 bg-[var(--color-card-bg)]">
+                            <div className="flex items-start justify-between mb-3">
+                              <div className="flex items-center">
+                                <CheckCircle className="h-5 w-5 text-green-500 mr-2" />
+                                <span className="font-medium text-[var(--color-text)]">Purchased</span>
+                              </div>
+                              <div className="text-right">
+                                <div className="text-sm text-[var(--color-text-muted)]">Cost: {hint.cost} coins</div>
+                              </div>
                             </div>
-                            <div className="text-right">
-                              <div className="text-sm text-gray-500">Cost: {hint.cost} coins</div>
+                          
+                            {hint.quality_hint_for && (
+                              <div className="mb-2">
+                                <span className="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-[var(--color-bg-muted)] text-[var(--color-text)]">
+                                  {hint.quality_hint_for}
+                                </span>
+                              </div>
+                            )}
+                          
+                            <div>
+                              <p className="text-[var(--color-text-muted)] text-sm">{hint.hint_text}</p>
                             </div>
                           </div>
-                          
-                          {hint.quality_hint_for && (
-                            <div className="mb-2">
-                              <span className="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-blue-100 text-blue-800">
-                                {hint.quality_hint_for}
-                              </span>
-                            </div>
-                          )}
-                          
-                          <div>
-                            <p className="text-gray-700 text-sm">{hint.hint_text}</p>
-                          </div>
-                        </div>
-                      ))}
-                    </div>
+                        ))}
+                      </div>
                   </div>
                 )}
               </div>
@@ -446,8 +446,8 @@ export default function TeamExcavation({ onPageChange }: TeamExcavationProps) {
 
         {/* All Teams Summary */}
         <div className="mb-8">
-          <div className="bg-white rounded-lg shadow p-6">
-            <h2 className="text-xl font-semibold text-gray-900 mb-6">All Teams Progress</h2>
+          <div className="bg-[var(--color-card-bg)] rounded-lg shadow p-6 border border-[var(--color-border)]">
+            <h2 className="text-xl font-semibold text-[var(--color-text)] mb-6">All Teams Progress</h2>
             
             <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
               {allTeamsInventory.map((team) => (
@@ -496,4 +496,4 @@ export default function TeamExcavation({ onPageChange }: TeamExcavationProps) {
       </div>
     </div>
   )
-} 
+}

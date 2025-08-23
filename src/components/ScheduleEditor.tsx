@@ -35,7 +35,12 @@ export default function ScheduleEditor() {
         .order('time', { ascending: true })
 
       if (error) throw error
-      setScheduleItems(data || [])
+      setScheduleItems(
+        (data || []).map(item => ({
+          ...item,
+          description: item.description ?? undefined,
+        }))
+      )
     } catch (error) {
       console.error('Error loading schedule items:', error)
       addToast({
@@ -194,14 +199,14 @@ export default function ScheduleEditor() {
     <div className="space-y-6">
       {/* Header */}
       <div>
-        <h3 className="text-lg font-semibold text-gray-900">Schedule Editor</h3>
-        <p className="text-sm text-gray-600">Edit camp schedule activities, times, and locations</p>
+        <h3 className="text-lg font-semibold text-[var(--color-text)]">Schedule Editor</h3>
+        <p className="text-sm text-[var(--color-text-muted)]">Edit camp schedule activities, times, and locations</p>
       </div>
 
       {/* Day Selection */}
-      <div className="bg-white rounded-lg shadow-sm p-6">
+      <div className="bg-[var(--color-card-bg)] rounded-lg shadow-sm p-6 border border-[var(--color-border)]">
         <div className="flex items-center justify-between mb-4">
-          <h4 className="text-lg font-medium text-gray-900">Select Day</h4>
+          <h4 className="text-lg font-medium text-[var(--color-text)]">Select Day</h4>
           <button
             onClick={() => {
               setEditForm({ ...editForm, day: selectedDay })
@@ -222,9 +227,9 @@ export default function ScheduleEditor() {
               className={`px-4 py-2 rounded-md text-sm font-medium ${
                 selectedDay === day
                   ? 'bg-blue-100 text-blue-700 border border-blue-300'
-                  : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
-              }`}
-            >
+                  : 'bg-[var(--color-bg-muted)] text-[var(--color-text)] hover:bg-[var(--color-bg-muted)]'
+               }`}
+             >
               Day {day}
             </button>
           ))}
@@ -232,21 +237,21 @@ export default function ScheduleEditor() {
       </div>
 
       {/* Add/Edit Form */}
-      {showAddForm && (
-        <div className="bg-white rounded-lg shadow-sm p-6 border border-gray-200">
-          <h4 className="text-lg font-medium text-gray-900 mb-4">
+        {showAddForm && (
+        <div className="bg-[var(--color-card-bg)] rounded-lg shadow-sm p-6 border border-[var(--color-border)]">
+          <h4 className="text-lg font-medium text-[var(--color-text)] mb-4">
             {editingItem ? 'Edit Schedule Item' : 'Add New Activity'}
           </h4>
           <form onSubmit={handleSubmit} className="space-y-4">
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">
+                <label className="block text-sm font-medium text-[var(--color-text-muted)] mb-1">
                   Day
                 </label>
                 <select
                   value={editForm.day}
                   onChange={(e) => setEditForm({ ...editForm, day: parseInt(e.target.value) })}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  className="w-full px-3 py-2 border border-[var(--color-border)] rounded-md bg-[var(--color-input-bg)] focus:outline-none focus:ring-2 focus:ring-blue-500"
                 >
                   {[1, 2, 3, 4].map((day) => (
                     <option key={day} value={day}>Day {day}</option>
@@ -254,56 +259,56 @@ export default function ScheduleEditor() {
                 </select>
               </div>
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">
+                <label className="block text-sm font-medium text-[var(--color-text-muted)] mb-1">
                   Time
                 </label>
                 <input
                   type="time"
                   value={editForm.time}
                   onChange={(e) => setEditForm({ ...editForm, time: e.target.value })}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  className="w-full px-3 py-2 border border-[var(--color-border)] rounded-md bg-[var(--color-input-bg)] focus:outline-none focus:ring-2 focus:ring-blue-500"
                   required
                 />
               </div>
             </div>
             
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">
+                <label className="block text-sm font-medium text-[var(--color-text-muted)] mb-1">
                 Activity
               </label>
               <input
                 type="text"
                 value={editForm.activity}
                 onChange={(e) => setEditForm({ ...editForm, activity: e.target.value })}
-                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                className="w-full px-3 py-2 border border-[var(--color-border)] rounded-md bg-[var(--color-input-bg)] focus:outline-none focus:ring-2 focus:ring-blue-500"
                 placeholder="e.g., Morning Devotion, Sports Activities"
                 required
               />
             </div>
 
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">
+              <label className="block text-sm font-medium text-[var(--color-text-muted)] mb-1">
                 Location
               </label>
               <input
                 type="text"
                 value={editForm.location}
                 onChange={(e) => setEditForm({ ...editForm, location: e.target.value })}
-                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                className="w-full px-3 py-2 border border-[var(--color-border)] rounded-md bg-[var(--color-input-bg)] focus:outline-none focus:ring-2 focus:ring-blue-500"
                 placeholder="e.g., Main Hall, Sports Field"
                 required
               />
             </div>
 
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">
+              <label className="block text-sm font-medium text-[var(--color-text-muted)] mb-1">
                 Description (Optional)
               </label>
               <textarea
                 value={editForm.description}
                 onChange={(e) => setEditForm({ ...editForm, description: e.target.value })}
                 rows={3}
-                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                className="w-full px-3 py-2 border border-[var(--color-border)] rounded-md bg-[var(--color-input-bg)] focus:outline-none focus:ring-2 focus:ring-blue-500"
                 placeholder="Additional details about this activity"
               />
             </div>
@@ -324,7 +329,7 @@ export default function ScheduleEditor() {
               <button
                 type="button"
                 onClick={resetForm}
-                className="inline-flex items-center px-4 py-2 border border-gray-300 text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
+                className="inline-flex items-center px-4 py-2 border border-[var(--color-border)] text-sm font-medium rounded-md text-[var(--color-text)] bg-[var(--color-bg)] hover:bg-[var(--color-bg-muted)] focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
               >
                 <X className="h-4 w-4 mr-2" />
                 Cancel
@@ -335,22 +340,22 @@ export default function ScheduleEditor() {
       )}
 
       {/* Schedule Items for Selected Day */}
-      <div className="bg-white rounded-lg shadow-sm">
-        <div className="px-6 py-4 border-b border-gray-200">
-          <h4 className="text-lg font-medium text-gray-900">Day {selectedDay} Schedule</h4>
+      <div className="bg-[var(--color-card-bg)] rounded-lg shadow-sm">
+        <div className="px-6 py-4 border-b border-[var(--color-border)]">
+          <h4 className="text-lg font-medium text-[var(--color-text)]">Day {selectedDay} Schedule</h4>
         </div>
-        <div className="divide-y divide-gray-200">
+        <div className="divide-y divide-[var(--color-border)]">
           {getScheduleItemsForDay(selectedDay).length === 0 ? (
-            <div className="p-6 text-center text-gray-500">No activities scheduled for Day {selectedDay}</div>
+            <div className="p-6 text-center text-[var(--color-text-muted)]">No activities scheduled for Day {selectedDay}</div>
           ) : (
             getScheduleItemsForDay(selectedDay).map((item) => (
               <div key={item.id} className="p-6">
                 <div className="flex items-center justify-between">
                   <div className="flex-1">
                     <div className="flex items-center space-x-3">
-                      <h5 className="text-lg font-medium text-gray-900">{item.activity}</h5>
+                      <h5 className="text-lg font-medium text-[var(--color-text)]">{item.activity}</h5>
                     </div>
-                    <div className="flex items-center space-x-4 mt-2 text-sm text-gray-500">
+                    <div className="flex items-center space-x-4 mt-2 text-sm text-[var(--color-text-muted)]">
                       <div className="flex items-center">
                         <Clock className="h-4 w-4 mr-1" />
                         {formatTime(item.time)}
@@ -361,20 +366,20 @@ export default function ScheduleEditor() {
                       </div>
                     </div>
                     {item.description && (
-                      <p className="text-sm text-gray-600 mt-1">{item.description}</p>
+                      <p className="text-sm text-[var(--color-text-muted)] mt-1">{item.description}</p>
                     )}
                   </div>
                   <div className="flex items-center space-x-2">
                     <button
                       onClick={() => editItem(item)}
-                      className="inline-flex items-center px-3 py-2 border border-gray-300 shadow-sm text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
+                      className="inline-flex items-center px-3 py-2 border border-[var(--color-border)] shadow-sm text-sm font-medium rounded-md text-[var(--color-text)] bg-[var(--color-bg)] hover:bg-[var(--color-bg-muted)] focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
                     >
                       <Edit className="h-4 w-4 mr-2" />
                       Edit
                     </button>
                     <button
                       onClick={() => handleDelete(item.id)}
-                      className="inline-flex items-center px-3 py-2 border border-red-300 shadow-sm text-sm font-medium rounded-md text-red-700 bg-white hover:bg-red-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500"
+                      className="inline-flex items-center px-3 py-2 border border-red-300 shadow-sm text-sm font-medium rounded-md text-red-700 bg-[var(--color-bg)] hover:bg-red-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500"
                     >
                       <Trash2 className="h-4 w-4 mr-2" />
                       Delete
@@ -388,4 +393,4 @@ export default function ScheduleEditor() {
       </div>
     </div>
   )
-} 
+}

@@ -4,7 +4,6 @@ import { useProfile } from '../hooks/useProfile'
 import { useTeamBalance } from '../hooks/useTeamBalance'
 import { TEAMS, TeamColor } from '../lib/supabase'
 import AdminPanel from './AdminPanel'
-import AdminTeamManagement from './AdminTeamManagement'
 import PlayerLists from './PlayerLists'
 import CountdownTimer from './CountdownTimer'
 import Scoreboard from './Scoreboard'
@@ -358,13 +357,13 @@ export default function Dashboard({ onPageChange }: DashboardProps) {
   return (
     <div className="space-y-6 sm:space-y-8 mobile-safe-area mobile-scroll-smooth">
       {/* Enhanced User Info Card */}
-      <div className="bg-white rounded-xl shadow-sm p-4 sm:p-6 border border-gray-100">
+      <div className="bg-[var(--color-card-bg)] rounded-xl shadow-sm p-4 sm:p-6 border border-[var(--color-border)]">
         <div className="flex items-center justify-between mb-4">
           <div className="flex-1">
-            <h2 className="text-xl sm:text-2xl font-bold text-gray-900 leading-tight">
+            <h2 className="text-xl sm:text-2xl font-bold text-[var(--color-text)] leading-tight">
               {t('welcomeMessageWithName').replace('{name}', profile.full_name.split(' ')[0])}
             </h2>
-            <p className="text-gray-600 text-sm sm:text-base mt-1">
+            <p className="text-[var(--color-text-muted)] text-sm sm:text-base mt-1">
               {getGradeDisplayWithNumber(profile.grade)} • {profile.gender === 'male' ? t('male') : t('female')}
             </p>
           </div>
@@ -372,7 +371,7 @@ export default function Dashboard({ onPageChange }: DashboardProps) {
 
         {/* Enhanced Quick Actions */}
         <div className="mb-6">
-          <h3 className="text-lg font-semibold text-gray-900 mb-4 flex items-center">
+          <h3 className="text-lg font-semibold text-[var(--color-text)] mb-4 flex items-center">
             <Activity className="h-5 w-5 mr-2" />
             {t('quickActions')}
           </h3>
@@ -401,7 +400,7 @@ export default function Dashboard({ onPageChange }: DashboardProps) {
                   }}
                 >
                   {/* Hover effect overlay */}
-                  <div className="absolute inset-0 bg-white bg-opacity-0 group-hover:bg-opacity-10 transition-all duration-300"></div>
+                  <div className="absolute inset-0 bg-[var(--color-bg)] bg-opacity-0 group-hover:bg-opacity-10 transition-all duration-300"></div>
                   
                   {/* Icon with enhanced styling */}
                   <div className="relative z-10">
@@ -428,14 +427,14 @@ export default function Dashboard({ onPageChange }: DashboardProps) {
 
         {/* Enhanced Admin Opt-in Section */}
         {isAdminNotParticipating && (
-          <div className="mb-6 p-4 sm:p-6 bg-gradient-to-r from-blue-50 to-indigo-50 border border-blue-200 rounded-xl shadow-sm">
+          <div className="mb-6 p-4 sm:p-6 bg-[var(--color-bg-muted)] border border-[var(--color-border)] rounded-xl shadow-sm">
             <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between space-y-3 sm:space-y-0">
               <div className="flex-1">
-                <h3 className="text-lg font-semibold text-blue-900 mb-1 flex items-center">
+                <h3 className="text-lg font-semibold text-[var(--color-text)] mb-1 flex items-center">
                   <Users className="h-5 w-5 mr-2" />
                   {t('teamAssignment')}
                 </h3>
-                <p className="text-blue-700 text-sm sm:text-base">
+                <p className="text-[var(--color-text-muted)] text-sm sm:text-base">
                   {t('teamMembers')}
                 </p>
               </div>
@@ -457,20 +456,20 @@ export default function Dashboard({ onPageChange }: DashboardProps) {
         
         {currentTeam && (
           <div className="mb-4">
-            <h3 className="text-lg font-semibold text-gray-900 mb-2">{t('teamColor')}</h3>
+            <h3 className="text-lg font-semibold text-[var(--color-text)] mb-2">{t('teamColor')}</h3>
             <div className={`inline-flex items-center px-4 py-2 rounded-lg ${currentTeam.lightColor} ${currentTeam.textColor}`}>
               <Users className="h-5 w-5 mr-2" />
               <span className="font-medium">{currentTeam.name} Team</span>
             </div>
           </div>
         )}
-        <div className="mb-4 p-3 bg-gradient-to-r from-orange-50 to-yellow-50 rounded-lg border border-orange-100">
+        <div className="mb-4 p-3 bg-[var(--color-bg-muted)] rounded-lg border border-[var(--color-border)]">
           <div className="flex items-center justify-between mb-2">
-            <span className="text-sm font-semibold text-gray-700">
+            <span className="text-sm font-semibold text-[var(--color-text-muted)]">
               {t('teamSwitchesRemaining')}: <span className="text-orange-600 font-bold">{profile.switches_remaining ?? 0}</span>
             </span>
           </div>
-          <div className="w-full bg-gray-200 rounded-full h-3 overflow-hidden shadow-inner">
+          <div className="w-full bg-[var(--color-bg-muted)] rounded-full h-3 overflow-hidden shadow-inner">
             <div 
               className="bg-gradient-to-r from-orange-500 to-orange-600 h-3 rounded-full transition-all duration-500 ease-out shadow-sm"
               style={{ width: `${((profile.switches_remaining ?? 0) / 3) * 100}%` }}
@@ -481,40 +480,40 @@ export default function Dashboard({ onPageChange }: DashboardProps) {
       </div>
 
       {/* Motivational Bible Verse Section */}
-      <div className="bg-white rounded-lg shadow-sm p-6">
+      <div className="bg-[var(--color-card-bg)] rounded-lg shadow-sm p-6">
         <div className="flex items-center justify-between mb-6">
           <div>
-            <h3 className="text-xl font-bold text-gray-900">{t('dailyInspiration')}</h3>
-            <p className="text-gray-600">{t('motivationalBibleVerse')}</p>
+            <h3 className="text-xl font-bold text-[var(--color-text)]">{t('dailyInspiration')}</h3>
+            <p className="text-[var(--color-text-muted)]">{t('motivationalBibleVerse')}</p>
           </div>
-          <div className="flex flex-col sm:flex-row space-y-2 sm:space-y-0 sm:space-x-3">
-            {profile.is_admin && (
-              <button
-                onClick={generateRandomVerse}
-                disabled={generatingVerse}
-                className="inline-flex items-center justify-center px-4 py-3 border border-gray-300 shadow-lg text-sm font-semibold rounded-xl text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-4 focus:ring-orange-500 focus:ring-opacity-50 disabled:opacity-50 transition-all duration-300 transform hover:scale-105 active:scale-95 touch-manipulation min-h-[48px]"
-              >
-                {generatingVerse ? (
-                  <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-orange-500 mr-2"></div>
-                ) : (
-                  <RefreshCw className="h-5 w-5 mr-2" />
-                )}
-                <span className="font-medium">{t('newVerse')}</span>
-              </button>
-            )}
-            <button
-              onClick={downloadVerseImage}
-              disabled={downloading || !currentVerse}
-              className="inline-flex items-center justify-center px-4 py-3 border border-transparent text-sm font-semibold rounded-xl text-white bg-gradient-to-r from-orange-600 to-red-600 hover:from-orange-700 hover:to-red-700 focus:outline-none focus:ring-4 focus:ring-orange-500 focus:ring-opacity-50 disabled:opacity-50 transition-all duration-300 transform hover:scale-105 active:scale-95 shadow-lg hover:shadow-xl touch-manipulation min-h-[48px]"
-            >
-              {downloading ? (
-                <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-white mr-2"></div>
-              ) : (
-                <Download className="h-5 w-5 mr-2" />
-              )}
-              <span className="font-medium">{t('download')}</span>
-            </button>
-          </div>
+           <div className="flex flex-col sm:flex-row space-y-2 sm:space-y-0 sm:space-x-3">
+             {profile.is_admin && (
+               <button
+                 onClick={generateRandomVerse}
+                 disabled={generatingVerse}
+                 className="inline-flex items-center justify-center px-4 py-3 border border-[var(--color-border)] shadow-lg text-sm font-semibold rounded-xl text-[var(--color-text)] bg-[var(--color-bg)] hover:bg-[var(--color-bg-muted)] focus:outline-none focus:ring-4 focus:ring-orange-500 focus:ring-opacity-50 disabled:opacity-50 transition-all duration-300 transform hover:scale-105 active:scale-95 touch-manipulation min-h-[48px]"
+               >
+                 {generatingVerse ? (
+                   <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-orange-500 mr-2"></div>
+                 ) : (
+                   <RefreshCw className="h-5 w-5 mr-2" />
+                 )}
+                 <span className="font-medium">{t('newVerse')}</span>
+               </button>
+             )}
+             <button
+               onClick={downloadVerseImage}
+               disabled={downloading || !currentVerse}
+               className="inline-flex items-center justify-center px-4 py-3 border border-transparent text-sm font-semibold rounded-xl text-white bg-gradient-to-r from-orange-600 to-red-600 hover:from-orange-700 hover:to-red-700 focus:outline-none focus:ring-4 focus:ring-orange-500 focus:ring-opacity-50 disabled:opacity-50 transition-all duration-300 transform hover:scale-105 active:scale-95 shadow-lg hover:shadow-xl touch-manipulation min-h-[48px]"
+             >
+               {downloading ? (
+                 <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-white mr-2"></div>
+               ) : (
+                 <Download className="h-5 w-5 mr-2" />
+               )}
+               <span className="font-medium">{t('download')}</span>
+             </button>
+           </div>
         </div>
         
         {currentVerse && (
@@ -570,42 +569,41 @@ export default function Dashboard({ onPageChange }: DashboardProps) {
       <PlayerLists />
 
       {/* Enhanced Team Balance Overview */}
-      <div className="bg-white rounded-xl shadow-sm p-4 sm:p-6 border border-gray-100">
-        <h3 className="text-lg font-semibold text-gray-900 mb-4 flex items-center">
-          <BarChart3 className="h-5 w-5 mr-2 text-blue-600" />
-          {t('teamBalanceOverview')}
-        </h3>
-        <div className="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4">
-          {teamBalance.map((team) => {
-            const teamKey = team.team as TeamColor
-            const teamData = TEAMS[teamKey]
-            return (
-              <div key={team.team} className="text-center group">
-                <div className={`inline-flex items-center justify-center w-14 h-14 sm:w-16 sm:h-16 lg:w-20 lg:h-20 rounded-full mb-3 transition-all duration-300 transform group-hover:scale-110 shadow-lg ${teamData.color}`}>
-                  <span className="text-white font-bold text-lg sm:text-xl lg:text-2xl drop-shadow-sm">{team.total_count}</span>
-                </div>
-                <h4 className="font-semibold text-gray-900 text-sm sm:text-base lg:text-lg mb-1">{teamData.name}</h4>
-                <div className="flex justify-center items-center space-x-2 text-xs sm:text-sm text-gray-600">
-                  <span className="flex items-center">
-                    <div className="w-2 h-2 bg-blue-500 rounded-full mr-1"></div>
-                    {team.male_count}M
-                  </span>
-                  <span className="flex items-center">
-                    <div className="w-2 h-2 bg-pink-500 rounded-full mr-1"></div>
-                    {team.female_count}F
-                  </span>
-                </div>
-              </div>
-            )
-          })}
-        </div>
-      </div>
+      <div className="bg-[var(--color-card-bg)] rounded-xl shadow-sm p-4 sm:p-6 border border-[var(--color-border)]">
+        <h3 className="text-lg font-semibold text-[var(--color-text)] mb-4 flex items-center">
+           <BarChart3 className="h-5 w-5 mr-2 text-blue-600" />
+           {t('teamBalanceOverview')}
+         </h3>
+         <div className="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4">
+           {teamBalance.map((team) => {
+             const teamKey = team.team as TeamColor
+             const teamData = TEAMS[teamKey]
+             return (
+               <div key={team.team} className="text-center group">
+                 <div className={`inline-flex items-center justify-center w-14 h-14 sm:w-16 sm:h-16 lg:w-20 lg:h-20 rounded-full mb-3 transition-all duration-300 transform group-hover:scale-110 shadow-lg ${teamData.color}`}>
+                   <span className="text-white font-bold text-lg sm:text-xl lg:text-2xl drop-shadow-sm">{team.total_count}</span>
+                 </div>
+                 <h4 className="font-semibold text-[var(--color-text)] text-sm sm:text-base lg:text-lg mb-1">{teamData.name}</h4>
+                 <div className="flex justify-center items-center space-x-2 text-xs sm:text-sm text-[var(--color-text-muted)]">
+                   <span className="flex items-center">
+                     <div className="w-2 h-2 bg-blue-500 rounded-full mr-1"></div>
+                     {team.male_count}M
+                   </span>
+                   <span className="flex items-center">
+                     <div className="w-2 h-2 bg-pink-500 rounded-full mr-1"></div>
+                     {team.female_count}F
+                   </span>
+                 </div>
+               </div>
+             )
+           })}
+         </div>
+       </div>
 
       {/* Admin Panel */}
       {profile.is_admin && (
         <>
           <AdminPanel />
-          <AdminTeamManagement />
         </>
       )}
     </div>

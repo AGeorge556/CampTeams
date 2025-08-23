@@ -173,13 +173,13 @@ export default function Gallery() {
   return (
     <div className="space-y-6">
       {/* Header */}
-      <div className="bg-white rounded-lg shadow-sm p-6">
+      <div className="bg-[var(--color-card-bg)] rounded-lg shadow-sm p-6">
         <div className="flex items-center justify-between">
           <div className="flex items-center space-x-3">
             <Camera className="h-8 w-8 text-orange-500" />
             <div>
-              <h1 className="text-2xl font-bold text-gray-900">{t('gallery')}</h1>
-              <p className="text-gray-600">Share your camp memories with photos</p>
+              <h1 className="text-2xl font-bold text-[var(--color-text)]">{t('gallery')}</h1>
+              <p className="text-[var(--color-text-muted)]">Share your camp memories with photos</p>
             </div>
           </div>
           <Button
@@ -193,9 +193,9 @@ export default function Gallery() {
 
       {/* Upload Section */}
       {showUpload && (
-        <div className="bg-white rounded-lg shadow-sm p-6">
+        <div className="bg-[var(--color-card-bg)] rounded-lg shadow-sm p-6">
           <div className="flex items-center justify-between mb-4">
-            <h2 className="text-lg font-semibold text-gray-900">{t('uploadPhotos')}</h2>
+            <h2 className="text-lg font-semibold text-[var(--color-text)]">{t('uploadPhotos')}</h2>
             <button
               onClick={() => setShowUpload(false)}
               className="text-gray-400 hover:text-gray-600"
@@ -214,14 +214,14 @@ export default function Gallery() {
               multiple
               accept="image/*,video/*"
               onChange={handleFileSelect}
-              className="block w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-md file:border-0 file:text-sm file:font-medium file:bg-orange-50 file:text-orange-700 hover:file:bg-orange-100"
+              className="block w-full text-sm text-[var(--color-text-muted)] file:mr-4 file:py-2 file:px-4 file:rounded-md file:border-0 file:text-sm file:font-medium file:bg-orange-50 file:text-orange-700 hover:file:bg-orange-100"
             />
           </div>
 
           {/* Selected Files Preview */}
           {selectedFiles.length > 0 && (
             <div className="mb-4">
-              <h3 className="text-sm font-medium text-gray-700 mb-2">Selected Files:</h3>
+              <h3 className="text-sm font-medium text-[var(--color-text)] mb-2">Selected Files:</h3>
               <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
                 {selectedFiles.map((upload, index) => (
                   <div key={index} className="relative group">
@@ -249,7 +249,7 @@ export default function Gallery() {
                       placeholder={t('addCaption')}
                       value={captions[upload.file.name] || ''}
                       onChange={(e) => handleCaptionChange(upload.file.name, e.target.value)}
-                      className="mt-2 w-full text-sm border border-gray-300 rounded-md px-2 py-1"
+                      className="mt-2 w-full text-sm border border-[var(--color-border)] rounded-md px-2 py-1 text-[var(--color-text)] bg-[var(--color-card-bg)]"
                     />
                   </div>
                 ))}
@@ -277,13 +277,13 @@ export default function Gallery() {
       )}
 
       {/* My Submissions */}
-      <div className="bg-white rounded-lg shadow-sm p-4 sm:p-6">
-        <h2 className="text-lg font-semibold text-gray-900 mb-4">{t('mySubmissions')}</h2>
+      <div className="bg-[var(--color-card-bg)] rounded-lg shadow-sm p-4 sm:p-6">
+        <h2 className="text-lg font-semibold text-[var(--color-text)] mb-4">{t('mySubmissions')}</h2>
         
         {myPhotos.length === 0 ? (
           <div className="text-center py-8">
-            <Image className="h-12 w-12 text-gray-400 mx-auto mb-4" />
-            <p className="text-gray-600">{t('noPhotosYet')}</p>
+            <Image className="h-12 w-12 text-[var(--color-text-muted)] mx-auto mb-4" />
+            <p className="text-[var(--color-text-muted)]">{t('noPhotosYet')}</p>
           </div>
         ) : (
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 sm:gap-4">
@@ -351,28 +351,28 @@ export default function Gallery() {
                 {/* Caption */}
                 {photo.caption && (
                   <div className="mt-2">
-                    <p className="text-sm text-gray-600 truncate">{photo.caption}</p>
+                    <p className="text-sm text-[var(--color-text-muted)] truncate">{photo.caption}</p>
                   </div>
                 )}
 
                 {/* Date */}
                 <div className="mt-1">
-                  <p className="text-xs text-gray-500">{formatDate(photo.submitted_at)}</p>
+                  <p className="text-xs text-[var(--color-text-muted)]">{formatDate(photo.submitted_at)}</p>
                 </div>
               </div>
             ))}
           </div>
-        )}
-      </div>
+         )}
+       </div>
 
       {/* Public Gallery */}
-      <div className="bg-white rounded-lg shadow-sm p-4 sm:p-6">
-        <h2 className="text-lg font-semibold text-gray-900 mb-4">{t('publicGallery')}</h2>
+      <div className="bg-[var(--color-card-bg)] rounded-lg shadow-sm p-4 sm:p-6">
+        <h2 className="text-lg font-semibold text-[var(--color-text)] mb-4">{t('publicGallery')}</h2>
         
         {approvedPhotos.length === 0 ? (
           <div className="text-center py-8">
-            <Image className="h-12 w-12 text-gray-400 mx-auto mb-4" />
-            <p className="text-gray-600">{t('noPhotosFound')}</p>
+            <Image className="h-12 w-12 text-[var(--color-text-muted)] mx-auto mb-4" />
+            <p className="text-[var(--color-text-muted)]">{t('noPhotosFound')}</p>
           </div>
         ) : (
           <div className="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-3 sm:gap-4">
@@ -421,7 +421,7 @@ export default function Gallery() {
                 {/* Caption */}
                 {photo.caption && (
                   <div className="mt-2">
-                    <p className="text-sm text-gray-600 truncate">{photo.caption}</p>
+                    <p className="text-sm text-[var(--color-text-muted)] truncate">{photo.caption}</p>
                   </div>
                 )}
               </div>
@@ -442,9 +442,9 @@ export default function Gallery() {
       {/* Delete Confirmation Modal */}
       {showDeleteConfirm && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-          <div className="bg-white rounded-lg p-6 max-w-md w-full mx-4">
-            <h3 className="text-lg font-semibold text-gray-900 mb-4">{t('confirmDelete')}</h3>
-            <p className="text-gray-600 mb-6">{t('deletePhotoConfirm')}</p>
+          <div className="bg-[var(--color-card-bg)] rounded-lg p-6 max-w-md w-full mx-4 border border-[var(--color-border)]">
+            <h3 className="text-lg font-semibold text-[var(--color-text)] mb-4">{t('confirmDelete')}</h3>
+            <p className="text-[var(--color-text-muted)] mb-6">{t('deletePhotoConfirm')}</p>
             <div className="flex justify-end space-x-3">
               <Button
                 variant="outline"
@@ -454,7 +454,7 @@ export default function Gallery() {
               </Button>
               <Button
                 variant="danger"
-                onClick={() => handleDeletePhoto(showDeleteConfirm)}
+                onClick={() => handleDeletePhoto(showDeleteConfirm!)}
               >
                 {t('confirmDeletePhoto')}
               </Button>
@@ -464,4 +464,4 @@ export default function Gallery() {
       )}
     </div>
   )
-} 
+}

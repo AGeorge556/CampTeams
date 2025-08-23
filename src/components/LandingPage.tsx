@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react'
+import { useState, useEffect } from 'react'
 import { Users, Calendar, Sun, Star, ArrowRight, Flame, Trees, Mountain, Cloud, Moon, Snowflake, Leaf, Rainbow } from 'lucide-react'
 import Auth from './Auth'
 
@@ -52,7 +52,7 @@ export default function LandingPage() {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-orange-50 via-yellow-50 to-orange-100 relative overflow-hidden">
+    <div className="min-h-screen bg-[var(--color-bg)] relative overflow-hidden transition-colors duration-300">
       {/* Animated Background Decorations */}
       <div className="absolute inset-0 overflow-hidden pointer-events-none select-none">
         {/* Top Left Cluster */}
@@ -88,11 +88,11 @@ export default function LandingPage() {
             <div className="p-2 bg-orange-500 rounded-lg">
               <Users className="h-8 w-8 text-white" />
             </div>
-            <h1 className="text-2xl font-bold text-gray-900">CampTeams</h1>
+            <h1 className="text-2xl font-bold text-[var(--color-text)]">CampTeams</h1>
           </div>
           <button
             onClick={handleSignIn}
-            className="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md text-orange-600 bg-white hover:bg-orange-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-orange-500 transition-colors"
+            className="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md text-orange-600 bg-[var(--color-bg)] hover:bg-[var(--color-bg-muted)] focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-orange-500 transition-colors"
           >
             Sign In
           </button>
@@ -109,14 +109,14 @@ export default function LandingPage() {
                 </h3>
                 <div className="w-16 h-1 bg-orange-500 mx-auto mb-4"></div>
               </div>
-              <h2 className="text-5xl md:text-7xl font-bold text-gray-900 mb-4">
+              <h2 className="text-5xl md:text-7xl font-bold text-[var(--color-text)] mb-4">
                 Summer Camp
                 <span className="block text-orange-600">Team Selection</span>
               </h2>
-              <p className="text-xl md:text-2xl text-gray-600 max-w-2xl mx-auto">
+              <p className="text-xl md:text-2xl text-[var(--color-text-muted)] max-w-2xl mx-auto">
                 Join your friends, make new ones, and find your perfect team for an unforgettable summer adventure getting closer to God!
               </p>
-              <p className="text-lg text-gray-500 mt-4 max-w-2xl mx-auto">
+              <p className="text-lg text-[var(--color-text-muted)] mt-4 max-w-2xl mx-auto">
                 Experience faith, friendship, and fun in a Christ-centered environment where every camper grows spiritually and socially. 
               </p>
             </div>
@@ -125,57 +125,57 @@ export default function LandingPage() {
             <div className="mb-12">
               <div className="flex items-center justify-center mb-4">
                 <Calendar className="h-6 w-6 text-orange-500 mr-2" />
-                <h3 className="text-2xl font-semibold text-gray-900">Camp Starts In</h3>
+                <h3 className="text-2xl font-semibold text-[var(--color-text)]">Camp Starts In</h3>
               </div>
               
               <div className="grid grid-cols-2 md:grid-cols-4 gap-4 max-w-2xl mx-auto">
-                <div className="bg-white rounded-lg p-4 shadow-lg border border-orange-100">
+                <div className="bg-[var(--color-card-bg)] rounded-lg p-4 shadow-lg border border-[var(--color-border)]">
                   <div className="text-3xl md:text-4xl font-bold text-orange-600">{countdown.days}</div>
-                  <div className="text-sm text-gray-600">Days</div>
+                  <div className="text-sm text-[var(--color-text-muted)]">Days</div>
                 </div>
-                <div className="bg-white rounded-lg p-4 shadow-lg border border-orange-100">
+                <div className="bg-[var(--color-card-bg)] rounded-lg p-4 shadow-lg border border-[var(--color-border)]">
                   <div className="text-3xl md:text-4xl font-bold text-orange-600">{countdown.hours}</div>
-                  <div className="text-sm text-gray-600">Hours</div>
+                  <div className="text-sm text-[var(--color-text-muted)]">Hours</div>
                 </div>
-                <div className="bg-white rounded-lg p-4 shadow-lg border border-orange-100">
+                <div className="bg-[var(--color-card-bg)] rounded-lg p-4 shadow-lg border border-[var(--color-border)]">
                   <div className="text-3xl md:text-4xl font-bold text-orange-600">{countdown.minutes}</div>
-                  <div className="text-sm text-gray-600">Minutes</div>
+                  <div className="text-sm text-[var(--color-text-muted)]">Minutes</div>
                 </div>
-                <div className="bg-white rounded-lg p-4 shadow-lg border border-orange-100">
+                <div className="bg-[var(--color-card-bg)] rounded-lg p-4 shadow-lg border border-[var(--color-border)]">
                   <div className="text-3xl md:text-4xl font-bold text-orange-600">{countdown.seconds}</div>
-                  <div className="text-sm text-gray-600">Seconds</div>
+                  <div className="text-sm text-[var(--color-text-muted)]">Seconds</div>
                 </div>
               </div>
               
-              <div className="mt-4 text-sm text-gray-500">
+              <div className="mt-4 text-sm text-[var(--color-text-muted)]">
                 August 28, 2025 • Get ready for a faith-filled adventure!
               </div>
             </div>
 
             {/* Features */}
             <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-12 max-w-4xl mx-auto">
-              <div className="bg-white rounded-lg p-6 shadow-lg border border-orange-100">
+              <div className="bg-[var(--color-card-bg)] rounded-lg p-6 shadow-lg border border-[var(--color-border)]">
                 <div className="w-12 h-12 bg-orange-100 rounded-lg flex items-center justify-center mb-4 mx-auto">
                   <Users className="h-6 w-6 text-orange-600" />
                 </div>
-                <h4 className="text-lg font-semibold text-gray-900 mb-2">Join Your Team</h4>
-                <p className="text-gray-600">Choose from 4 exciting teams and find your perfect match in a Christian community</p>
+                <h4 className="text-lg font-semibold text-[var(--color-text)] mb-2">Join Your Team</h4>
+                <p className="text-[var(--color-text-muted)]">Choose from 4 exciting teams and find your perfect match in a Christian community</p>
               </div>
               
-              <div className="bg-white rounded-lg p-6 shadow-lg border border-orange-100">
+              <div className="bg-[var(--color-card-bg)] rounded-lg p-6 shadow-lg border border-[var(--color-border)]">
                 <div className="w-12 h-12 bg-orange-100 rounded-lg flex items-center justify-center mb-4 mx-auto">
                   <Star className="h-6 w-6 text-orange-600" />
                 </div>
-                <h4 className="text-lg font-semibold text-gray-900 mb-2">Grow in Faith</h4>
-                <p className="text-gray-600">Build meaningful friendships and strengthen your faith through fellowship and activities</p>
+                <h4 className="text-lg font-semibold text-[var(--color-text)] mb-2">Grow in Faith</h4>
+                <p className="text-[var(--color-text-muted)]">Build meaningful friendships and strengthen your faith through fellowship and activities</p>
               </div>
               
-              <div className="bg-white rounded-lg p-6 shadow-lg border border-orange-100">
+              <div className="bg-[var(--color-card-bg)] rounded-lg p-6 shadow-lg border border-[var(--color-border)]">
                 <div className="w-12 h-12 bg-orange-100 rounded-lg flex items-center justify-center mb-4 mx-auto">
                   <Flame className="h-6 w-6 text-orange-600" />
                 </div>
-                <h4 className="text-lg font-semibold text-gray-900 mb-2">Christian Adventure</h4>
-                <p className="text-gray-600">Experience the best Christian summer camp with balanced teams and spiritual growth</p>
+                <h4 className="text-lg font-semibold text-[var(--color-text)] mb-2">Christian Adventure</h4>
+                <p className="text-[var(--color-text-muted)]">Experience the best Christian summer camp with balanced teams and spiritual growth</p>
               </div>
             </div>
             {/* CTA Button */}
@@ -190,7 +190,7 @@ export default function LandingPage() {
             </div>
 
             {/* Additional Info */}
-            <div className="text-sm text-gray-500">
+            <div className="text-sm text-[var(--color-text-muted)]">
               <p>Already have an account? 
                 <button
                   onClick={handleSignIn}
@@ -204,10 +204,10 @@ export default function LandingPage() {
         </main>
 
         {/* Footer */}
-        <footer className="p-6 text-center text-gray-500 text-sm">
-          <p>© 2025 BCH Youth Program • Christian Summer Camp Team Selection Platform</p>
+        <footer className="p-6 text-center text-[var(--color-text-muted)] text-sm">
+          <p> a9 2025 BCH Youth Program  b7 Christian Summer Camp Team Selection Platform</p>
         </footer>
       </div>
     </div>
   )
-} 
+}

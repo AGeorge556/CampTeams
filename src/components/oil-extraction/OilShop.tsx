@@ -56,11 +56,11 @@ export default function OilShop({ onPageChange }: OilShopProps) {
   if (!profile || profile.role !== 'shop_owner') {
     return (
       <div className="min-h-screen bg-gradient-to-br from-green-50 to-blue-50 flex items-center justify-center">
-        <div className="bg-white rounded-lg shadow-lg p-8 max-w-md w-full mx-4">
+        <div className="bg-[var(--color-card-bg)] rounded-lg shadow-lg p-8 max-w-md w-full mx-4 border border-[var(--color-border)]">
           <div className="text-center">
             <AlertTriangle className="h-12 w-12 text-red-500 mx-auto mb-4" />
-            <h2 className="text-2xl font-bold text-gray-900 mb-2">Access Denied</h2>
-            <p className="text-gray-600">
+            <h2 className="text-2xl font-bold text-[var(--color-text)] mb-2">Access Denied</h2>
+            <p className="text-[var(--color-text-muted)]">
               Only shop owners can access the oil shop.
             </p>
           </div>
@@ -171,11 +171,11 @@ export default function OilShop({ onPageChange }: OilShopProps) {
   if (!activeSession) {
     return (
       <div className="min-h-screen bg-gradient-to-br from-green-50 to-blue-50 flex items-center justify-center">
-        <div className="bg-white rounded-lg shadow-lg p-8 max-w-md w-full mx-4">
+        <div className="bg-[var(--color-card-bg)] rounded-lg shadow-lg p-8 max-w-md w-full mx-4 border border-[var(--color-border)]">
           <div className="text-center">
             <XCircle className="h-12 w-12 text-red-500 mx-auto mb-4" />
-            <h2 className="text-2xl font-bold text-gray-900 mb-2">No Active Session</h2>
-            <p className="text-gray-600">
+            <h2 className="text-2xl font-bold text-[var(--color-text)] mb-2">No Active Session</h2>
+            <p className="text-[var(--color-text-muted)]">
               There is no active game session. Please wait for an admin to start a session.
             </p>
           </div>
@@ -217,8 +217,8 @@ export default function OilShop({ onPageChange }: OilShopProps) {
         {/* Shop Statistics */}
         {statistics && (
           <div className="mb-8">
-            <div className="bg-white rounded-lg shadow p-6">
-              <h2 className="text-xl font-semibold text-gray-900 mb-4">Shop Statistics</h2>
+        <div className="bg-[var(--color-card-bg)] rounded-lg shadow p-6">
+          <h2 className="text-xl font-semibold text-[var(--color-text)] mb-4">Shop Statistics</h2>
               <div className="grid grid-cols-2 md:grid-cols-4 gap-3 sm:gap-4">
                 <div className="text-center p-3 sm:p-4 border rounded-lg">
                   <div className="text-xl sm:text-2xl font-bold text-green-600">{statistics.total_sales}</div>
@@ -351,7 +351,7 @@ export default function OilShop({ onPageChange }: OilShopProps) {
             {salesHistory.length > 0 ? (
               <div className="overflow-x-auto">
                 <table className="min-w-full divide-y divide-gray-200">
-                  <thead className="bg-gray-50">
+                  <thead className="bg-[var(--color-bg-muted)]">
                     <tr>
                       <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                         Team
@@ -438,7 +438,7 @@ export default function OilShop({ onPageChange }: OilShopProps) {
 
             {/* Create Hint Form */}
             {showHintForm && (
-              <div className="mb-6 p-4 border rounded-lg bg-gray-50">
+              <div className="mb-6 p-4 border rounded-lg bg-[var(--color-bg-muted)] border-[var(--color-border)]">
                 <h3 className="text-lg font-medium text-gray-900 mb-4">Create New Hint</h3>
                 <div className="space-y-4">
                   <div>
@@ -579,4 +579,4 @@ export default function OilShop({ onPageChange }: OilShopProps) {
       </div>
     </div>
   )
-} 
+}

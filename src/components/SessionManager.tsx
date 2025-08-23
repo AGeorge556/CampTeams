@@ -175,8 +175,8 @@ export default function SessionManager({ onSessionCreated }: SessionManagerProps
       {/* Header */}
       <div className="flex items-center justify-between">
         <div>
-          <h3 className="text-lg font-semibold text-gray-900">Session Management</h3>
-          <p className="text-sm text-gray-600">Create and manage camp sessions</p>
+          <h3 className="text-lg font-semibold text-[var(--color-text)]">Session Management</h3>
+          <p className="text-sm text-[var(--color-text-muted)]">Create and manage camp sessions</p>
         </div>
         <div className="flex space-x-2">
 
@@ -186,7 +186,7 @@ export default function SessionManager({ onSessionCreated }: SessionManagerProps
 
       {/* Manual Session Form */}
       <div className="flex items-center justify-between mb-4">
-        <h4 className="text-lg font-medium text-gray-900">Manual Session Creation</h4>
+        <h4 className="text-lg font-medium text-[var(--color-text)]">Manual Session Creation</h4>
         <button
           onClick={() => setShowForm(true)}
           className="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md text-white bg-orange-600 hover:bg-orange-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-orange-500"
@@ -197,33 +197,33 @@ export default function SessionManager({ onSessionCreated }: SessionManagerProps
       </div>
 
       {/* Session Form */}
-      {showForm && (
-        <div className="bg-white rounded-lg shadow-sm p-6 border border-gray-200">
-          <h4 className="text-lg font-medium text-gray-900 mb-4">
+        {showForm && (
+        <div className="bg-[var(--color-card-bg)] rounded-lg shadow-sm p-6 border border-[var(--color-border)]">
+          <h4 className="text-lg font-medium text-[var(--color-text)] mb-4">
             {editingSession ? 'Edit Session' : 'Create New Session'}
           </h4>
           <form onSubmit={handleSubmit} className="space-y-4">
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">
+                <label className="block text-sm font-medium text-[var(--color-text-muted)] mb-1">
                   Session Name
                 </label>
                 <input
                   type="text"
                   value={formData.name}
                   onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-orange-500"
+                  className="w-full px-3 py-2 border border-[var(--color-border)] rounded-md bg-[var(--color-input-bg)] focus:outline-none focus:ring-2 focus:ring-orange-500"
                   required
                 />
               </div>
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">
+                <label className="block text-sm font-medium text-[var(--color-text-muted)] mb-1">
                   Session Type
                 </label>
                 <select
                   value={formData.session_type}
                   onChange={(e) => setFormData({ ...formData, session_type: e.target.value as SessionType })}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-orange-500"
+                  className="w-full px-3 py-2 border border-[var(--color-border)] rounded-md bg-[var(--color-input-bg)] focus:outline-none focus:ring-2 focus:ring-orange-500"
                 >
                   {Object.entries(SESSION_TYPE_LABELS).map(([value, label]) => (
                     <option key={value} value={value}>
@@ -385,4 +385,4 @@ export default function SessionManager({ onSessionCreated }: SessionManagerProps
       )}
     </div>
   )
-} 
+}

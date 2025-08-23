@@ -1,5 +1,5 @@
-import React, { useState } from 'react'
-import { Calendar, Clock, Users, Settings, BarChart3, Edit, Plus, Menu, X, Eye, EyeOff } from 'lucide-react'
+import { useState } from 'react'
+import { Calendar, Clock, BarChart3, Edit, Menu, X, Eye, EyeOff } from 'lucide-react'
 import { useProfile } from '../hooks/useProfile'
 import { useLanguage } from '../contexts/LanguageContext'
 import { useToast } from './Toast'
@@ -20,7 +20,6 @@ export default function Schedule() {
 
   const handleToggleScheduleVisibility = async () => {
     if (!profile?.is_admin) return
-
     try {
       await toggleScheduleVisibility()
       addToast({
@@ -35,23 +34,6 @@ export default function Schedule() {
         message: 'Failed to update schedule visibility'
       })
     }
-  }
-
-  // For non-admin users, show a message if schedule is hidden
-  if (!profile?.is_admin) {
-    return (
-      <div className="space-y-4 md:space-y-6">
-        <div className="bg-white rounded-lg shadow-sm p-8 text-center">
-          <Calendar className="h-16 w-16 text-gray-400 mx-auto mb-4" />
-          <h2 className="text-xl md:text-2xl font-bold text-gray-900 mb-2">
-            {t('schedule')}
-          </h2>
-          <p className="text-gray-600 text-lg">
-            {t('scheduleMakingInProgress')}
-          </p>
-        </div>
-      </div>
-    )
   }
 
   const tabs = [
@@ -85,13 +67,13 @@ export default function Schedule() {
   return (
     <div className="space-y-4 md:space-y-6">
       {/* Header */}
-      <div className="bg-white rounded-lg shadow-sm p-4 md:p-6">
+      <div className="bg-[var(--color-card-bg)] rounded-lg shadow-sm p-4 md:p-6 border border-[var(--color-border)]">
         <div className="flex items-center justify-between">
           <div className="flex items-center space-x-2 md:space-x-3">
             <Calendar className="h-6 w-6 md:h-8 md:w-8 text-blue-500" />
             <div>
-              <h2 className="text-xl md:text-2xl font-bold text-gray-900">Schedule Management</h2>
-              <p className="text-sm md:text-base text-gray-600">Manage camp schedule, sessions, and attendance</p>
+              <h2 className="text-xl md:text-2xl font-bold text-[var(--color-text)]">Schedule Management</h2>
+              <p className="text-sm md:text-base text-[var(--color-text-muted)]">Manage camp schedule, sessions, and attendance</p>
             </div>
           </div>
           <div className="flex items-center space-x-2">
@@ -114,7 +96,7 @@ export default function Schedule() {
             {/* Mobile menu button */}
             <button
               onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-              className="md:hidden inline-flex items-center justify-center p-2 rounded-md text-gray-400 hover:text-gray-500 hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-inset focus:ring-blue-500"
+              className="md:hidden inline-flex items-center justify-center p-2 rounded-md text-[var(--color-text-muted)] hover:text-[var(--color-text)] hover:bg-[var(--color-bg-muted)] focus:outline-none focus:ring-2 focus:ring-inset focus:ring-blue-500"
             >
               {mobileMenuOpen ? (
                 <X className="h-6 w-6" />
@@ -127,9 +109,9 @@ export default function Schedule() {
       </div>
 
       {/* Tab Navigation */}
-      <div className="bg-white rounded-lg shadow-sm">
+  <div className="bg-[var(--color-card-bg)] rounded-lg shadow-sm">
         {/* Desktop Navigation */}
-        <div className="hidden md:block border-b border-gray-200">
+        <div className="hidden md:block border-b border-[var(--color-border)]">
           <nav className="flex space-x-8 px-6">
             {tabs.map((tab) => {
               const Icon = tab.icon
@@ -140,7 +122,7 @@ export default function Schedule() {
                   className={`py-4 px-1 border-b-2 font-medium text-sm transition-colors duration-200 ${
                     activeTab === tab.id
                       ? 'border-blue-500 text-blue-600'
-                      : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
+                      : 'border-transparent text-[var(--color-text-muted)] hover:text-[var(--color-text)] hover:border-[var(--color-border)]'
                   }`}
                 >
                   <Icon className="h-4 w-4 inline mr-2" />
@@ -152,7 +134,7 @@ export default function Schedule() {
         </div>
 
         {/* Mobile Navigation */}
-        <div className={`md:hidden ${mobileMenuOpen ? 'block' : 'hidden'}`}>
+  <div className={`md:hidden ${mobileMenuOpen ? 'block' : 'hidden'}`}>
           <div className="px-4 py-2 space-y-1">
             {tabs.map((tab) => {
               const Icon = tab.icon
@@ -165,15 +147,15 @@ export default function Schedule() {
                   }}
                   className={`w-full text-left px-4 py-3 rounded-lg font-medium text-sm transition-colors duration-200 ${
                     activeTab === tab.id
-                      ? 'bg-blue-50 text-blue-700 border border-blue-200'
-                      : 'text-gray-700 hover:bg-gray-50'
+              ? 'bg-[var(--color-bg-muted)] text-[var(--color-text)] border border-[var(--color-border)]'
+                : 'text-[var(--color-text)] hover:bg-[var(--color-bg-muted)]'
                   }`}
                 >
                   <div className="flex items-center">
                     <Icon className="h-5 w-5 mr-3" />
                     <div>
                       <div className="font-medium">{tab.name}</div>
-                      <div className="text-xs text-gray-500">{tab.description}</div>
+                      <div className="text-xs text-[var(--color-text-muted)]">{tab.description}</div>
                     </div>
                   </div>
                 </button>
@@ -183,7 +165,7 @@ export default function Schedule() {
         </div>
 
         {/* Mobile Tab Indicator */}
-        <div className="md:hidden px-4 py-3 border-t border-gray-200">
+    <div className="md:hidden px-4 py-3 border-t border-[var(--color-border)]">
           <div className="flex items-center justify-between">
             <div className="flex items-center">
               {(() => {
@@ -191,15 +173,15 @@ export default function Schedule() {
                 const Icon = activeTabData?.icon || Clock
                 return (
                   <>
-                    <Icon className="h-5 w-5 mr-2 text-blue-500" />
-                    <span className="font-medium text-gray-900">{activeTabData?.name}</span>
+  <Icon className="h-5 w-5 mr-2 text-[var(--color-accent,#3b82f6)]" />
+        <span className="font-medium text-[var(--color-text)]">{activeTabData?.name}</span>
                   </>
                 )
               })()}
             </div>
             <button
               onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-              className="text-gray-400 hover:text-gray-500"
+      className="text-[var(--color-text-muted)] hover:text-[var(--color-text)]"
             >
               <Menu className="h-5 w-5" />
             </button>
@@ -209,30 +191,30 @@ export default function Schedule() {
 
       {/* Content based on active tab */}
       {activeTab === 'sessions' && (
-        <div className="bg-white rounded-lg shadow-sm p-4 md:p-6">
+        <div className="bg-[var(--color-card-bg)] rounded-lg shadow-sm p-4 md:p-6">
           <div className="mb-4">
-            <h3 className="text-lg font-semibold text-gray-900">Session Management</h3>
-            <p className="text-sm text-gray-600">Create and manage individual camp sessions</p>
+            <h3 className="text-lg font-semibold text-[var(--color-text)]">Session Management</h3>
+            <p className="text-sm text-[var(--color-text-muted)]">Create and manage individual camp sessions</p>
           </div>
           <SessionManager />
         </div>
       )}
 
       {activeTab === 'editor' && (
-        <div className="bg-white rounded-lg shadow-sm p-4 md:p-6">
+        <div className="bg-[var(--color-card-bg)] rounded-lg shadow-sm p-4 md:p-6">
           <div className="mb-4">
-            <h3 className="text-lg font-semibold text-gray-900">Schedule Editor</h3>
-            <p className="text-sm text-gray-600">Edit camp schedule activities, times, and locations</p>
+            <h3 className="text-lg font-semibold text-[var(--color-text)]">Schedule Editor</h3>
+            <p className="text-sm text-[var(--color-text-muted)]">Edit camp schedule activities, times, and locations</p>
           </div>
           <ScheduleEditor />
         </div>
       )}
 
       {activeTab === 'schedule' && (
-        <div className="bg-white rounded-lg shadow-sm p-4 md:p-6">
+        <div className="bg-[var(--color-card-bg)] rounded-lg shadow-sm p-4 md:p-6">
           <div className="mb-4">
-            <h3 className="text-lg font-semibold text-gray-900">Schedule Sessions</h3>
-            <p className="text-sm text-gray-600">Manage schedule items and create sessions from schedule</p>
+            <h3 className="text-lg font-semibold text-[var(--color-text)]">Schedule Sessions</h3>
+            <p className="text-sm text-[var(--color-text-muted)]">Manage schedule items and create sessions from schedule</p>
           </div>
           <ScheduleSessionManager />
         </div>
@@ -241,14 +223,14 @@ export default function Schedule() {
       {/* Finalize tab removed */}
 
       {activeTab === 'reports' && (
-        <div className="bg-white rounded-lg shadow-sm p-4 md:p-6">
+        <div className="bg-[var(--color-card-bg)] rounded-lg shadow-sm p-4 md:p-6">
           <div className="mb-4">
-            <h3 className="text-lg font-semibold text-gray-900">Attendance Reports</h3>
-            <p className="text-sm text-gray-600">View attendance statistics and reports</p>
+            <h3 className="text-lg font-semibold text-[var(--color-text)]">Attendance Reports</h3>
+            <p className="text-sm text-[var(--color-text-muted)]">View attendance statistics and reports</p>
           </div>
           <AttendanceReports />
         </div>
       )}
     </div>
   )
-} 
+}

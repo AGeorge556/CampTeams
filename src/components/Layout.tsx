@@ -8,7 +8,7 @@ interface LayoutProps {
 
 export default function Layout({ children, className = '', mobileOptimized = true }: LayoutProps) {
   return (
-    <div className="min-h-screen bg-gradient-to-br from-orange-50 to-yellow-50">
+    <div className="min-h-screen bg-[var(--color-bg)]">
       <main className={`
         max-w-7xl mx-auto px-3 sm:px-4 md:px-6 lg:px-8 
         py-4 sm:py-6 md:py-8
@@ -24,7 +24,7 @@ export default function Layout({ children, className = '', mobileOptimized = tru
 // Mobile-specific layout variants
 export function MobileLayout({ children, className = '' }: { children: React.ReactNode, className?: string }) {
   return (
-    <div className="min-h-screen bg-gradient-to-br from-orange-50 to-yellow-50">
+    <div className="min-h-screen bg-[var(--color-bg)]">
       <main className={`
         max-w-full mx-auto px-4 py-4
         mobile-safe-area

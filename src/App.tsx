@@ -4,6 +4,7 @@ import { useProfile } from './hooks/useProfile'
 import { useRulesAcceptance } from './hooks/useRulesAcceptance'
 import { useOilExtractionVisibility } from './hooks/useOilExtractionVisibility'
 import { useGalleryVisibility } from './hooks/useGalleryVisibility'
+import { ThemeProvider } from './contexts/ThemeContext'
 import Auth from './components/Auth'
 import OnboardingForm from './components/OnboardingForm'
 import RulesAgreement from './components/RulesAgreement'
@@ -134,9 +135,10 @@ function App() {
 
   return (
     <ErrorBoundary>
-      <LanguageProvider>
-        <ToastProvider>
-          <AppContent 
+      <ThemeProvider>
+        <LanguageProvider>
+          <ToastProvider>
+            <AppContent 
             user={user} 
             authLoading={authLoading} 
             profile={profile} 
@@ -144,8 +146,9 @@ function App() {
             currentPage={currentPage}
             setCurrentPage={setCurrentPage}
           />
-        </ToastProvider>
-      </LanguageProvider>
+          </ToastProvider>
+        </LanguageProvider>
+      </ThemeProvider>
     </ErrorBoundary>
   )
 }

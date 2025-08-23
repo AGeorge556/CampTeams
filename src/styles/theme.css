@@ -1,0 +1,64 @@
+/* Base theme variables */
+:root {
+  color-scheme: light;
+  --color-bg: #ffffff;
+  --color-bg-muted: #f8f9ff;
+  --color-text: #1a1b4b;
+  --color-text-muted: #4a4f8c;
+  --color-border: #e2e4ff;
+  --color-primary: #6366f1;
+  --color-primary-contrast: #ffffff;
+  --color-accent: #a855f7;
+  --color-accent-glow: rgba(168, 85, 247, 0.15);
+  --color-danger: #ff3d71;
+  --color-warning: #ffaa00;
+  --color-success: #00e3b0;
+
+  /* Additional semantic variables */
+  --color-input-bg: var(--color-bg);
+  --color-card-bg: var(--color-bg-muted);
+  --color-tooltip-bg: var(--color-text);
+  --color-tooltip-text: var(--color-bg);
+  
+  /* Shadow effects */
+  --shadow-sm: 0 2px 4px rgba(99, 102, 241, 0.05);
+  --shadow-md: 0 4px 6px rgba(99, 102, 241, 0.1);
+  --shadow-lg: 0 8px 16px rgba(99, 102, 241, 0.1);
+  
+  /* Transitions */
+  --transition-glow: box-shadow 0.3s ease;
+}
+
+/* Dark theme overrides */
+.dark {
+  color-scheme: dark;
+  --color-bg: #0a0627;
+  --color-bg-muted: #131045;
+  --color-text: #e4e4ff;
+  --color-text-muted: #a5a6f6;
+  --color-border: #2e2b80;
+  --color-primary: #818cf8;
+  --color-primary-contrast: #ffffff;
+  --color-accent: #d8b4fe;
+  --color-accent-glow: rgba(216, 180, 254, 0.15);
+  --color-danger: #ff5c9e;
+  --color-warning: #ffd426;
+  --color-success: #34ffd1;
+  
+  /* Additional semantic variables - dark mode */
+  --color-input-bg: var(--color-bg-muted);
+  --color-card-bg: var(--color-bg);
+  --color-tooltip-bg: var(--color-bg-muted);
+  --color-tooltip-text: var(--color-text);
+  
+  /* Shadow effects - dark mode */
+  --shadow-sm: 0 2px 4px rgba(129, 140, 248, 0.1);
+  --shadow-md: 0 4px 6px rgba(129, 140, 248, 0.15);
+  --shadow-lg: 0 8px 16px rgba(129, 140, 248, 0.15);
+  
+  /* Additional dark mode effects */
+  --neon-glow: 0 0 10px rgba(129, 140, 248, 0.3),
+               0 0 20px rgba(129, 140, 248, 0.2),
+               0 0 30px rgba(129, 140, 248, 0.1);
+  --neon-text-glow: 0 0 5px rgba(216, 180, 254, 0.3);
+}

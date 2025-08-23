@@ -1,4 +1,5 @@
-import React from 'react'
+// React runtime is automatic; no default import required
+
 import { useScoreboard } from '../hooks/useScoreboard'
 import { TEAMS } from '../lib/supabase'
 import LoadingSpinner from './LoadingSpinner'
@@ -27,8 +28,8 @@ export default function Scoreboard() {
   }
 
   return (
-    <div className="bg-white rounded-lg shadow p-4 sm:p-6">
-      <h2 className="text-lg sm:text-xl font-bold mb-4 sm:mb-6">Team Scoreboard</h2>
+    <div className="bg-[var(--color-card-bg)] rounded-lg shadow p-4 sm:p-6 border border-[var(--color-border)]">
+      <h2 className="text-lg sm:text-xl font-bold mb-4 sm:mb-6 text-[var(--color-text)]">Team Scoreboard</h2>
 
       {/* Bar Chart */}
       <div className="flex items-end justify-around gap-2 sm:gap-4 h-48 sm:h-64 md:h-72 mb-4 sm:mb-6">
@@ -39,7 +40,7 @@ export default function Scoreboard() {
           const teamData = TEAMS[team]
           return (
             <div key={team} className="flex flex-col items-center flex-1">
-              <div className="w-full max-w-[40px] sm:max-w-[50px] md:max-w-[60px] lg:max-w-[72px] bg-gray-100 rounded-t-md overflow-hidden flex items-end justify-center h-36 sm:h-44 md:h-48 lg:h-56">
+              <div className="w-full max-w-[40px] sm:max-w-[50px] md:max-w-[60px] lg:max-w-[72px] bg-[var(--color-bg-muted)] rounded-t-md overflow-hidden flex items-end justify-center h-36 sm:h-44 md:h-48 lg:h-56 border border-[var(--color-border)]">
                 <div
                   className={`w-full ${teamData.color} transition-all duration-700 ease-out rounded-t-md`}
                   style={{ height: `${heightPct}%` }}
@@ -48,8 +49,8 @@ export default function Scoreboard() {
                 />
               </div>
               <div className="mt-2 sm:mt-3 text-center">
-                <div className="text-xs sm:text-sm font-medium text-gray-700">{teamData.name}</div>
-                <div className={`text-sm sm:text-base md:text-lg lg:text-xl font-extrabold ${isTop ? 'text-orange-600' : 'text-gray-900'}`}>
+                <div className="text-xs sm:text-sm font-medium text-[var(--color-text)]">{teamData.name}</div>
+                <div className={`text-sm sm:text-base md:text-lg lg:text-xl font-extrabold ${isTop ? 'text-orange-600' : 'text-[var(--color-text)]'}`}>
                   {funLabel(points, isTop)}
                 </div>
               </div>
@@ -59,17 +60,17 @@ export default function Scoreboard() {
       </div>
 
       {/* Legend */}
-      <div className="flex flex-wrap justify-center gap-2 sm:gap-4 text-xs sm:text-sm text-gray-600">
+      <div className="flex flex-wrap justify-center gap-2 sm:gap-4 text-xs sm:text-sm text-[var(--color-text-muted)]">
         {teamIds.map(team => {
-          const teamData = TEAMS[team]
-          return (
-            <div key={team} className="flex items-center gap-1 sm:gap-2">
-              <span className={`inline-block w-2 h-2 sm:w-3 sm:h-3 rounded ${teamData.color}`} />
-              {teamData.name}
-            </div>
-          )
-        })}
-      </div>
-    </div>
-  )
-}
+           const teamData = TEAMS[team]
+           return (
+             <div key={team} className="flex items-center gap-1 sm:gap-2">
+               <span className={`inline-block w-2 h-2 sm:w-3 sm:h-3 rounded ${teamData.color}`} />
+               {teamData.name}
+             </div>
+           )
+         })}
+       </div>
+     </div>
+   )
+ }

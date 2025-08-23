@@ -26,8 +26,10 @@ export default function TeamCard({
   const progress = (totalCount / maxSize) * 100
 
   return (
-    <div className={`bg-white rounded-lg shadow-sm overflow-hidden border-2 transition-all duration-200 ${
-      isCurrentTeam ? `border-${team}-500` : 'border-gray-200 hover:border-gray-300'
+    <div className={`bg-[var(--color-bg)] dark:bg-[var(--color-bg-muted)] rounded-lg overflow-hidden border transition-all duration-300 ${
+      isCurrentTeam 
+        ? 'border-[var(--color-primary)] shadow-[var(--neon-glow)]' 
+        : 'border-[var(--color-border)] hover:border-[var(--color-primary)] hover:shadow-[var(--neon-glow)]'
     }`}>
       {/* Header */}
       <div className={`${teamConfig.color} p-4 text-white`}>

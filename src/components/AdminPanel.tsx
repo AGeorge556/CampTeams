@@ -269,28 +269,28 @@ export default function AdminPanel() {
   return (
     <div className="space-y-8">
       {/* Header */}
-      <div className="bg-white rounded-lg shadow-sm p-6">
+      <div className="bg-[var(--color-card-bg)] rounded-lg shadow-sm p-6">
         <div className="flex items-center justify-between">
           <div className="flex items-center space-x-3">
             <Shield className="h-8 w-8 text-purple-500" />
             <div>
-              <h2 className="text-2xl font-bold text-gray-900">Admin Panel</h2>
-              <p className="text-gray-600">Manage camp participants and settings</p>
+              <h2 className="text-2xl font-bold text-[var(--color-text)]">Admin Panel</h2>
+              <p className="text-[var(--color-text-muted)]">Manage camp participants and settings</p>
             </div>
           </div>
         </div>
       </div>
 
       {/* Tab Navigation */}
-      <div className="bg-white rounded-lg shadow-sm p-6">
-        <div className="border-b border-gray-200">
+      <div className="bg-[var(--color-card-bg)] rounded-lg shadow-sm p-6">
+        <div className="border-b border-[var(--color-border)]">
           <nav className="-mb-px flex space-x-8">
             <button
               onClick={() => setActiveTab('participants')}
               className={`py-2 px-1 border-b-2 font-medium text-sm ${
                 activeTab === 'participants'
                   ? 'border-purple-500 text-purple-600'
-                  : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
+                  : 'border-transparent text-[var(--color-text-muted)] hover:text-[var(--color-text)] hover:border-[var(--color-border)]'
               }`}
             >
               <Users className="h-4 w-4 inline mr-2" />
@@ -301,7 +301,7 @@ export default function AdminPanel() {
               className={`py-2 px-1 border-b-2 font-medium text-sm ${
                 activeTab === 'sports'
                   ? 'border-purple-500 text-purple-600'
-                  : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
+                  : 'border-transparent text-[var(--color-text-muted)] hover:text-[var(--color-text)] hover:border-[var(--color-border)]'
               }`}
             >
               <Trophy className="h-4 w-4 inline mr-2" />
@@ -312,7 +312,7 @@ export default function AdminPanel() {
               className={`py-2 px-1 border-b-2 font-medium text-sm ${
                 activeTab === 'roles'
                   ? 'border-purple-500 text-purple-600'
-                  : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
+                  : 'border-transparent text-[var(--color-text-muted)] hover:text-[var(--color-text)] hover:border-[var(--color-border)]'
               }`}
             >
               <Shield className="h-4 w-4 inline mr-2" />
@@ -323,9 +323,9 @@ export default function AdminPanel() {
       </div>
 
       {/* Camp Settings */}
-      <div className="bg-white rounded-lg shadow-sm p-6">
+      <div className="bg-[var(--color-card-bg)] rounded-lg shadow-sm p-6">
         <div className="flex items-center justify-between mb-4">
-          <h3 className="text-lg font-semibold text-gray-900">Camp Settings</h3>
+          <h3 className="text-lg font-semibold text-[var(--color-text)]">Camp Settings</h3>
           <button
             onClick={toggleTeamsLock}
             disabled={loading}
@@ -336,46 +336,46 @@ export default function AdminPanel() {
           </button>
         </div>
         <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
-          <div className="bg-gray-50 rounded-lg p-4">
-            <h4 className="font-medium text-gray-900">Teams Status</h4>
-            <p className="text-sm text-gray-600">
+          <div className="bg-[var(--color-bg-muted)] rounded-lg p-4">
+            <h4 className="font-medium text-[var(--color-text)]">Teams Status</h4>
+            <p className="text-sm text-[var(--color-text-muted)]">
               {campSettings?.teams_locked ? 'Locked' : 'Unlocked'}
             </p>
           </div>
-          <div className="bg-gray-50 rounded-lg p-4">
-            <h4 className="font-medium text-gray-900">Lock Date</h4>
-            <p className="text-sm text-gray-600">
+          <div className="bg-[var(--color-bg-muted)] rounded-lg p-4">
+            <h4 className="font-medium text-[var(--color-text)]">Lock Date</h4>
+            <p className="text-sm text-[var(--color-text-muted)]">
               {campSettings?.lock_date 
                 ? new Date(campSettings.lock_date).toLocaleDateString()
                 : 'Not locked'
               }
             </p>
           </div>
-          <div className="bg-gray-50 rounded-lg p-4">
-            <h4 className="font-medium text-gray-900">Max Team Size</h4>
-            <p className="text-sm text-gray-600">{campSettings?.max_team_size || 50}</p>
+          <div className="bg-[var(--color-bg-muted)] rounded-lg p-4">
+            <h4 className="font-medium text-[var(--color-text)]">Max Team Size</h4>
+            <p className="text-sm text-[var(--color-text-muted)]">{campSettings?.max_team_size || 50}</p>
           </div>
-          <div className="bg-gray-50 rounded-lg p-4">
-            <h4 className="font-medium text-gray-900">{t('oilExtractionVisibility')}</h4>
-            <p className="text-sm text-gray-600">
+          <div className="bg-[var(--color-bg-muted)] rounded-lg p-4">
+            <h4 className="font-medium text-[var(--color-text)]">{t('oilExtractionVisibility')}</h4>
+            <p className="text-sm text-[var(--color-text-muted)]">
               {oilExtractionVisible ? t('oilExtractionVisible') : t('oilExtractionHidden')}
             </p>
           </div>
-          <div className="bg-gray-50 rounded-lg p-4">
-            <h4 className="font-medium text-gray-900">{t('galleryVisibility')}</h4>
-            <p className="text-sm text-gray-600">
+          <div className="bg-[var(--color-bg-muted)] rounded-lg p-4">
+            <h4 className="font-medium text-[var(--color-text)]">{t('galleryVisibility')}</h4>
+            <p className="text-sm text-[var(--color-text-muted)]">
               {galleryVisible ? t('galleryVisible') : t('galleryHidden')}
             </p>
           </div>
         </div>
         
         {/* Oil Extraction Visibility Toggle */}
-        <div className="mt-4 flex items-center justify-between p-4 bg-orange-50 border border-orange-200 rounded-lg">
+        <div className="mt-4 flex items-center justify-between p-4 bg-[var(--color-bg-muted)] border border-[var(--color-border)] rounded-lg">
           <div className="flex items-center">
             <Zap className="h-5 w-5 text-orange-600 mr-3" />
             <div>
-              <h4 className="font-medium text-gray-900">{t('oilExtractionVisibility')}</h4>
-              <p className="text-sm text-gray-600">
+              <h4 className="font-medium text-[var(--color-text)]">{t('oilExtractionVisibility')}</h4>
+              <p className="text-sm text-[var(--color-text-muted)]">
                 {oilExtractionVisible ? t('oilExtractionVisible') : t('oilExtractionHidden')}
               </p>
             </div>
@@ -395,12 +395,12 @@ export default function AdminPanel() {
         </div>
 
         {/* Gallery Visibility Toggle */}
-        <div className="mt-4 flex items-center justify-between p-4 bg-purple-50 border border-purple-200 rounded-lg">
+        <div className="mt-4 flex items-center justify-between p-4 bg-[var(--color-bg-muted)] border border-[var(--color-border)] rounded-lg">
           <div className="flex items-center">
             <Camera className="h-5 w-5 text-purple-600 mr-3" />
             <div>
-              <h4 className="font-medium text-gray-900">{t('galleryVisibility')}</h4>
-              <p className="text-sm text-gray-600">
+              <h4 className="font-medium text-[var(--color-text)]">{t('galleryVisibility')}</h4>
+              <p className="text-sm text-[var(--color-text-muted)]">
                 {galleryVisible ? t('galleryVisible') : t('galleryHidden')}
               </p>
             </div>
@@ -429,12 +429,12 @@ export default function AdminPanel() {
       {activeTab === 'participants' ? (
         <div>
           <div className="flex items-center justify-between mb-4">
-            <h3 className="font-semibold text-gray-900">Participant Management</h3>
+            <h3 className="font-semibold text-[var(--color-text)]">Participant Management</h3>
             <div className="flex space-x-2">
               <select
                 value={selectedTeam}
                 onChange={(e) => setSelectedTeam(e.target.value as TeamColor | 'all')}
-                className="rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50"
+                className="rounded-md border-[var(--color-border)] shadow-sm bg-[var(--color-input-bg)] focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50"
               >
                 <option value="all">All Teams</option>
                 {Object.entries(TEAMS).map(([key, team]) => (
@@ -444,7 +444,7 @@ export default function AdminPanel() {
               <div className="flex space-x-2">
                 <button
                   onClick={exportRoster}
-                  className="inline-flex items-center px-3 py-2 border border-gray-300 shadow-sm text-sm leading-4 font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
+                  className="inline-flex items-center px-3 py-2 border border-[var(--color-border)] shadow-sm text-sm leading-4 font-medium rounded-md text-[var(--color-text)] bg-[var(--color-bg)] hover:bg-[var(--color-bg-muted)] focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
                 >
                   <Download className="h-4 w-4 mr-2" />
                   Export CSV
@@ -472,7 +472,7 @@ export default function AdminPanel() {
                       {lockedTeams.includes(key) ? 'Unlock' : 'Lock'}
                     </button>
                   </div>
-                  <p className="text-sm text-gray-500 mt-1">
+                  <p className="text-sm text-[var(--color-text-muted)] mt-1">
                     {lockedTeams.includes(key) ? 'No new joins allowed' : 'Open for new players'}
                   </p>
                 </div>
@@ -481,39 +481,39 @@ export default function AdminPanel() {
           </div>
           
           <div className="overflow-x-auto">
-            <table className="min-w-full divide-y divide-gray-200">
-              <thead className="bg-gray-50">
+            <table className="min-w-full divide-y divide-[var(--color-border)]">
+              <thead className="bg-[var(--color-bg-muted)]">
                 <tr>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  <th className="px-6 py-3 text-left text-xs font-medium text-[var(--color-text-muted)] uppercase tracking-wider">
                     Name
                   </th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  <th className="px-6 py-3 text-left text-xs font-medium text-[var(--color-text-muted)] uppercase tracking-wider">
                     Grade
                   </th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  <th className="px-6 py-3 text-left text-xs font-medium text-[var(--color-text-muted)] uppercase tracking-wider">
                     Gender
                   </th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  <th className="px-6 py-3 text-left text-xs font-medium text-[var(--color-text-muted)] uppercase tracking-wider">
                     Current Team
                   </th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  <th className="px-6 py-3 text-left text-xs font-medium text-[var(--color-text-muted)] uppercase tracking-wider">
                     Switches
                   </th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  <th className="px-6 py-3 text-left text-xs font-medium text-[var(--color-text-muted)] uppercase tracking-wider">
                     Actions
                   </th>
                 </tr>
               </thead>
-              <tbody className="bg-white divide-y divide-gray-200">
+              <tbody className="bg-[var(--color-card-bg)] divide-y divide-[var(--color-border)]">
                 {filteredProfiles.map((profile) => (
                   <tr key={profile.id}>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
+                    <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-[var(--color-text)]">
                       {profile.full_name}
                     </td>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                    <td className="px-6 py-4 whitespace-nowrap text-sm text-[var(--color-text-muted)]">
                       {getGradeDisplayWithNumber(profile.grade)}
                     </td>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                    <td className="px-6 py-4 whitespace-nowrap text-sm text-[var(--color-text-muted)]">
                       {profile.gender}
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
@@ -526,17 +526,17 @@ export default function AdminPanel() {
                           {getTeamProperty(profile.current_team as keyof typeof TEAMS, 'name')}
                         </span>
                       ) : (
-                        <span className="text-gray-400">Unassigned</span>
+                        <span className="text-[var(--color-text-muted)]">Unassigned</span>
                       )}
                     </td>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                    <td className="px-6 py-4 whitespace-nowrap text-sm text-[var(--color-text-muted)]">
                       {profile.switches_remaining}
                     </td>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                    <td className="px-6 py-4 whitespace-nowrap text-sm text-[var(--color-text-muted)]">
                       <select
                         value={profile.current_team || ''}
                         onChange={(e) => reassignUser(profile.id, e.target.value as TeamColor)}
-                        className="rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50 text-sm"
+                        className="rounded-md border-[var(--color-border)] shadow-sm bg-[var(--color-input-bg)] focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50 text-sm"
                       >
                         <option value="">Unassigned</option>
                         {Object.entries(TEAMS).map(([key, team]) => (
@@ -553,7 +553,7 @@ export default function AdminPanel() {
       ) : activeTab === 'sports' ? (
         <div>
           <div className="flex items-center justify-between mb-4">
-            <h3 className="font-semibold text-gray-900">Sport Selections</h3>
+            <h3 className="font-semibold text-[var(--color-text)]">Sport Selections</h3>
             <button
               onClick={exportSportSelections}
               className="inline-flex items-center px-3 py-2 border border-gray-300 shadow-sm text-sm leading-4 font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
@@ -565,19 +565,19 @@ export default function AdminPanel() {
           
           <div className="space-y-6">
             {sportSelections.map((sport) => (
-              <div key={sport.sport_id} className="bg-white rounded-lg shadow-sm border border-gray-200">
-                <div className="px-6 py-4 border-b border-gray-200">
-                  <h4 className="text-lg font-semibold text-gray-900">{sport.sport_name}</h4>
-                  <p className="text-sm text-gray-600">{sport.participants.length} participants</p>
+              <div key={sport.sport_id} className="bg-[var(--color-card-bg)] rounded-lg shadow-sm border border-[var(--color-border)]">
+                <div className="px-6 py-4 border-b border-[var(--color-border)]">
+                  <h4 className="text-lg font-semibold text-[var(--color-text)]">{sport.sport_name}</h4>
+                  <p className="text-sm text-[var(--color-text-muted)]">{sport.participants.length} participants</p>
                 </div>
                 <div className="px-6 py-4">
                   {sport.participants.length > 0 ? (
                     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
                       {sport.participants.map((participant) => (
-                        <div key={participant.id} className="flex items-center space-x-3 p-3 bg-gray-50 rounded-lg">
+                        <div key={participant.id} className="flex items-center space-x-3 p-3 bg-[var(--color-bg-muted)] rounded-lg">
                           <div className="flex-1">
-                            <p className="text-sm font-medium text-gray-900">{participant.full_name}</p>
-                            <p className="text-xs text-gray-500">
+                            <p className="text-sm font-medium text-[var(--color-text)]">{participant.full_name}</p>
+                            <p className="text-xs text-[var(--color-text-muted)]">
                               {getGradeDisplayWithNumber(participant.grade)} • {participant.gender}
                               {participant.current_team && (
                                 <span className={`ml-2 inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium ${
@@ -597,7 +597,7 @@ export default function AdminPanel() {
                       ))}
                     </div>
                   ) : (
-                    <p className="text-gray-500 text-center py-4">No participants yet</p>
+                    <p className="text-[var(--color-text-muted)] text-center py-4">No participants yet</p>
                   )}
                 </div>
               </div>
@@ -607,43 +607,43 @@ export default function AdminPanel() {
       ) : activeTab === 'roles' ? (
         <div>
           <div className="flex items-center justify-between mb-4">
-            <h3 className="font-semibold text-gray-900">Role Management</h3>
-            <div className="text-sm text-gray-600">
+            <h3 className="font-semibold text-[var(--color-text)]">Role Management</h3>
+            <div className="text-sm text-[var(--color-text-muted)]">
               Only you can assign team_leader roles. New users get 'camper' by default.
             </div>
           </div>
           
-          <div className="bg-white shadow overflow-hidden sm:rounded-md">
-            <table className="min-w-full divide-y divide-gray-200">
-              <thead className="bg-gray-50">
+          <div className="bg-[var(--color-card-bg)] shadow overflow-hidden sm:rounded-md">
+            <table className="min-w-full divide-y divide-[var(--color-border)]">
+              <thead className="bg-[var(--color-bg-muted)]">
                 <tr>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  <th className="px-6 py-3 text-left text-xs font-medium text-[var(--color-text-muted)] uppercase tracking-wider">
                     Name
                   </th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  <th className="px-6 py-3 text-left text-xs font-medium text-[var(--color-text-muted)] uppercase tracking-wider">
                     Grade
                   </th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  <th className="px-6 py-3 text-left text-xs font-medium text-[var(--color-text-muted)] uppercase tracking-wider">
                     Team
                   </th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  <th className="px-6 py-3 text-left text-xs font-medium text-[var(--color-text-muted)] uppercase tracking-wider">
                     Current Role
                   </th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  <th className="px-6 py-3 text-left text-xs font-medium text-[var(--color-text-muted)] uppercase tracking-wider">
                     Assign Role
                   </th>
                 </tr>
               </thead>
-              <tbody className="bg-white divide-y divide-gray-200">
+              <tbody className="bg-[var(--color-card-bg)] divide-y divide-[var(--color-border)]">
                 {profiles.map((profile) => (
                   <tr key={profile.id}>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
+                    <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-[var(--color-text)]">
                       {profile.full_name}
                     </td>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                    <td className="px-6 py-4 whitespace-nowrap text-sm text-[var(--color-text-muted)]">
                       {getGradeDisplayWithNumber(profile.grade)}
                     </td>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                    <td className="px-6 py-4 whitespace-nowrap text-sm text-[var(--color-text-muted)]">
                       {profile.current_team ? (
                         <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${
                           TEAMS[profile.current_team as keyof typeof TEAMS].lightColor
@@ -651,10 +651,10 @@ export default function AdminPanel() {
                           {TEAMS[profile.current_team as keyof typeof TEAMS].name}
                         </span>
                       ) : (
-                        <span className="text-gray-400">Unassigned</span>
+                        <span className="text-[var(--color-text-muted)]">Unassigned</span>
                       )}
                     </td>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                    <td className="px-6 py-4 whitespace-nowrap text-sm text-[var(--color-text-muted)]">
                       <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${
                         profile.role === 'admin' ? 'bg-purple-100 text-purple-800' :
                         profile.role === 'shop_owner' ? 'bg-yellow-100 text-yellow-800' :
@@ -667,11 +667,11 @@ export default function AdminPanel() {
                          'Camper'}
                       </span>
                     </td>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                    <td className="px-6 py-4 whitespace-nowrap text-sm text-[var(--color-text-muted)]">
                       <select
                         value={profile.role || 'camper'}
                         onChange={(e) => updateUserRole(profile.id, e.target.value)}
-                        className="rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50 text-sm"
+                        className="rounded-md border-[var(--color-border)] bg-[var(--color-input-bg)] shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50 text-sm"
                       >
                         <option value="camper">Camper</option>
                         <option value="team_leader">Team Leader</option>
@@ -679,13 +679,13 @@ export default function AdminPanel() {
                         {profile.is_admin && <option value="admin">Admin</option>}
                       </select>
                     </td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
-        </div>
-      ) : null}
+                   </tr>
+                 ))}
+               </tbody>
+             </table>
+           </div>
+         </div>
+       ) : null}
     </div>
   );
 }

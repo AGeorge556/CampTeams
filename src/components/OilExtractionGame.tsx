@@ -37,7 +37,7 @@ export default function OilExtractionGame({ onPageChange }: OilExtractionGamePro
         return (
           <div className="space-y-6 sm:space-y-8">
             {/* Admin Controls Card */}
-            <div className="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden">
+            <div className="bg-[var(--color-card-bg)] rounded-xl shadow-sm border border-[var(--color-border)] overflow-hidden">
               <div className="bg-gradient-to-r from-orange-500 to-orange-600 px-4 sm:px-6 py-3">
                 <h2 className="text-lg sm:text-xl font-semibold text-white flex items-center">
                   <svg className="w-5 h-5 mr-2" fill="currentColor" viewBox="0 0 20 20">
@@ -76,7 +76,7 @@ export default function OilExtractionGame({ onPageChange }: OilExtractionGamePro
         return (
           <div className="space-y-6 sm:space-y-8">
             {/* Shop Actions Card */}
-            <div className="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden">
+            <div className="bg-[var(--color-card-bg)] rounded-xl shadow-sm border border-[var(--color-border)] overflow-hidden">
               <div className="bg-gradient-to-r from-green-500 to-green-600 px-4 sm:px-6 py-3">
                 <h2 className="text-lg sm:text-xl font-semibold text-white flex items-center">
                   <svg className="w-5 h-5 mr-2" fill="currentColor" viewBox="0 0 20 20">
@@ -104,7 +104,7 @@ export default function OilExtractionGame({ onPageChange }: OilExtractionGamePro
         return (
           <div className="space-y-6 sm:space-y-8">
             {/* Team Actions Card */}
-            <div className="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden">
+            <div className="bg-[var(--color-card-bg)] rounded-xl shadow-sm border border-[var(--color-border)] overflow-hidden">
               <div className="bg-gradient-to-r from-orange-500 to-orange-600 px-4 sm:px-6 py-3">
                 <h2 className="text-lg sm:text-xl font-semibold text-white flex items-center">
                   <svg className="w-5 h-5 mr-2" fill="currentColor" viewBox="0 0 20 20">
@@ -131,14 +131,14 @@ export default function OilExtractionGame({ onPageChange }: OilExtractionGamePro
       default:
         return (
           <div className="text-center py-8">
-            <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-6 sm:p-8">
+            <div className="bg-[var(--color-card-bg)] rounded-xl shadow-sm border border-[var(--color-border)] p-6 sm:p-8">
               <svg className="w-16 h-16 text-red-400 mx-auto mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.964-.833-2.732 0L3.732 16.5c-.77.833.192 2.5 1.732 2.5z" />
               </svg>
-              <h2 className="text-xl sm:text-2xl font-bold text-gray-900 mb-4">
+              <h2 className="text-xl sm:text-2xl font-bold text-[var(--color-text)] mb-4">
                 Access Denied
               </h2>
-              <p className="text-gray-600 text-sm sm:text-base">
+              <p className="text-[var(--color-text-muted)] text-sm sm:text-base">
                 You don't have permission to access the Oil Extraction Game.
               </p>
             </div>
@@ -148,7 +148,7 @@ export default function OilExtractionGame({ onPageChange }: OilExtractionGamePro
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-orange-50 to-yellow-50">
+    <div className="min-h-screen bg-[var(--color-bg)]">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         {/* Header */}
         <div className="mb-6 sm:mb-8">
@@ -219,4 +219,4 @@ export default function OilExtractionGame({ onPageChange }: OilExtractionGamePro
       </div>
     </div>
   )
-} 
+}

@@ -74,12 +74,12 @@ export default function EconomyDashboard({ onPageChange }: EconomyDashboardProps
   // Check if user has admin access
   if (!profile || (profile.role !== 'admin' && profile.role !== 'shop_owner')) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-purple-50 to-blue-50 flex items-center justify-center">
-        <div className="bg-white rounded-lg shadow-lg p-8 max-w-md w-full mx-4">
+      <div className="min-h-screen bg-[var(--color-bg)] flex items-center justify-center">
+        <div className="bg-[var(--color-card-bg)] rounded-lg shadow-lg p-8 max-w-md w-full mx-4 border border-[var(--color-border)]">
           <div className="text-center">
             <BarChart3 className="h-12 w-12 text-red-500 mx-auto mb-4" />
-            <h2 className="text-2xl font-bold text-gray-900 mb-2">Access Denied</h2>
-            <p className="text-gray-600">
+            <h2 className="text-2xl font-bold text-[var(--color-text)] mb-2">Access Denied</h2>
+            <p className="text-[var(--color-text-muted)]">
               Only admins and shop owners can access the economy dashboard.
             </p>
           </div>
@@ -97,8 +97,8 @@ export default function EconomyDashboard({ onPageChange }: EconomyDashboardProps
 
   if (!activeSession) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-purple-50 to-blue-50">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+    <div className="min-h-screen bg-[var(--color-bg)]">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
           {/* Header */}
           <div className="mb-8">
             <div className="flex items-center justify-between">
@@ -129,12 +129,12 @@ export default function EconomyDashboard({ onPageChange }: EconomyDashboardProps
 
           {/* No Active Session Warning */}
           <div className="mb-8">
-            <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-4">
+            <div className="bg-[var(--color-card-bg)] border border-[var(--color-border)] rounded-lg p-4">
               <div className="flex">
                 <Target className="h-5 w-5 text-yellow-400 mr-2 mt-0.5" />
                 <div>
-                  <h3 className="text-sm font-medium text-yellow-800">No Active Session</h3>
-                  <p className="text-sm text-yellow-700 mt-1">
+                  <h3 className="text-sm font-medium text-[var(--color-text)]">No Active Session</h3>
+                  <p className="text-sm text-[var(--color-text-muted)] mt-1">
                     There is no active game session. Team economy data will be limited. Please wait for an admin to start a session for full functionality.
                   </p>
                 </div>
@@ -144,14 +144,14 @@ export default function EconomyDashboard({ onPageChange }: EconomyDashboardProps
 
           {/* Economy Overview */}
           <div className="mb-8">
-            <div className="bg-white rounded-lg shadow p-6">
-              <h2 className="text-xl font-semibold text-gray-900 mb-6">Economy Pipeline Overview</h2>
+            <div className="bg-[var(--color-card-bg)] rounded-lg shadow p-6 border border-[var(--color-border)]">
+              <h2 className="text-xl font-semibold text-[var(--color-text)] mb-6">Economy Pipeline Overview</h2>
               
               <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-                <div className="text-center p-4 border rounded-lg">
+                <div className="text-center p-4 border rounded-lg bg-[var(--color-card-bg)]">
                   <Coins className="h-8 w-8 text-orange-600 mx-auto mb-2" />
-                  <h3 className="text-lg font-semibold text-gray-900">Coins</h3>
-                  <p className="text-sm text-gray-600">Used for playing the game</p>
+                  <h3 className="text-lg font-semibold text-[var(--color-text)]">Coins</h3>
+                  <p className="text-sm text-[var(--color-text-muted)]">Used for playing the game</p>
                   <ul className="text-xs text-gray-500 mt-2 text-left">
                     <li>• Start with 0 coins</li>
                     <li>• Added by admins via real-life mini-games</li>
@@ -161,10 +161,10 @@ export default function EconomyDashboard({ onPageChange }: EconomyDashboardProps
                   </ul>
                 </div>
                 
-                <div className="text-center p-4 border rounded-lg">
+                <div className="text-center p-4 border rounded-lg bg-[var(--color-card-bg)]">
                   <TrendingUp className="h-8 w-8 text-green-600 mx-auto mb-2" />
-                  <h3 className="text-lg font-semibold text-gray-900">Net Worth</h3>
-                  <p className="text-sm text-gray-600">Used to win the game</p>
+                  <h3 className="text-lg font-semibold text-[var(--color-text)]">Net Worth</h3>
+                  <p className="text-sm text-[var(--color-text-muted)]">Used to win the game</p>
                   <ul className="text-xs text-gray-500 mt-2 text-left">
                     <li>• Start with 0 net worth</li>
                     <li>• Earned ONLY by selling oil barrels</li>
@@ -173,10 +173,10 @@ export default function EconomyDashboard({ onPageChange }: EconomyDashboardProps
                   </ul>
                 </div>
                 
-                <div className="text-center p-4 border rounded-lg">
+                <div className="text-center p-4 border rounded-lg bg-[var(--color-card-bg)]">
                   <Package className="h-8 w-8 text-blue-600 mx-auto mb-2" />
-                  <h3 className="text-lg font-semibold text-gray-900">Oil Barrels</h3>
-                  <p className="text-sm text-gray-600">Converted to net worth</p>
+                  <h3 className="text-lg font-semibold text-[var(--color-text)]">Oil Barrels</h3>
+                  <p className="text-sm text-[var(--color-text-muted)]">Converted to net worth</p>
                   <ul className="text-xs text-gray-500 mt-2 text-left">
                     <li>• 1 barrel per excavation</li>
                     <li>• Random quality per square</li>

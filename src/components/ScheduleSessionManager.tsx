@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react'
+import { useState, useEffect } from 'react'
 import { Calendar, Clock, MapPin, Users, Plus, Play, Pause } from 'lucide-react'
 import { supabase } from '../lib/supabase'
 import { useProfile } from '../hooks/useProfile'
@@ -256,8 +256,8 @@ export default function ScheduleSessionManager() {
     <div className="space-y-6">
       {/* Header */}
       <div>
-        <h3 className="text-lg font-semibold text-gray-900">Schedule-Based Sessions</h3>
-        <p className="text-sm text-gray-600">Create attendance sessions from the camp schedule</p>
+        <h3 className="text-lg font-semibold text-[var(--color-text)]">Schedule-Based Sessions</h3>
+        <p className="text-sm text-[var(--color-text-muted)]">Create attendance sessions from the camp schedule</p>
       </div>
 
       {/* Day Selection */}

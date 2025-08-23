@@ -1,5 +1,5 @@
-import React, { useState } from 'react'
-import { Users, Mail, Lock, UserPlus, LogIn, Clock, AlertCircle } from 'lucide-react'
+import { useState } from 'react'
+import { Users, Mail, Lock, UserPlus, LogIn, Clock } from 'lucide-react'
 import { useAuth } from '../hooks/useAuth'
 import { useToast } from './Toast'
 import Button from './ui/Button'
@@ -70,7 +70,6 @@ export default function Auth({ initialMode = 'signin', onBack }: AuthProps) {
           if (error.message.includes('over_email_send_rate_limit')) {
             const match = error.message.match(/after (\d+) seconds/)
             const seconds = match ? parseInt(match[1]) : 60
-            setRateLimitCooldown(seconds)
             startCooldownTimer(seconds)
             addToast({
               type: 'warning',
@@ -115,6 +114,7 @@ export default function Auth({ initialMode = 'signin', onBack }: AuthProps) {
   }
 
   const startCooldownTimer = (seconds: number) => {
+    setRateLimitCooldown(seconds)
     const timer = setInterval(() => {
       setRateLimitCooldown((prev) => {
         if (prev <= 1) {
@@ -133,7 +133,7 @@ export default function Auth({ initialMode = 'signin', onBack }: AuthProps) {
   }
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-orange-50 to-yellow-50 px-4 sm:px-6 lg:px-8">
+    <div className="min-h-screen flex items-center justify-center bg-[var(--color-bg)] px-4 sm:px-6 lg:px-8">
       {onBack && (
         <Button
           onClick={onBack}
@@ -148,18 +148,18 @@ export default function Auth({ initialMode = 'signin', onBack }: AuthProps) {
           <div className="flex justify-center">
             <Users className="h-16 w-16 text-orange-500" />
           </div>
-          <h2 className="mt-6 text-3xl font-extrabold text-gray-900">
+          <h2 className="mt-6 text-3xl font-extrabold text-[var(--color-text)]">
             Summer Camp Team Selection
           </h2>
-          <p className="mt-2 text-sm text-gray-600">
+          <p className="mt-2 text-sm text-[var(--color-text-muted)]">
             {isSignUp ? 'Create your account to join a team' : 'Sign in to manage your team'}
           </p>
         </div>
-
-        <form className="mt-8 space-y-6" onSubmit={handleSubmit}>
-          <div className="space-y-4">
-            <Input
-              label="Email address"
+         
+        <form className="mt-8 space-y-6 bg-[var(--color-card-bg)] p-6 rounded-lg border border-[var(--color-border)]" onSubmit={handleSubmit}>
+           <div className="space-y-4">
+             <Input
+               label="Email address"
                   type="email"
               icon={<Mail />}
                   value={email}
@@ -188,7 +188,7 @@ export default function Auth({ initialMode = 'signin', onBack }: AuthProps) {
           </div>
 
           {showEmailConfirmation && (
-            <div className="rounded-md bg-green-50 border border-green-200 p-4">
+            <div className="rounded-md bg-[var(--color-bg-muted)] border border-[var(--color-border)] p-4">
               <div className="flex">
                 <Mail className="h-5 w-5 text-green-500 mt-0.5 mr-3" />
                 <div className="text-sm text-green-700">

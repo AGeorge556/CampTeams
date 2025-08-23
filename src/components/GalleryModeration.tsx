@@ -133,13 +133,13 @@ export default function GalleryModeration() {
   return (
     <div className="space-y-6">
       {/* Header */}
-      <div className="bg-white rounded-lg shadow-sm p-6">
+      <div className="bg-[var(--color-card-bg)] rounded-lg shadow-sm p-6">
         <div className="flex items-center justify-between">
           <div className="flex items-center space-x-3">
             <Shield className="h-8 w-8 text-purple-500" />
             <div>
-              <h1 className="text-2xl font-bold text-gray-900">{t('photoModeration')}</h1>
-              <p className="text-gray-600">Review and moderate photo submissions</p>
+              <h1 className="text-2xl font-bold text-[var(--color-text)]">{t('photoModeration')}</h1>
+              <p className="text-[var(--color-text-muted)]">Review and moderate photo submissions</p>
             </div>
           </div>
           <Button
@@ -154,31 +154,31 @@ export default function GalleryModeration() {
 
       {/* Statistics */}
       {stats && (
-        <div className="bg-white rounded-lg shadow-sm p-6">
+        <div className="bg-[var(--color-card-bg)] rounded-lg shadow-sm p-6">
           <div className="flex items-center space-x-2 mb-4">
             <BarChart3 className="h-5 w-5 text-gray-600" />
-            <h2 className="text-lg font-semibold text-gray-900">{t('galleryStats')}</h2>
+            <h2 className="text-lg font-semibold text-[var(--color-text)]">{t('galleryStats')}</h2>
           </div>
           <div className="grid grid-cols-2 md:grid-cols-5 gap-4">
             <div className="text-center">
-              <div className="text-2xl font-bold text-gray-900">{stats.total_photos}</div>
-              <div className="text-sm text-gray-600">{t('totalPhotos')}</div>
+              <div className="text-2xl font-bold text-[var(--color-text)]">{stats.total_photos}</div>
+              <div className="text-sm text-[var(--color-text-muted)]">{t('totalPhotos')}</div>
             </div>
             <div className="text-center">
               <div className="text-2xl font-bold text-yellow-600">{stats.pending_photos}</div>
-              <div className="text-sm text-gray-600">{t('pendingCount')}</div>
+              <div className="text-sm text-[var(--color-text-muted)]">{t('pendingCount')}</div>
             </div>
             <div className="text-center">
               <div className="text-2xl font-bold text-green-600">{stats.approved_photos}</div>
-              <div className="text-sm text-gray-600">{t('approvedCount')}</div>
+              <div className="text-sm text-[var(--color-text-muted)]">{t('approvedCount')}</div>
             </div>
             <div className="text-center">
               <div className="text-2xl font-bold text-red-600">{stats.rejected_photos}</div>
-              <div className="text-sm text-gray-600">{t('rejectedCount')}</div>
+              <div className="text-sm text-[var(--color-text-muted)]">{t('rejectedCount')}</div>
             </div>
             <div className="text-center">
               <div className="text-2xl font-bold text-blue-600">{stats.total_users}</div>
-              <div className="text-sm text-gray-600">{t('totalUsers')}</div>
+              <div className="text-sm text-[var(--color-text-muted)]">{t('totalUsers')}</div>
             </div>
           </div>
         </div>
@@ -186,8 +186,8 @@ export default function GalleryModeration() {
 
       {/* Filters */}
       {showFilters && (
-        <div className="bg-white rounded-lg shadow-sm p-6">
-          <h3 className="text-lg font-semibold text-gray-900 mb-4">{t('filterByStatus')}</h3>
+        <div className="bg-[var(--color-card-bg)] rounded-lg shadow-sm p-6">
+          <h3 className="text-lg font-semibold text-[var(--color-text)] mb-4">{t('filterByStatus')}</h3>
           <div className="flex flex-wrap gap-2">
             <Button
               variant={statusFilter === null ? 'primary' : 'outline'}
@@ -222,8 +222,8 @@ export default function GalleryModeration() {
       )}
 
       {/* Photos Grid */}
-      <div className="bg-white rounded-lg shadow-sm p-6">
-        <h2 className="text-lg font-semibold text-gray-900 mb-4">
+      <div className="bg-[var(--color-card-bg)] rounded-lg shadow-sm p-6">
+        <h2 className="text-lg font-semibold text-[var(--color-text)] mb-4">
           {statusFilter ? PHOTO_STATUS_LABELS[statusFilter] : t('allPhotos')} ({photosWithInfo.length})
         </h2>
 
@@ -235,7 +235,7 @@ export default function GalleryModeration() {
         ) : (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             {photosWithInfo.map((photo) => (
-              <div key={photo.id} className="border border-gray-200 rounded-lg overflow-hidden">
+              <div key={photo.id} className="border border-[var(--color-border)] rounded-lg overflow-hidden bg-[var(--color-card-bg)]">
                 {/* Photo */}
                 <div className="relative group">
                   {(() => {
@@ -313,7 +313,7 @@ export default function GalleryModeration() {
                   )}
 
                   {/* Metadata */}
-                  <div className="space-y-1 text-xs text-gray-500">
+                  <div className="space-y-1 text-xs text-[var(--color-text-muted)]">
                     <div className="flex items-center space-x-1">
                       <Users className="h-3 w-3" />
                       <span>{photo.user_name}</span>
@@ -386,9 +386,9 @@ export default function GalleryModeration() {
       {/* Delete Confirmation Modal */}
       {showDeleteConfirm && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-          <div className="bg-white rounded-lg p-6 max-w-md w-full mx-4">
-            <h3 className="text-lg font-semibold text-gray-900 mb-4">{t('confirmDelete')}</h3>
-            <p className="text-gray-600 mb-6">{t('deletePhotoConfirm')}</p>
+          <div className="bg-[var(--color-card-bg)] rounded-lg p-6 max-w-md w-full mx-4 border border-[var(--color-border)]">
+            <h3 className="text-lg font-semibold text-[var(--color-text)] mb-4">{t('confirmDelete')}</h3>
+            <p className="text-[var(--color-text-muted)] mb-6">{t('deletePhotoConfirm')}</p>
             <div className="flex justify-end space-x-3">
               <Button
                 variant="outline"
@@ -408,4 +408,4 @@ export default function GalleryModeration() {
       )}
     </div>
   )
-} 
+}

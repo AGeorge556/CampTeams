@@ -37,9 +37,9 @@ export default function QRCode({ value, size = 200, className = '' }: QRCodeProp
     <div className={`flex flex-col items-center ${className}`}>
       <canvas
         ref={canvasRef}
-        className="border border-gray-200 rounded-lg shadow-sm"
+        className="border border-[var(--color-border)] rounded-lg shadow-sm bg-[var(--color-bg)]"
       />
-      <p className="text-sm text-gray-600 mt-2 text-center">
+      <p className="text-sm text-[var(--color-text-muted)] mt-2 text-center">
         Scan to check in
       </p>
     </div>

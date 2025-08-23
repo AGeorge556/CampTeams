@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react'
+import { useState, useEffect } from 'react'
 import { QrCode, CheckCircle, XCircle, Clock, Users } from 'lucide-react'
 import { supabase } from '../lib/supabase'
 import { useProfile } from '../hooks/useProfile'
@@ -30,7 +30,7 @@ export default function AttendanceCheckIn() {
         .order('start_time', { ascending: true })
 
       if (error) throw error
-      setActiveSessions(data || [])
+      setActiveSessions((data || []) as CampSession[])
     } catch (error) {
       console.error('Error loading active sessions:', error)
       addToast({
@@ -54,7 +54,7 @@ export default function AttendanceCheckIn() {
         .order('created_at', { ascending: false })
 
       if (error) throw error
-      setMyAttendance(data || [])
+      setMyAttendance((data || []) as AttendanceRecord[])
     } catch (error) {
       console.error('Error loading attendance:', error)
     }
@@ -130,23 +130,23 @@ export default function AttendanceCheckIn() {
     <div className="space-y-4 sm:space-y-6">
       {/* Header */}
       <div>
-        <h3 className="text-lg font-semibold text-gray-900">Attendance Check-in</h3>
-        <p className="text-sm text-gray-600">Check in to active camp sessions</p>
+        <h3 className="text-lg font-semibold text-[var(--color-text)]">Attendance Check-in</h3>
+        <p className="text-sm text-[var(--color-text-muted)]">Check in to active camp sessions</p>
       </div>
 
       {/* Active Sessions */}
-      <div className="bg-white rounded-lg shadow-sm">
-        <div className="px-4 sm:px-6 py-3 sm:py-4 border-b border-gray-200">
-          <h4 className="text-lg font-medium text-gray-900 flex items-center">
+      <div className="bg-[var(--color-card-bg)] rounded-lg shadow-sm border border-[var(--color-border)]">
+        <div className="px-4 sm:px-6 py-3 sm:py-4 border-b border-[var(--color-border)]">
+          <h4 className="text-lg font-medium text-[var(--color-text)] flex items-center">
             <QrCode className="h-5 w-5 mr-2" />
             Active Sessions
           </h4>
         </div>
-        <div className="divide-y divide-gray-200">
+        <div className="divide-y divide-[var(--color-border)]">
           {loading ? (
-            <div className="p-4 sm:p-6 text-center text-gray-500">Loading sessions...</div>
+            <div className="p-4 sm:p-6 text-center text-[var(--color-text-muted)]">Loading sessions...</div>
           ) : activeSessions.length === 0 ? (
-            <div className="p-4 sm:p-6 text-center text-gray-500">No active sessions available</div>
+            <div className="p-4 sm:p-6 text-center text-[var(--color-text-muted)]">No active sessions available</div>
           ) : (
             activeSessions.map((session) => {
               const attendanceStatus = getAttendanceStatus(session.id)
@@ -157,7 +157,7 @@ export default function AttendanceCheckIn() {
                   <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between space-y-3 sm:space-y-0">
                     <div className="flex-1">
                       <div className="flex flex-col sm:flex-row sm:items-center space-y-2 sm:space-y-0 sm:space-x-3">
-                        <h5 className="text-base sm:text-lg font-medium text-gray-900">{session.name}</h5>
+                        <h5 className="text-base sm:text-lg font-medium text-[var(--color-text)]">{session.name}</h5>
                         {isActive && (
                           <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800 w-fit">
                             Active Now
@@ -165,9 +165,9 @@ export default function AttendanceCheckIn() {
                         )}
                       </div>
                       {session.description && (
-                        <p className="text-sm text-gray-600 mt-1">{session.description}</p>
+                        <p className="text-sm text-[var(--color-text-muted)] mt-1">{session.description}</p>
                       )}
-                      <div className="flex flex-col sm:flex-row sm:items-center space-y-1 sm:space-y-0 sm:space-x-4 mt-2 text-sm text-gray-500">
+                      <div className="flex flex-col sm:flex-row sm:items-center space-y-1 sm:space-y-0 sm:space-x-4 mt-2 text-sm text-[var(--color-text-muted)]">
                         <div className="flex items-center">
                           <Clock className="h-4 w-4 mr-1" />
                           {formatDateTime(session.start_time)}
@@ -213,16 +213,16 @@ export default function AttendanceCheckIn() {
       </div>
 
       {/* My Attendance History */}
-      <div className="bg-white rounded-lg shadow-sm">
-        <div className="px-4 sm:px-6 py-3 sm:py-4 border-b border-gray-200">
-          <h4 className="text-lg font-medium text-gray-900 flex items-center">
+      <div className="bg-[var(--color-card-bg)] rounded-lg shadow-sm border border-[var(--color-border)]">
+        <div className="px-4 sm:px-6 py-3 sm:py-4 border-b border-[var(--color-border)]">
+          <h4 className="text-lg font-medium text-[var(--color-text)] flex items-center">
             <Users className="h-5 w-5 mr-2" />
             My Attendance History
           </h4>
         </div>
-        <div className="divide-y divide-gray-200">
+        <div className="divide-y divide-[var(--color-border)]">
           {myAttendance.length === 0 ? (
-            <div className="p-4 sm:p-6 text-center text-gray-500">No attendance records yet</div>
+            <div className="p-4 sm:p-6 text-center text-[var(--color-text-muted)]">No attendance records yet</div>
           ) : (
             myAttendance.slice(0, 10).map((attendance) => (
               <div key={attendance.id} className="p-3 sm:p-4">
@@ -236,11 +236,11 @@ export default function AttendanceCheckIn() {
                       ) : (
                         <Clock className="h-4 w-4 text-yellow-600" />
                       )}
-                      <span className="text-sm font-medium text-gray-900 capitalize">
+                      <span className="text-sm font-medium text-[var(--color-text)] capitalize">
                         {attendance.status}
                       </span>
                     </div>
-                    <p className="text-xs text-gray-500 mt-1">
+                    <p className="text-xs text-[var(--color-text-muted)] mt-1">
                       {formatDateTime(attendance.checked_in_at)}
                     </p>
                   </div>
@@ -252,4 +252,4 @@ export default function AttendanceCheckIn() {
       </div>
     </div>
   )
-} 
+}

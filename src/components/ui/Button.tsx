@@ -12,11 +12,11 @@ interface ButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElement> {
 }
 
 const variants = {
-  primary: 'bg-orange-600 hover:bg-orange-700 text-white border-transparent focus:ring-orange-500',
-  secondary: 'bg-gray-600 hover:bg-gray-700 text-white border-transparent focus:ring-gray-500',
-  outline: 'bg-transparent hover:bg-gray-50 text-gray-700 border-gray-300 focus:ring-orange-500',
-  ghost: 'bg-transparent hover:bg-gray-100 text-gray-700 border-transparent focus:ring-orange-500',
-  danger: 'bg-red-600 hover:bg-red-700 text-white border-transparent focus:ring-red-500',
+  primary: 'bg-[var(--color-primary)] hover:opacity-90 text-[var(--color-primary-contrast)] border-transparent shadow-[var(--neon-glow)] hover:shadow-none transition-all duration-300',
+  secondary: 'bg-[var(--color-accent)] hover:opacity-90 text-white border-transparent shadow-[var(--neon-glow)] hover:shadow-none transition-all duration-300',
+  outline: 'bg-transparent hover:bg-[var(--color-bg-muted)] text-[var(--color-text)] border-[var(--color-border)] hover:border-[var(--color-primary)] hover:shadow-[var(--neon-glow)] transition-all duration-300',
+  ghost: 'bg-transparent hover:bg-[var(--color-bg-muted)] text-[var(--color-text-muted)] hover:text-[var(--color-text)] border-transparent transition-colors duration-300',
+  danger: 'bg-[var(--color-danger)] hover:opacity-90 text-white border-transparent shadow-[var(--neon-glow)] hover:shadow-none transition-all duration-300',
   'mobile-primary': 'btn-mobile-primary',
   'mobile-secondary': 'btn-mobile-secondary',
   'mobile-outline': 'btn-mobile-outline'

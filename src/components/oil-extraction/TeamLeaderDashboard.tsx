@@ -54,10 +54,10 @@ export default function TeamLeaderDashboard() {
   if (!teamId) {
     return (
       <div className="text-center py-8">
-        <h2 className="text-2xl font-bold text-gray-900 mb-4">
+        <h2 className="text-2xl font-bold text-[var(--color-text)] mb-4">
           No Team Assigned
         </h2>
-        <p className="text-gray-600">
+        <p className="text-[var(--color-text-muted)]">
           You need to be assigned to a team to access the Oil Extraction Game.
         </p>
       </div>
@@ -69,13 +69,13 @@ export default function TeamLeaderDashboard() {
   return (
     <div className="space-y-8">
       {/* Team Status */}
-      <div className="bg-white rounded-lg shadow p-6">
-        <div className="flex items-center justify-between mb-6">
+  <div className="bg-[var(--color-card-bg)] rounded-lg shadow p-6 border border-[var(--color-border)]">
+    <div className="flex items-center justify-between mb-6">
           <div className="flex items-center">
-            <div className={`w-8 h-8 rounded-full ${TEAM_COLORS[teamId]} mr-3`} />
+            <div className={`w-8 h-8 rounded-full ${teamId && TEAM_COLORS[teamId as keyof typeof TEAM_COLORS]} mr-3`} />
             <div>
-              <h2 className="text-2xl font-bold text-gray-900">{TEAM_NAMES[teamId]}</h2>
-              <p className="text-gray-600">Team Leader Dashboard</p>
+      <h2 className="text-2xl font-bold text-[var(--color-text)]">{TEAM_NAMES[teamId as keyof typeof TEAM_NAMES]}</h2>
+      <p className="text-[var(--color-text-muted)]">Team Leader Dashboard</p>
             </div>
           </div>
           {teamRank && (
@@ -101,9 +101,9 @@ export default function TeamLeaderDashboard() {
               </div>
             </div>
           ) : (
-            <div className="p-4 bg-gray-50 border border-gray-200 rounded-lg">
+            <div className="p-4 bg-[var(--color-bg-muted)] border border-[var(--color-border)] rounded-lg">
               <div className="flex items-center">
-                <div className="w-3 h-3 bg-gray-500 rounded-full mr-3" />
+                <div className="w-3 h-3 bg-[var(--color-accent-muted)] rounded-full mr-3" />
                 <div>
                   <h3 className="font-medium text-gray-900">Game Inactive</h3>
                   <p className="text-sm text-gray-700">No active game session</p>
@@ -256,4 +256,4 @@ export default function TeamLeaderDashboard() {
       </div>
     </div>
   )
-} 
+}

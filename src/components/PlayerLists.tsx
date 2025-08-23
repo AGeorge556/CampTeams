@@ -83,32 +83,32 @@ export default function PlayerLists() {
 
   if (loading) {
     return (
-      <div className="bg-white rounded-lg shadow-sm p-6">
+      <div className="bg-[var(--color-card-bg)] rounded-lg shadow-sm p-6 border border-[var(--color-border)]">
         <LoadingSpinner text={t('loadingTeamRosters')} />
       </div>
     )
   }
 
   return (
-    <div className="bg-white rounded-lg shadow-sm p-6">
-      <h3 className="text-lg font-semibold text-gray-900 mb-6 flex items-center">
+    <div className="bg-[var(--color-card-bg)] rounded-lg shadow-sm p-6 border border-[var(--color-border)]">
+      <h3 className="text-lg font-semibold text-[var(--color-text)] mb-6 flex items-center">
         <Users className="h-5 w-5 mr-2" />
         {t('teamRosters')}
       </h3>
       
       {/* Team Balance Summary */}
       {teamBalances.length > 0 && (
-        <div className="mb-6 p-4 bg-blue-50 rounded-lg border border-blue-200">
+        <div className="mb-6 p-4 bg-[var(--color-bg-muted)] rounded-lg border border-[var(--color-border)]">
           <div className="flex items-center mb-3">
             <Info className="h-5 w-5 mr-2 text-blue-600" />
-            <h4 className="font-medium text-blue-900">{t('teamBalanceSummary')}</h4>
+            <h4 className="font-medium text-[var(--color-text)]">{t('teamBalanceSummary')}</h4>
           </div>
           <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
             {teamBalances.map((balance) => (
               <div key={balance.team} className="text-center">
-                <div className="font-semibold text-blue-800">{TEAMS[balance.team as TeamColor].name}</div>
-                <div className="text-sm text-blue-600">
-                  {balance.total_count} {t('players')} • {balance.male_count} {t('male')} • {balance.female_count} {t('female')}
+                <div className="font-semibold text-[var(--color-text)]">{TEAMS[balance.team as TeamColor].name}</div>
+                <div className="text-sm text-[var(--color-text-muted)]">
+                  {balance.total_count} {t('players')}  {balance.male_count} {t('male')}  {balance.female_count} {t('female')}
                 </div>
               </div>
             ))}
@@ -130,7 +130,7 @@ export default function PlayerLists() {
                     <span className="text-sm opacity-90">{nonAdminPlayers.length} {t('players')}</span>
                     {profile && profile.current_team === teamKey && (
                       <div className="mt-1">
-                        <span className="inline-flex items-center px-2 py-1 bg-white bg-opacity-20 rounded-full text-xs font-medium">
+                        <span className="inline-flex items-center px-2 py-1 bg-[var(--color-bg-muted)] rounded-full text-xs font-medium text-[var(--color-text)] border border-[var(--color-border)]">
                           {t('yourCurrentTeam')}
                         </span>
                       </div>
@@ -161,7 +161,7 @@ export default function PlayerLists() {
               </div>
 
               {/* Player List */}
-              <div className="bg-white rounded-b-lg p-4 border-t-0 border shadow-sm">
+              <div className="bg-[var(--color-card-bg)] rounded-b-lg p-4 border-t-0 border border-[var(--color-border)] shadow-sm">
                 <div className="flex flex-wrap gap-2">
                   {nonAdminPlayers.map((p) => {
                     const roles: { label: string; color: string; icon: React.ReactNode }[] = []
@@ -170,23 +170,23 @@ export default function PlayerLists() {
                     if (p.role === 'team_leader') roles.push({ label: 'Team Leader', color: 'bg-blue-100 text-blue-800 border border-blue-300', icon: <User className="h-3 w-3 mr-1 text-blue-500" /> })
                     if (p.role === 'camper' || (!p.is_admin && p.role !== 'shop_owner' && p.role !== 'team_leader')) roles.push({ label: 'Camper', color: 'bg-green-100 text-green-800 border border-green-300', icon: <User className="h-3 w-3 mr-1 text-green-500" /> })
                     return (
-                      <span key={p.id} className="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-gray-100 text-gray-800 mr-2">
+                      <span key={p.id} className="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-[var(--color-bg-muted)] text-[var(--color-text)] mr-2 border border-[var(--color-border)]">
                         <User className="h-4 w-4 mr-1 text-orange-500" />
-                        {p.full_name} {!p.is_admin && <span className="ml-1 text-xs text-gray-500">({getGradeDisplayWithNumber(p.grade)}, {p.gender === 'male' ? t('male') : t('female')})</span>}
+                        {p.full_name} {!p.is_admin && <span className="ml-1 text-xs text-[var(--color-text-muted)]">({getGradeDisplayWithNumber(p.grade)}, {p.gender === 'male' ? t('male') : t('female')})</span>}
                         {roles.map((role, idx) => (
                           <span key={idx} className={`ml-2 inline-flex items-center px-2 py-0.5 rounded-full text-xs font-bold ${role.color}`}>{role.icon}{role.label}</span>
                         ))}
                       </span>
                     )
                   })}
-                                     {adminPlayers.map((p) => {
+                                      {adminPlayers.map((p) => {
                      const roles: { label: string; color: string; icon: React.ReactNode }[] = []
                      if (p.is_admin) roles.push({ label: 'Admin', color: 'bg-purple-100 text-purple-800 border border-purple-300', icon: <Shield className="h-3 w-3 mr-1 text-purple-500" /> })
                      if (p.role === 'shop_owner') roles.push({ label: 'Shop Owner', color: 'bg-yellow-100 text-yellow-800 border border-yellow-300', icon: <User className="h-3 w-3 mr-1 text-yellow-500" /> })
                      if (p.role === 'team_leader') roles.push({ label: 'Team Leader', color: 'bg-blue-100 text-blue-800 border border-blue-300', icon: <User className="h-3 w-3 mr-1 text-blue-500" /> })
                      if (p.role === 'camper' || (!p.is_admin && p.role !== 'shop_owner' && p.role !== 'team_leader')) roles.push({ label: 'Camper', color: 'bg-green-100 text-green-800 border border-green-300', icon: <User className="h-3 w-3 mr-1 text-green-500" /> })
                      return (
-                       <span key={p.id} className="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-purple-100 text-purple-800 border border-purple-300 mr-2">
+                       <span key={p.id} className="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-[var(--color-bg-muted)] text-[var(--color-text)] border border-[var(--color-border)] mr-2">
                          <Shield className="h-4 w-4 mr-1 text-purple-500" />
                          {p.full_name}
                          {roles.map((role, idx) => (
@@ -203,4 +203,4 @@ export default function PlayerLists() {
       </div>
     </div>
   )
-} 
+}

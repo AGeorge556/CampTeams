@@ -79,12 +79,13 @@ export const SESSION_TYPE_LABELS: Record<SessionType, string> = {
   other: 'Other'
 }
 
+// Semantic token classes that work in light mode and will fall back to CSS variables in dark
 export const SESSION_TYPE_COLORS: Record<SessionType, string> = {
   sermon: 'bg-purple-100 text-purple-800',
   quiet_time: 'bg-blue-100 text-blue-800',
   activity: 'bg-green-100 text-green-800',
   meal: 'bg-orange-100 text-orange-800',
-  other: 'bg-gray-100 text-gray-800'
+  other: 'bg-[var(--color-card-bg)] text-[var(--color-text)]'
 }
 
 export interface CampSettings {
@@ -312,7 +313,7 @@ export const TRANSACTION_TYPE_COLORS: Record<OilTransaction['transaction_type'],
 }
 
 export const OIL_QUALITY_COLORS: Record<OilQuality, string> = {
-  common: 'bg-gray-100 text-gray-800',
+  common: 'bg-[var(--color-card-bg)] text-[var(--color-text-muted)]',
   rare: 'bg-blue-100 text-blue-800',
   epic: 'bg-purple-100 text-purple-800',
   legendary: 'bg-orange-100 text-orange-800',
