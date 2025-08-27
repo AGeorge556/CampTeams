@@ -66,8 +66,19 @@ export default function SessionManager({ onSessionCreated }: SessionManagerProps
       const sessionId = `session_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`
       const qrCodeUrl = `${siteUrl}/?attendance=${sessionId}`
 
+      // Convert datetime-local values to proper ISO strings with timezone
+      const convertToISOString = (datetimeLocal: string) => {
+        if (!datetimeLocal) return null
+        // Create a Date object from the datetime-local value (which is in local time)
+        const date = new Date(datetimeLocal)
+        // Convert to ISO string to include timezone information
+        return date.toISOString()
+      }
+
       const sessionData = {
         ...formData,
+        start_time: convertToISOString(formData.start_time),
+        end_time: convertToISOString(formData.end_time),
         created_by: profile.id,
         qr_code: qrCodeUrl
       }
@@ -157,12 +168,26 @@ export default function SessionManager({ onSessionCreated }: SessionManagerProps
 
   const editSession = (session: CampSession) => {
     setEditingSession(session)
+    
+    // Convert ISO datetime strings to datetime-local format
+    const convertToDatetimeLocal = (isoString: string) => {
+      if (!isoString) return ''
+      const date = new Date(isoString)
+      // Format as YYYY-MM-DDTHH:MM for datetime-local input
+      const year = date.getFullYear()
+      const month = String(date.getMonth() + 1).padStart(2, '0')
+      const day = String(date.getDate()).padStart(2, '0')
+      const hours = String(date.getHours()).padStart(2, '0')
+      const minutes = String(date.getMinutes()).padStart(2, '0')
+      return `${year}-${month}-${day}T${hours}:${minutes}`
+    }
+    
     setFormData({
       name: session.name,
       description: session.description || '',
       session_type: session.session_type,
-      start_time: session.start_time.slice(0, 16), // Format for datetime-local input
-      end_time: session.end_time.slice(0, 16)
+      start_time: convertToDatetimeLocal(session.start_time),
+      end_time: convertToDatetimeLocal(session.end_time)
     })
     setShowForm(true)
   }

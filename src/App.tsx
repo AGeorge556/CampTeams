@@ -216,6 +216,18 @@ function AppContent({
   const { oilExtractionVisible } = useOilExtractionVisibility()
   const { galleryVisible } = useGalleryVisibility()
 
+  // Debug logging to track profile state
+  useEffect(() => {
+    console.log('AppContent Debug:', {
+      user: !!user,
+      authLoading,
+      profile: !!profile,
+      profileLoading,
+      currentPage,
+      hasAccepted
+    })
+  }, [user, authLoading, profile, profileLoading, currentPage, hasAccepted])
+
   // Redirect to dashboard if user is on oil extraction page but it's hidden and they're not admin
   useEffect(() => {
     if (currentPage.startsWith('oil-extraction') && !oilExtractionVisible && !profile?.is_admin) {
@@ -238,8 +250,14 @@ function AppContent({
     return <LandingPage />
   }
 
-  if (!profile) {
+  // Only show onboarding if user exists but profile is null AND profile loading is complete
+  if (!profile && !profileLoading) {
     return <OnboardingForm />
+  }
+
+  // If profile is still loading, show loading spinner
+  if (profileLoading) {
+    return <LoadingSpinner fullScreen text="Loading profile..." />
   }
 
   if (hasAccepted === false) {
