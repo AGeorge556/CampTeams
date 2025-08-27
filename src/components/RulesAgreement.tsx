@@ -132,11 +132,35 @@ export default function RulesAgreement() {
           </div>
         </div>
 
+        {/* Agreement Checkbox */}
+        <div className="bg-[var(--color-card-bg)] rounded-lg shadow-lg p-4 sm:p-6 border border-[var(--color-border)]">
+          <div className="flex items-start space-x-3">
+            <div className="flex-shrink-0">
+              <input
+                type="checkbox"
+                id="agree-checkbox"
+                checked={agreed}
+                onChange={(e) => setAgreed(e.target.checked)}
+                className="w-6 h-6 sm:w-5 sm:h-5 text-orange-600 bg-[var(--color-input-bg)] border-[var(--color-border)] rounded focus:ring-orange-500 focus:ring-2 cursor-pointer"
+              />
+            </div>
+            <div className="flex-1">
+              <label htmlFor="agree-checkbox" className="text-sm text-[var(--color-text)] cursor-pointer select-none">
+                <span className="font-medium">I have read and agree to the Camp Rules & Guidelines</span>
+                <p className="text-[var(--color-text-muted)] mt-1">
+                  By checking this box, you acknowledge that you have read, understood, and agree to follow all the rules and guidelines outlined above.
+                </p>
+              </label>
+            </div>
+          </div>
+        </div>
+
         <div className="flex justify-center">
           <Button
             onClick={handleAccept}
             loading={loading}
-            className="px-8 py-3 text-lg"
+            disabled={!agreed}
+            className={`px-8 py-3 text-lg ${!agreed ? 'opacity-50 cursor-not-allowed' : ''}`}
           >
             {loading ? 'Processing...' : 'I Agree to the Rules'}
           </Button>
