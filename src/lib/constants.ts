@@ -13,7 +13,6 @@ export const MAX_TEAM_SIZE_DIFFERENCE = 1 // Teams should stay within 1 player d
 export const MAX_GENDER_DIFFERENCE_WITHIN_TEAM = 2 // Max difference between males/females within a team
 export const MAX_GENDER_DIFFERENCE_ACROSS_TEAMS = 1 // Max difference between teams for same gender
 
-
 // Grade Configuration
 export const GRADES = [7, 8, 9, 10, 11, 12] as const
 export const GRADE_NAMES = {
@@ -33,6 +32,25 @@ export const TEAM_NAMES = {
   green: 'Green',
   yellow: 'Yellow'
 } as const
+
+// Oil Extraction Game Configuration
+export type OilQuality = 'common' | 'rare' | 'epic' | 'legendary' | 'mythic'
+
+export const OIL_QUALITY_LABELS: Record<OilQuality, string> = {
+  common: 'Common',
+  rare: 'Rare',
+  epic: 'Epic',
+  legendary: 'Legendary',
+  mythic: 'Mythic'
+}
+
+export const OIL_QUALITY_COLORS: Record<OilQuality, string> = {
+  common: 'bg-gray-500 text-white',
+  rare: 'bg-blue-500 text-white',
+  epic: 'bg-purple-500 text-white',
+  legendary: 'bg-orange-500 text-white',
+  mythic: 'bg-red-500 text-white'
+}
 
 // Sports Configuration
 export const AVAILABLE_SPORTS = [

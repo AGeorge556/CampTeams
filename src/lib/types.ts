@@ -156,6 +156,8 @@ export interface OilGridSquare {
   is_excavated: boolean
   excavated_by_team?: 'red' | 'blue' | 'green' | 'yellow'
   timestamp?: string
+  marked_by_team?: 'red' | 'blue' | 'green' | 'yellow'
+  marked_at?: string
 }
 
 export interface OilInventoryItem {
@@ -164,13 +166,11 @@ export interface OilInventoryItem {
 }
 
 export interface TeamInventorySummary {
-  team_id: 'red' | 'blue' | 'green' | 'yellow'
-  common_count: number
-  rare_count: number
-  epic_count: number
-  legendary_count: number
-  mythic_count: number
-  total_count: number
+  team_id: string
+  team_name: string
+  total_barrels: number
+  total_value: number
+  inventory: OilInventoryItem[]
 }
 
 export interface ExcavationResult {
@@ -178,6 +178,12 @@ export interface ExcavationResult {
   quality?: OilQuality
   coins_deducted?: number
   remaining_coins?: number
+  error?: string
+}
+
+export interface MarkingResult {
+  success: boolean
+  message: string
   error?: string
 }
 
@@ -394,9 +400,17 @@ export const PHOTO_STATUS_COLORS: Record<PhotoStatus, string> = {
 
 // Scoreboard Types
 export interface TeamScore {
-  team_id: 'red' | 'blue' | 'green' | 'yellow'
-  points: number
-  updated_at: string
+  team_id: string
+  correct_marks: number
+  total_marks: number
+  score: number
+}
+
+export interface RevealResult {
+  success: boolean
+  message: string
+  scores?: TeamScore[]
+  error?: string
 }
 
 export interface ScoreEvent {
