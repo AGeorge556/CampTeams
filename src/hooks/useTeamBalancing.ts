@@ -1,13 +1,9 @@
 import { useState, useEffect } from 'react'
-import { TEAMS, TeamColor } from '../lib/supabase'
+import { supabase } from '../lib/supabase'
+import { TEAM_COLORS, TeamColor } from '../lib/types'
 import { usePlayers } from './usePlayers'
 import { useProfile } from './useProfile'
-import {
-	MAX_TEAM_SIZE,
-	MAX_PLAYERS_PER_GRADE,
-	MAX_TEAM_SIZE_DIFFERENCE,
-	MAX_GENDER_DIFFERENCE_ACROSS_TEAMS,
-} from '../lib/constants'
+import { MAX_PLAYERS_PER_GRADE } from '../lib/constants'
 
 interface TeamBalance {
   team: string
@@ -21,7 +17,7 @@ interface TeamAcceptanceResult {
   reason: string
 }
 
-interface SwitchResult {
+interface TeamSwitchResult {
   canSwitch: boolean
   reason: string
 }
@@ -32,128 +28,167 @@ export function useTeamBalancing() {
   const [teamBalances, setTeamBalances] = useState<TeamBalance[]>([])
   const [loading, setLoading] = useState(true)
 
-  // Calculate team balances from current player data
   useEffect(() => {
-    if (!players) return
-
-    const balances: TeamBalance[] = Object.entries(TEAMS).map(([teamKey, teamConfig]) => {
-      const teamPlayers = (players[teamKey] || []).filter(p => p.participate_in_teams && !p.is_admin)
-      const maleCount = teamPlayers.filter(p => p.gender === 'male').length
-      const femaleCount = teamPlayers.filter(p => p.gender === 'female').length
-      
-      return {
-        team: teamKey,
-        total_count: teamPlayers.length,
-        male_count: maleCount,
-        female_count: femaleCount
-      }
-    })
-
-    setTeamBalances(balances)
-    setLoading(false)
+    loadTeamBalances()
   }, [players])
 
-  // Check if a team can accept a player based on balancing rules (join-only projection)
-  const canTeamAcceptPlayer = (teamKey: TeamColor, userGender: string): TeamAcceptanceResult => {
-    if (!teamBalances.length) {
-      return { canAccept: false, reason: 'Loading team data...' }
+  const loadTeamBalances = async () => {
+    try {
+      setLoading(true)
+      const { data, error } = await supabase
+        .rpc('get_team_sizes')
+
+      if (error) throw error
+
+      const balances: TeamBalance[] = data.map((row: any) => ({
+        team: row.team,
+        total_count: row.size,
+        male_count: row.male_count,
+        female_count: row.female_count
+      }))
+
+      setTeamBalances(balances)
+    } catch (error) {
+      console.error('Failed to load team balances:', error)
+    } finally {
+      setLoading(false)
     }
+  }
 
-    const targetTeam = teamBalances.find(b => b.team === teamKey)
-    if (!targetTeam) {
-      return { canAccept: false, reason: 'Team not found' }
-    }
+  // Check if a team can accept a player based on database validation
+  const canTeamAcceptPlayer = async (teamKey: TeamColor, userGender: string): Promise<TeamAcceptanceResult> => {
+    try {
+      const { data, error } = await supabase
+        .rpc('validate_team_assignment', {
+          new_team: teamKey,
+          user_gender: userGender
+        })
 
-    // Check absolute team size limit
-    if (targetTeam.total_count >= MAX_TEAM_SIZE) {
-      return { canAccept: false, reason: 'Team is at maximum capacity' }
-    }
+      if (error) throw error
 
-    // Only check absolute team size limit (24 players max)
-    // Remove overly restrictive balancing rules that prevent reasonable team growth
-
-    // Check grade limit (max 4 players per grade per team)
-    if (profile) {
-      const teamPlayers = (players[teamKey] || []).filter(p => p.participate_in_teams && !p.is_admin)
-      const playersInSameGrade = teamPlayers.filter(p => p.grade === profile.grade)
-      if (playersInSameGrade.length >= MAX_PLAYERS_PER_GRADE) {
-        return { canAccept: false, reason: 'Maximum players per grade reached' }
+      const result = data[0]
+      return {
+        canAccept: result.can_assign,
+        reason: result.reason
       }
-    }
-
-    return { canAccept: true, reason: 'Team can accept player' }
-  }
-
-  // Check if user can switch to a specific team (full client-side projection)
-  const canSwitchToTeam = async (newTeam: TeamColor): Promise<SwitchResult> => {
-    if (!profile) return { canSwitch: false, reason: 'User profile not found' }
-
-    // Admins never count toward restrictions and can always move
-    if (profile.is_admin) {
-      return { canSwitch: true, reason: 'Admin override' }
-    }
-
-    if (profile.current_team === newTeam) {
-      return { canSwitch: false, reason: 'Already on this team' }
-    }
-
-    if (!profile.is_admin && (profile.switches_remaining || 0) <= 0) {
-      return { canSwitch: false, reason: 'No switches remaining' }
-    }
-
-    const fromTeam = (profile.current_team || '') as TeamColor
-    const userGender = profile.gender
-
-    // Basic capacity/grade checks using the join-only helper
-    const acceptCheck = canTeamAcceptPlayer(newTeam, userGender)
-    if (!acceptCheck.canAccept && !profile.is_admin) {
-      return { canSwitch: false, reason: acceptCheck.reason }
-    }
-
-    // Only check if the target team would exceed 24 players
-    // Remove overly restrictive balancing rules that prevent reasonable team switching
-
-    return { canSwitch: true, reason: 'Switch allowed' }
-  }
-
-  // Get recommended team for user (client-side)
-  const getRecommendedTeam = async (): Promise<{ team: string; reason: string } | null> => {
-    if (!profile) return null
-
-    // Prefer teams with the smallest total size, then smallest gender count for the user's gender
-    const minSize = Math.min(...teamBalances.map(b => b.total_count))
-    const smallestTeams = teamBalances.filter(b => b.total_count === minSize)
-
-    const genderKey = profile.gender === 'male' ? 'male_count' : 'female_count'
-    const minGender = Math.min(...smallestTeams.map(b => b[genderKey as 'male_count' | 'female_count']))
-    const candidates = smallestTeams.filter(b => b[genderKey as 'male_count' | 'female_count'] === minGender)
-
-    if (!candidates.length) return null
-
-    const chosen = candidates[0]
-    return {
-      team: chosen.team,
-      reason: 'Chosen to maintain even team and gender distribution'
+    } catch (error) {
+      console.error('Failed to validate team assignment:', error)
+      return { canAccept: false, reason: 'Error validating team assignment' }
     }
   }
 
-  // Get teams that can accept the current user
-  const getAvailableTeams = (): TeamColor[] => {
-    if (!profile) return []
+  // Check if user can switch to a specific team using database function
+  const canUserSwitchToTeam = async (teamKey: TeamColor): Promise<TeamSwitchResult> => {
+    if (!profile) {
+      return { canSwitch: false, reason: 'User not authenticated' }
+    }
 
-    return Object.keys(TEAMS).filter(teamKey => {
-      const result = canTeamAcceptPlayer(teamKey as TeamColor, profile.gender)
-      return result.canAccept
-    }) as TeamColor[]
+    try {
+      const { data, error } = await supabase
+        .rpc('can_switch_team', {
+          user_id: profile.id,
+          new_team: teamKey
+        })
+
+      if (error) throw error
+
+      const result = data[0]
+      return {
+        canSwitch: result.can_switch,
+        reason: result.reason
+      }
+    } catch (error) {
+      console.error('Failed to check team switch:', error)
+      return { canSwitch: false, reason: 'Error checking team switch' }
+    }
+  }
+
+  // Get team balance statistics from database
+  const getTeamBalanceStats = async () => {
+    try {
+      const { data, error } = await supabase
+        .rpc('get_team_balance_stats')
+
+      if (error) throw error
+      return data
+    } catch (error) {
+      console.error('Failed to get team balance stats:', error)
+      return []
+    }
+  }
+
+  // Check if a team is at capacity (24 players)
+  const isTeamAtCapacity = (teamKey: TeamColor): boolean => {
+    const team = teamBalances.find(b => b.team === teamKey)
+    return team ? team.total_count >= 24 : false
+  }
+
+  // Get the current size of a team
+  const getTeamSize = (teamKey: TeamColor): number => {
+    const team = teamBalances.find(b => b.team === teamKey)
+    return team ? team.total_count : 0
+  }
+
+  // Get the maximum team size (always 24)
+  const getMaxTeamSize = (): number => {
+    return 24
+  }
+
+  // Check if a team can accept a specific gender
+  const canTeamAcceptGender = async (teamKey: TeamColor, gender: string): Promise<boolean> => {
+    try {
+      const stats = await getTeamBalanceStats()
+      const teamStats = stats.find((s: any) => s.team === teamKey)
+      
+      if (!teamStats) return false
+      
+      if (gender === 'male') {
+        return teamStats.can_accept_male
+      } else {
+        return teamStats.can_accept_female
+      }
+    } catch (error) {
+      console.error('Failed to check gender acceptance:', error)
+      return false
+    }
+  }
+
+  // Get the best available team for a user (least populated)
+  const getBestAvailableTeam = async (userGender: string): Promise<TeamColor | null> => {
+    try {
+      const stats = await getTeamBalanceStats()
+      const availableTeams = stats.filter((team: any) => {
+        if (userGender === 'male') {
+          return team.can_accept_male
+        } else {
+          return team.can_accept_female
+        }
+      })
+
+      if (availableTeams.length === 0) return null
+
+      // Sort by total players (ascending) to get the least populated team
+      availableTeams.sort((a: any, b: any) => a.total_players - b.total_players)
+      
+      return availableTeams[0].team as TeamColor
+    } catch (error) {
+      console.error('Failed to get best available team:', error)
+      return null
+    }
   }
 
   return {
     teamBalances,
     loading,
     canTeamAcceptPlayer,
-    canSwitchToTeam,
-    getRecommendedTeam,
-    getAvailableTeams
+    canUserSwitchToTeam,
+    getTeamBalanceStats,
+    isTeamAtCapacity,
+    getTeamSize,
+    getMaxTeamSize,
+    canTeamAcceptGender,
+    getBestAvailableTeam,
+    refresh: loadTeamBalances
   }
 }
 

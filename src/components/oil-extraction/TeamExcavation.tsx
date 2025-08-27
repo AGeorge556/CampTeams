@@ -5,7 +5,7 @@ import { useTeamWallets } from '../../hooks/useTeamWallets'
 import { useOilExcavation } from '../../hooks/useOilExcavation'
 import { useOilHints } from '../../hooks/useOilHints'
 import { useLanguage } from '../../contexts/LanguageContext'
-import { LoadingSpinner } from '../LoadingSpinner'
+import LoadingSpinner from '../LoadingSpinner'
 import { 
   AlertTriangle, 
   XCircle, 
