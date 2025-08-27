@@ -203,12 +203,12 @@ export default function SessionManager({ onSessionCreated }: SessionManagerProps
 
       {/* Session Form */}
         {showForm && (
-        <div className="bg-[var(--color-card-bg)] rounded-lg shadow-sm p-6 border border-[var(--color-border)]">
+        <div className="bg-[var(--color-card-bg)] rounded-lg shadow-sm p-4 sm:p-6 border border-[var(--color-border)]">
           <h4 className="text-lg font-medium text-[var(--color-text)] mb-4">
             {editingSession ? 'Edit Session' : 'Create New Session'}
           </h4>
           <form onSubmit={handleSubmit} className="space-y-4">
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
               <div>
                   <label className="block text-sm font-medium text-[var(--color-text-muted)] mb-1">
                     Session Name
@@ -249,7 +249,7 @@ export default function SessionManager({ onSessionCreated }: SessionManagerProps
                 className="w-full px-3 py-2 border border-[var(--color-border)] rounded-md bg-[var(--color-input-bg)] text-[var(--color-text)] focus:outline-none focus:ring-2 focus:ring-orange-500"
               />
             </div>
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
               <div>
                 <label className="block text-sm font-medium text-[var(--color-text-muted)] mb-1">
                   Start Time
@@ -275,23 +275,23 @@ export default function SessionManager({ onSessionCreated }: SessionManagerProps
                 />
               </div>
             </div>
-            <div className="flex space-x-3">
+            <div className="flex flex-col sm:flex-row space-y-3 sm:space-y-0 sm:space-x-3">
               <button
                 type="submit"
                 disabled={loading}
-                className="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md text-white bg-orange-600 hover:bg-orange-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-orange-500 disabled:opacity-50"
+                className="inline-flex items-center justify-center px-4 py-3 sm:px-4 sm:py-2 border border-transparent text-sm font-medium rounded-md text-white bg-orange-600 hover:bg-orange-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-orange-500 disabled:opacity-50 min-h-[44px] touch-manipulation"
               >
                 {loading ? (
                   <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white mr-2"></div>
                 ) : null}
-                {editingSession ? 'Update Session' : 'Create Session'}
+                <span className="whitespace-nowrap">{editingSession ? 'Update Session' : 'Create Session'}</span>
               </button>
               <button
                 type="button"
                 onClick={resetForm}
-                  className="inline-flex items-center px-4 py-2 border border-[var(--color-border)] text-sm font-medium rounded-md text-[var(--color-text)] bg-[var(--color-card-bg)] hover:bg-[var(--color-bg-muted)] focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-orange-500"
+                className="inline-flex items-center justify-center px-4 py-3 sm:px-4 sm:py-2 border border-[var(--color-border)] text-sm font-medium rounded-md text-[var(--color-text)] bg-[var(--color-card-bg)] hover:bg-[var(--color-bg-muted)] focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-orange-500 min-h-[44px] touch-manipulation"
               >
-                Cancel
+                <span className="whitespace-nowrap">Cancel</span>
               </button>
             </div>
           </form>
@@ -300,7 +300,7 @@ export default function SessionManager({ onSessionCreated }: SessionManagerProps
 
       {/* Sessions List */}
       <div className="bg-[var(--color-card-bg)] rounded-lg shadow-sm">
-        <div className="px-6 py-4 border-b border-[var(--color-border)]">
+        <div className="px-4 sm:px-6 py-4 border-b border-[var(--color-border)]">
           <h4 className="text-lg font-medium text-[var(--color-text)]">Active Sessions</h4>
         </div>
         <div className="divide-y divide-[var(--color-border)]">
@@ -310,54 +310,54 @@ export default function SessionManager({ onSessionCreated }: SessionManagerProps
             <div className="p-6 text-center text-[var(--color-text-muted)]">No sessions created yet</div>
           ) : (
             sessions.map((session) => (
-              <div key={session.id} className="p-6">
-                <div className="flex items-center justify-between">
-                  <div className="flex-1">
-                    <div className="flex items-center space-x-3">
-                      <h5 className="text-lg font-medium text-[var(--color-text)]">{session.name}</h5>
-                      <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${SESSION_TYPE_COLORS[session.session_type]}`}>
+              <div key={session.id} className="p-4 sm:p-6">
+                <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between space-y-4 sm:space-y-0">
+                  <div className="flex-1 min-w-0">
+                    <div className="flex flex-col sm:flex-row sm:items-center space-y-2 sm:space-y-0 sm:space-x-3">
+                      <h5 className="text-base sm:text-lg font-medium text-[var(--color-text)] break-words">{session.name}</h5>
+                      <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium w-fit ${SESSION_TYPE_COLORS[session.session_type]}`}>
                         {SESSION_TYPE_LABELS[session.session_type]}
                       </span>
                     </div>
                     {session.description && (
-                      <p className="text-sm text-[var(--color-text-muted)] mt-1">{session.description}</p>
+                      <p className="text-sm text-[var(--color-text-muted)] mt-1 break-words">{session.description}</p>
                     )}
-                    <div className="flex items-center space-x-4 mt-2 text-sm text-[var(--color-text-muted)]">
+                    <div className="flex flex-col sm:flex-row sm:items-center space-y-1 sm:space-y-0 sm:space-x-4 mt-2 text-sm text-[var(--color-text-muted)]">
                       <div className="flex items-center">
-                        <Calendar className="h-4 w-4 mr-1" />
-                        {formatDateTime(session.start_time)}
+                        <Calendar className="h-4 w-4 mr-1 flex-shrink-0" />
+                        <span className="break-words">{formatDateTime(session.start_time)}</span>
                       </div>
                       <div className="flex items-center">
-                        <Clock className="h-4 w-4 mr-1" />
-                        {formatDateTime(session.end_time)}
+                        <Clock className="h-4 w-4 mr-1 flex-shrink-0" />
+                        <span className="break-words">{formatDateTime(session.end_time)}</span>
                       </div>
                     </div>
                   </div>
-                  <div className="flex items-center space-x-2">
+                  <div className="flex flex-col sm:flex-row items-stretch sm:items-center space-y-2 sm:space-y-0 sm:space-x-2 w-full sm:w-auto">
                     <button
                       onClick={() => {
                         setSelectedSession(session)
                         setShowQR(true)
                       }}
-                      className="inline-flex items-center px-3 py-2 border border-[var(--color-border)] shadow-sm text-sm font-medium rounded-md text-[var(--color-text)] bg-[var(--color-card-bg)] hover:bg-[var(--color-bg-muted)] focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-orange-500"
+                      className="inline-flex items-center justify-center px-4 py-3 sm:px-3 sm:py-2 border border-[var(--color-border)] shadow-sm text-sm font-medium rounded-md text-[var(--color-text)] bg-[var(--color-card-bg)] hover:bg-[var(--color-bg-muted)] focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-orange-500 min-h-[44px] touch-manipulation"
                     >
-                      <QrCode className="h-4 w-4 mr-2" />
-                      QR Code
+                      <QrCode className="h-4 w-4 mr-2 flex-shrink-0" />
+                      <span className="whitespace-nowrap">QR Code</span>
                     </button>
                     <button
                       onClick={() => editSession(session)}
-                      className="inline-flex items-center px-3 py-2 border border-[var(--color-border)] shadow-sm text-sm font-medium rounded-md text-[var(--color-text)] bg-[var(--color-card-bg)] hover:bg-[var(--color-bg-muted)] focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-orange-500"
+                      className="inline-flex items-center justify-center px-4 py-3 sm:px-3 sm:py-2 border border-[var(--color-border)] shadow-sm text-sm font-medium rounded-md text-[var(--color-text)] bg-[var(--color-card-bg)] hover:bg-[var(--color-bg-muted)] focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-orange-500 min-h-[44px] touch-manipulation"
                     >
-                      <Edit className="h-4 w-4 mr-2" />
-                      Edit
+                      <Edit className="h-4 w-4 mr-2 flex-shrink-0" />
+                      <span className="whitespace-nowrap">Edit</span>
                     </button>
                     <button
                       onClick={() => handleDelete(session.id)}
-                      className="inline-flex items-center px-3 py-2 border border-[var(--color-border)] shadow-sm text-sm font-medium rounded-md bg-[var(--color-card-bg)] hover:bg-[var(--color-bg-muted)] focus:outline-none focus:ring-2 focus:ring-offset-2"
+                      className="inline-flex items-center justify-center px-4 py-3 sm:px-3 sm:py-2 border border-[var(--color-border)] shadow-sm text-sm font-medium rounded-md bg-[var(--color-card-bg)] hover:bg-[var(--color-bg-muted)] focus:outline-none focus:ring-2 focus:ring-offset-2 min-h-[44px] touch-manipulation"
                       style={{ color: 'var(--color-error,#dc2626)' }}
                     >
-                      <Trash2 className="h-4 w-4 mr-2" />
-                      Delete
+                      <Trash2 className="h-4 w-4 mr-2 flex-shrink-0" />
+                      <span className="whitespace-nowrap">Delete</span>
                     </button>
                   </div>
                 </div>
@@ -369,19 +369,19 @@ export default function SessionManager({ onSessionCreated }: SessionManagerProps
 
       {/* QR Code Modal */}
       {showQR && selectedSession && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-          <div className="bg-white rounded-lg p-6 max-w-md w-full mx-4">
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
+          <div className="bg-white rounded-lg p-4 sm:p-6 max-w-md w-full max-h-[90vh] overflow-y-auto">
             <div className="flex items-center justify-between mb-4">
-              <h3 className="text-lg font-medium text-gray-900">QR Code for {selectedSession.name}</h3>
+              <h3 className="text-lg font-medium text-gray-900 break-words">QR Code for {selectedSession.name}</h3>
               <button
                 onClick={() => setShowQR(false)}
-                className="text-gray-400 hover:text-gray-600"
+                className="text-gray-400 hover:text-gray-600 p-2 min-h-[44px] min-w-[44px] flex items-center justify-center"
               >
                 ×
               </button>
             </div>
             <div className="flex justify-center">
-              <QRCode value={selectedSession.qr_code || ''} size={250} />
+              <QRCode value={selectedSession.qr_code || ''} size={Math.min(250, window.innerWidth - 80)} />
             </div>
             <div className="mt-4 p-3 bg-gray-50 rounded-lg">
               <p className="text-xs text-gray-600 mb-2 font-medium">QR Code URL:</p>

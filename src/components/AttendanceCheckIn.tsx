@@ -228,28 +228,28 @@ export default function AttendanceCheckIn() {
             <p><strong>QR Session ID:</strong> {qrSessionId}</p>
             <p><strong>Current URL:</strong> {window.location.href}</p>
             <p><strong>Origin:</strong> {window.location.origin}</p>
-                         <p><strong>Active Sessions Count:</strong> {activeSessions.length}</p>
-             <p><strong>My Attendance Count:</strong> {myAttendance.length}</p>
-             <p><strong>Profile ID:</strong> {profile?.id || 'Not loaded'}</p>
-             <p><strong>Check-in Status:</strong> {checkingIn ? 'Processing...' : 'Ready'}</p>
-           </div>
-           <div className="mt-3 pt-3 border-t border-yellow-200">
-             <p className="text-xs text-yellow-600">
-               <strong>Note:</strong> This debug panel will help identify QR code issues. 
-               Check the browser console for detailed logs.
-             </p>
+            <p><strong>Active Sessions Count:</strong> {activeSessions.length}</p>
+            <p><strong>My Attendance Count:</strong> {myAttendance.length}</p>
+            <p><strong>Profile ID:</strong> {profile?.id || 'Not loaded'}</p>
+            <p><strong>Check-in Status:</strong> {checkingIn ? 'Processing...' : 'Ready'}</p>
+          </div>
+          <div className="mt-3 pt-3 border-t border-yellow-200">
+            <p className="text-xs text-yellow-600">
+              <strong>Note:</strong> This debug panel will help identify QR code issues. 
+              Check the browser console for detailed logs.
+            </p>
           </div>
         </div>
       )}
       
       {/* Header */}
-      <div className="flex items-center justify-between">
+      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between space-y-3 sm:space-y-0">
         <div>
-          <h2 className="text-2xl font-bold text-[var(--color-text)]">Attendance Check-in</h2>
+          <h2 className="text-xl sm:text-2xl font-bold text-[var(--color-text)]">Attendance Check-in</h2>
           <p className="text-[var(--color-text-muted)]">Check in to active sessions</p>
         </div>
         <div className="flex items-center space-x-2">
-          <QrCode className="h-8 w-8 text-[var(--color-primary)]" />
+          <QrCode className="h-6 w-6 sm:h-8 sm:w-8 text-[var(--color-primary)]" />
           {/* Test button for debugging */}
           {activeSessions.length > 0 && (
             <button
@@ -259,7 +259,7 @@ export default function AttendanceCheckIn() {
                 console.log('Testing check-in for session:', firstSession)
                 handleCheckIn(firstSession.id)
               }}
-              className="px-3 py-1 text-xs bg-blue-500 text-white rounded hover:bg-blue-600"
+              className="px-3 py-2 text-xs sm:text-sm bg-blue-500 text-white rounded hover:bg-blue-600 min-h-[44px] touch-manipulation"
             >
               Test Check-in
             </button>
@@ -288,9 +288,9 @@ export default function AttendanceCheckIn() {
               return (
                 <div key={session.id} className="p-4 sm:p-6">
                   <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between space-y-3 sm:space-y-0">
-                    <div className="flex-1">
+                    <div className="flex-1 min-w-0">
                       <div className="flex flex-col sm:flex-row sm:items-center space-y-2 sm:space-y-0 sm:space-x-3">
-                        <h5 className="text-base sm:text-lg font-medium text-[var(--color-text)]">{session.name}</h5>
+                        <h5 className="text-base sm:text-lg font-medium text-[var(--color-text)] break-words">{session.name}</h5>
                         {isActive && (
                           <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800 w-fit">
                             Active Now
@@ -298,16 +298,16 @@ export default function AttendanceCheckIn() {
                         )}
                       </div>
                       {session.description && (
-                        <p className="text-sm text-[var(--color-text-muted)] mt-1">{session.description}</p>
+                        <p className="text-sm text-[var(--color-text-muted)] mt-1 break-words">{session.description}</p>
                       )}
                       <div className="flex flex-col sm:flex-row sm:items-center space-y-1 sm:space-y-0 sm:space-x-4 mt-2 text-sm text-[var(--color-text-muted)]">
                         <div className="flex items-center">
-                          <Clock className="h-4 w-4 mr-1" />
-                          {formatDateTime(session.start_time)}
+                          <Clock className="h-4 w-4 mr-1 flex-shrink-0" />
+                          <span className="break-words">{formatDateTime(session.start_time)}</span>
                         </div>
                         <div className="flex items-center">
-                          <Clock className="h-4 w-4 mr-1" />
-                          {formatDateTime(session.end_time)}
+                          <Clock className="h-4 w-4 mr-1 flex-shrink-0" />
+                          <span className="break-words">{formatDateTime(session.end_time)}</span>
                         </div>
                       </div>
                     </div>
@@ -326,14 +326,14 @@ export default function AttendanceCheckIn() {
                         <button
                           onClick={() => handleCheckIn(session.id)}
                           disabled={checkingIn === session.id || !isActive}
-                          className="inline-flex items-center px-4 py-3 border border-transparent text-sm font-medium rounded-md text-white bg-orange-600 hover:bg-orange-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-orange-500 disabled:opacity-50 disabled:cursor-not-allowed touch-target mobile-touch-feedback"
+                          className="inline-flex items-center justify-center px-4 py-3 border border-transparent text-sm font-medium rounded-md text-white bg-orange-600 hover:bg-orange-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-orange-500 disabled:opacity-50 disabled:cursor-not-allowed min-h-[44px] touch-manipulation"
                         >
                           {checkingIn === session.id ? (
                             <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white mr-2"></div>
                           ) : (
                             <CheckCircle className="h-4 w-4 mr-2" />
                           )}
-                          Check In
+                          <span className="whitespace-nowrap">Check In</span>
                         </button>
                       )}
                     </div>
@@ -373,7 +373,7 @@ export default function AttendanceCheckIn() {
                         {attendance.status}
                       </span>
                     </div>
-                    <p className="text-xs text-[var(--color-text-muted)] mt-1">
+                    <p className="text-xs text-[var(--color-text-muted)] mt-1 break-words">
                       {formatDateTime(attendance.checked_in_at)}
                     </p>
                   </div>
