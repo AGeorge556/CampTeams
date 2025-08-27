@@ -12,10 +12,21 @@ export default function AttendanceCheckIn() {
   const [loading, setLoading] = useState(false)
   const [checkingIn, setCheckingIn] = useState<string | null>(null)
   const [myAttendance, setMyAttendance] = useState<AttendanceRecord[]>([])
+  const [qrSessionId, setQrSessionId] = useState<string | null>(null)
 
   useEffect(() => {
     loadActiveSessions()
     loadMyAttendance()
+    
+    // Check if user arrived via QR code
+    const storedSessionId = sessionStorage.getItem('qr_session_id')
+    if (storedSessionId) {
+      setQrSessionId(storedSessionId)
+      sessionStorage.removeItem('qr_session_id') // Clear it after reading
+      
+      // Auto-check in if we have a valid session
+      handleQRCodeCheckIn(storedSessionId)
+    }
   }, [])
 
   const loadActiveSessions = async () => {
@@ -57,6 +68,68 @@ export default function AttendanceCheckIn() {
       setMyAttendance((data || []) as AttendanceRecord[])
     } catch (error) {
       console.error('Error loading attendance:', error)
+    }
+  }
+
+  const handleQRCodeCheckIn = async (sessionId: string) => {
+    if (!profile) return
+
+    setCheckingIn(sessionId)
+    try {
+      // Find the session by QR code
+      const { data: sessions, error: sessionError } = await supabase
+        .from('camp_sessions')
+        .select('*')
+        .eq('qr_code', `${window.location.origin}/attendance/${sessionId}`)
+        .eq('is_active', true)
+        .single()
+
+      if (sessionError || !sessions) {
+        addToast({
+          type: 'error',
+          title: 'Invalid QR Code',
+          message: 'This QR code is not valid or the session is not active'
+        })
+        return
+      }
+
+      // Check if already attended
+      const existingAttendance = myAttendance.find(att => att.session_id === sessions.id)
+      if (existingAttendance) {
+        addToast({
+          type: 'warning',
+          title: 'Already Checked In',
+          message: `You have already checked in to ${sessions.name}`
+        })
+        return
+      }
+
+      const { error } = await supabase
+        .from('attendance_records')
+        .insert({
+          session_id: sessions.id,
+          user_id: profile.id,
+          status: 'present'
+        })
+
+      if (error) throw error
+
+      addToast({
+        type: 'success',
+        title: 'Check-in Successful',
+        message: `You have been marked as present for ${sessions.name}`
+      })
+
+      loadMyAttendance()
+    } catch (error) {
+      console.error('Error checking in via QR code:', error)
+      addToast({
+        type: 'error',
+        title: 'Check-in Failed',
+        message: 'Failed to check in. Please try again.'
+      })
+    } finally {
+      setCheckingIn(null)
     }
   }
 

@@ -61,10 +61,15 @@ export default function SessionManager({ onSessionCreated }: SessionManagerProps
 
     setLoading(true)
     try {
+      // Generate a proper QR code URL for attendance check-in
+      const siteUrl = window.location.origin
+      const sessionId = `session_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`
+      const qrCodeUrl = `${siteUrl}/attendance/${sessionId}`
+
       const sessionData = {
         ...formData,
         created_by: profile.id,
-        qr_code: `session_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`
+        qr_code: qrCodeUrl
       }
 
       if (editingSession) {
@@ -377,6 +382,12 @@ export default function SessionManager({ onSessionCreated }: SessionManagerProps
             </div>
             <div className="flex justify-center">
               <QRCode value={selectedSession.qr_code || ''} size={250} />
+            </div>
+            <div className="mt-4 p-3 bg-gray-50 rounded-lg">
+              <p className="text-xs text-gray-600 mb-2 font-medium">QR Code URL:</p>
+              <p className="text-xs text-gray-800 break-all font-mono">
+                {selectedSession.qr_code || 'No QR code generated'}
+              </p>
             </div>
             <p className="text-sm text-gray-600 mt-4 text-center">
               Display this QR code for participants to scan and check in

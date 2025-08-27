@@ -28,6 +28,7 @@ import { LanguageProvider } from './contexts/LanguageContext'
 import LanguageNotification from './components/LanguageNotification'
 import Scoreboard from './components/Scoreboard'
 import ScoreboardAdmin from './components/ScoreboardAdmin'
+import AttendanceCheckIn from './components/AttendanceCheckIn'
 import { supabase } from './lib/supabase'
 import { CheckCircle, XCircle, Loader2 } from 'lucide-react'
 
@@ -78,6 +79,32 @@ function App() {
     }
 
     handleAuthCallback()
+  }, [])
+
+  // Handle QR code URLs for attendance check-in
+  useEffect(() => {
+    const handleQRCodeURL = () => {
+      const path = window.location.pathname
+      
+      // Check if URL matches attendance QR code pattern: /attendance/session_*
+      const attendanceMatch = path.match(/^\/attendance\/(session_.+)$/)
+      if (attendanceMatch) {
+        const sessionId = attendanceMatch[1]
+        
+        // Navigate to attendance check-in page with session ID
+        setCurrentPage('attendance-checkin')
+        
+        // Store the session ID in sessionStorage for the attendance component to use
+        sessionStorage.setItem('qr_session_id', sessionId)
+        
+        // Clean up the URL
+        window.history.replaceState({}, document.title, '/')
+        
+        return
+      }
+    }
+
+    handleQRCodeURL()
   }, [])
 
   // Show auth callback UI if processing
@@ -220,6 +247,8 @@ function AppContent({
               return <Scoreboard />
             case 'scoreboard-admin':
               return <ScoreboardAdmin />
+            case 'attendance-checkin':
+              return <AttendanceCheckIn />
             case 'oil-extraction':
               return <OilExtractionGame onPageChange={setCurrentPage} />
             case 'oil-extraction-admin':
