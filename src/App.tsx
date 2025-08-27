@@ -84,9 +84,26 @@ function App() {
   // Handle QR code URLs for attendance check-in
   useEffect(() => {
     const handleQRCodeURL = () => {
-      const path = window.location.pathname
+      // Check for attendance query parameter
+      const urlParams = new URLSearchParams(window.location.search)
+      const attendanceSessionId = urlParams.get('attendance')
       
-      // Check if URL matches attendance QR code pattern: /attendance/session_*
+      if (attendanceSessionId) {
+        // Navigate to attendance check-in page with session ID
+        setCurrentPage('attendance-checkin')
+        
+        // Store the session ID in sessionStorage for the attendance component to use
+        sessionStorage.setItem('qr_session_id', attendanceSessionId)
+        
+        // Clean up the URL by removing the query parameter
+        const newUrl = window.location.pathname
+        window.history.replaceState({}, document.title, newUrl)
+        
+        return
+      }
+      
+      // Also check for path-based attendance URLs (for backward compatibility)
+      const path = window.location.pathname
       const attendanceMatch = path.match(/^\/attendance\/(session_.+)$/)
       if (attendanceMatch) {
         const sessionId = attendanceMatch[1]

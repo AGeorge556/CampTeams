@@ -61,10 +61,10 @@ export default function SessionManager({ onSessionCreated }: SessionManagerProps
 
     setLoading(true)
     try {
-      // Generate a proper QR code URL for attendance check-in
+      // Generate a proper QR code URL for attendance check-in using query parameters
       const siteUrl = window.location.origin
       const sessionId = `session_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`
-      const qrCodeUrl = `${siteUrl}/attendance/${sessionId}`
+      const qrCodeUrl = `${siteUrl}/?attendance=${sessionId}`
 
       const sessionData = {
         ...formData,
