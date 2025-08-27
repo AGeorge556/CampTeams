@@ -201,7 +201,7 @@ export default function TeamLeaderDashboard() {
             <div 
               key={entry.team_id} 
               className={`flex items-center justify-between p-4 border rounded-lg ${
-                entry.team_id === teamId ? 'bg-orange-50 border-orange-200' : ''
+                entry.team_id === teamId ? 'bg-[var(--color-accent-glow)] border-[var(--color-primary)]' : ''
               }`}
             >
               <div className="flex items-center">

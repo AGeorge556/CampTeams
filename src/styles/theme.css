@@ -27,6 +27,26 @@
   
   /* Transitions */
   --transition-glow: box-shadow 0.3s ease;
+
+  /* Background gradients */
+  --gradient-primary: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  --gradient-warm: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+  --gradient-sunset: linear-gradient(135deg, #ffecd2 0%, #fcb69f 100%);
+  --gradient-app-bg: linear-gradient(135deg, #fff7ed 0%, #fed7aa 100%);
+  
+  /* Toast colors */
+  --toast-success-bg: #f0fdf4;
+  --toast-success-border: #bbf7d0;
+  --toast-success-text: #166534;
+  --toast-error-bg: #fef2f2;
+  --toast-error-border: #fecaca;
+  --toast-error-text: #dc2626;
+  --toast-warning-bg: #fffbeb;
+  --toast-warning-border: #fed7aa;
+  --toast-warning-text: #d97706;
+  --toast-info-bg: #eff6ff;
+  --toast-info-border: #bfdbfe;
+  --toast-info-text: #2563eb;
 }
 
 /* Dark theme overrides */
@@ -61,4 +81,24 @@
                0 0 20px rgba(129, 140, 248, 0.2),
                0 0 30px rgba(129, 140, 248, 0.1);
   --neon-text-glow: 0 0 5px rgba(216, 180, 254, 0.3);
+
+  /* Background gradients - dark mode */
+  --gradient-primary: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  --gradient-warm: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+  --gradient-sunset: linear-gradient(135deg, #1e1b4b 0%, #312e81 100%);
+  --gradient-app-bg: linear-gradient(135deg, #0a0627 0%, #131045 100%);
+
+  /* Toast colors - dark mode */
+  --toast-success-bg: #064e3b;
+  --toast-success-border: #065f46;
+  --toast-success-text: #34d399;
+  --toast-error-bg: #7f1d1d;
+  --toast-error-border: #991b1b;
+  --toast-error-text: #f87171;
+  --toast-warning-bg: #78350f;
+  --toast-warning-border: #92400e;
+  --toast-warning-text: #fbbf24;
+  --toast-info-bg: #1e3a8a;
+  --toast-info-border: #1e40af;
+  --toast-info-text: #60a5fa;
 }

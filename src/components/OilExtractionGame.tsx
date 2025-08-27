@@ -154,11 +154,11 @@ export default function OilExtractionGame({ onPageChange }: OilExtractionGamePro
         <div className="mb-6 sm:mb-8">
           {/* Title and Description */}
           <div className="text-center sm:text-left mb-6">
-            <h1 className="text-2xl sm:text-3xl lg:text-4xl font-bold text-gray-900 mb-2">
+            <h1 className="text-2xl sm:text-3xl lg:text-4xl font-bold text-[var(--color-text)] mb-2">
               Oil Extraction Game
             </h1>
-            <p className="text-sm sm:text-base text-gray-600 max-w-2xl mx-auto sm:mx-0">
-              Compete to collect and sell oil barrels to maximize your team's net worth
+            <p className="text-sm sm:text-base text-[var(--color-text-muted)] max-w-2xl mx-auto sm:mx-0">
+              Welcome to the oil extraction game! Each team has a wallet with coins to spend on excavation and hints.
             </p>
           </div>
 
@@ -197,7 +197,7 @@ export default function OilExtractionGame({ onPageChange }: OilExtractionGamePro
                 </h3>
                 <div className="space-y-2 text-xs sm:text-sm text-blue-800">
                   <div className="flex items-center">
-                    <div className="w-2 h-2 bg-orange-500 rounded-full mr-2"></div>
+                    <div className="w-2 h-2 bg-[var(--color-primary)] rounded-full mr-2"></div>
                     <span><strong>Coins (Orange):</strong> Used for playing - excavation & hints. Added by admins via mini-games.</span>
                   </div>
                   <div className="flex items-center">

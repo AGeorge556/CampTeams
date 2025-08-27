@@ -205,7 +205,7 @@ export default function LandingPage() {
 
         {/* Footer */}
         <footer className="p-6 text-center text-[var(--color-text-muted)] text-sm">
-          <p> a9 2025 BCH Youth Program  b7 Christian Summer Camp Team Selection Platform</p>
+          <p>© 2025 BCH Youth Program • Christian Summer Camp Team Selection Platform</p>
         </footer>
       </div>
     </div>

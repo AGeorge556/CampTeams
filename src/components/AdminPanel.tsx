@@ -516,7 +516,7 @@ export default function AdminPanel() {
                     <td className="px-6 py-4 whitespace-nowrap text-sm text-[var(--color-text-muted)]">
                       {profile.gender}
                     </td>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                    <td className="px-6 py-4 whitespace-nowrap text-sm text-[var(--color-text-muted)]">
                       {profile.current_team && TEAMS[profile.current_team as keyof typeof TEAMS] ? (
                         <span
                           className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${
@@ -556,7 +556,7 @@ export default function AdminPanel() {
             <h3 className="font-semibold text-[var(--color-text)]">Sport Selections</h3>
             <button
               onClick={exportSportSelections}
-              className="inline-flex items-center px-3 py-2 border border-gray-300 shadow-sm text-sm leading-4 font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
+              className="inline-flex items-center px-3 py-2 border border-[var(--color-border)] shadow-sm text-sm leading-4 font-medium rounded-md text-[var(--color-text)] bg-[var(--color-bg)] hover:bg-[var(--color-bg-muted)] focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
             >
               <Download className="h-4 w-4 mr-2" />
               Export CSV

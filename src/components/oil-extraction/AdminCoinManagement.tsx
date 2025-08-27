@@ -24,12 +24,11 @@ export default function AdminCoinManagement({ onPageChange }: AdminCoinManagemen
   // Check if user is admin
   if (!profile || (!profile.is_admin && profile.role !== 'admin')) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-orange-50 to-yellow-50 flex items-center justify-center">
-        <div className="bg-white rounded-lg shadow-lg p-8 max-w-md w-full mx-4">
+      <div className="min-h-screen bg-[var(--gradient-app-bg)] flex items-center justify-center">
+        <div className="bg-[var(--color-card-bg)] rounded-lg shadow-lg p-8 max-w-md w-full mx-4 border border-[var(--color-border)]">
           <div className="text-center">
-            <AlertTriangle className="h-12 w-12 text-red-500 mx-auto mb-4" />
-            <h2 className="text-2xl font-bold text-gray-900 mb-2">Access Denied</h2>
-            <p className="text-gray-600">
+            <h2 className="text-2xl font-bold text-[var(--color-text)] mb-2">Access Denied</h2>
+            <p className="text-[var(--color-text-muted)]">
               You need admin privileges to access this page.
             </p>
           </div>
@@ -66,20 +65,20 @@ export default function AdminCoinManagement({ onPageChange }: AdminCoinManagemen
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-orange-50 to-yellow-50">
+    <div className="min-h-screen bg-[var(--gradient-app-bg)]">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         {/* Header */}
         <div className="mb-8">
           <div className="flex items-center justify-between">
             <div>
-              <h1 className="text-3xl font-bold text-gray-900">Admin Coin Management</h1>
-              <p className="text-gray-600 mt-2">
-                Manage team coins and view transaction history
+              <h1 className="text-3xl font-bold text-[var(--color-text)]">Admin Coin Management</h1>
+              <p className="text-[var(--color-text-muted)] mt-2">
+                Manage team wallets and coin distribution for the oil extraction game.
               </p>
             </div>
             <button
               onClick={() => onPageChange?.('oil-extraction')}
-              className="inline-flex items-center px-4 py-2 border border-gray-300 text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-orange-500"
+              className="inline-flex items-center px-4 py-2 border border-[var(--color-border)] text-sm font-medium rounded-md text-[var(--color-text)] bg-[var(--color-bg)] hover:bg-[var(--color-bg-muted)] focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-orange-500"
             >
               ← Back to Game
             </button>
@@ -88,22 +87,22 @@ export default function AdminCoinManagement({ onPageChange }: AdminCoinManagemen
 
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 sm:gap-8">
           {/* Add Coins Form */}
-          <div className="bg-white rounded-lg shadow p-6">
-            <h2 className="text-xl font-semibold text-gray-900 mb-6">Add Coins to Team</h2>
+          <div className="bg-[var(--color-card-bg)] rounded-lg shadow p-6 border border-[var(--color-border)]">
+            <h2 className="text-xl font-semibold text-[var(--color-text)] mb-6">Add Coins to Team</h2>
             
             <form onSubmit={handleAddCoins} className="space-y-6">
               {/* Team Selection */}
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">
+                <label className="block text-sm font-medium text-[var(--color-text)] mb-2">
                   Select Team
                 </label>
                 <select
                   value={selectedTeam}
                   onChange={(e) => setSelectedTeam(e.target.value)}
-                  className="w-full border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-transparent"
+                  className="w-full border border-[var(--color-border)] rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-transparent bg-[var(--color-input-bg)] text-[var(--color-text)]"
                   required
                 >
-                  <option value="">Choose a team...</option>
+                  <option value="">Select a team...</option>
                   {wallets.map((wallet) => (
                     <option key={wallet.id} value={wallet.team_id}>
                       {TEAM_NAMES[wallet.team_id]} (Current: {wallet.coins.toLocaleString()} coins)
@@ -114,8 +113,8 @@ export default function AdminCoinManagement({ onPageChange }: AdminCoinManagemen
 
               {/* Coin Amount Selection */}
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">
-                  Coin Amount
+                <label className="block text-sm font-medium text-[var(--color-text)] mb-2">
+                  Amount
                 </label>
                 <div className="grid grid-cols-2 gap-2 sm:gap-3">
                   {coinAmounts.map((amount) => (
@@ -125,8 +124,8 @@ export default function AdminCoinManagement({ onPageChange }: AdminCoinManagemen
                       onClick={() => setSelectedAmount(amount)}
                       className={`p-2 sm:p-3 border rounded-lg text-center transition-colors ${
                         selectedAmount === amount
-                          ? 'border-orange-500 bg-orange-50 text-orange-700'
-                          : 'border-gray-300 hover:border-gray-400'
+                          ? 'border-[var(--color-primary)] bg-[var(--color-accent-glow)] text-[var(--color-primary)]'
+                          : 'border-[var(--color-border)] hover:border-[var(--color-border-hover)]'
                       }`}
                     >
                       <div className="flex items-center justify-center">
@@ -140,15 +139,15 @@ export default function AdminCoinManagement({ onPageChange }: AdminCoinManagemen
 
               {/* Description */}
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">
-                  Description (Optional)
+                <label className="block text-sm font-medium text-[var(--color-text)] mb-2">
+                  Reason (Optional)
                 </label>
                 <input
                   type="text"
                   value={description}
                   onChange={(e) => setDescription(e.target.value)}
-                  placeholder="e.g., Bonus for good performance"
-                  className="w-full border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-transparent"
+                  placeholder="e.g., Daily bonus, Event reward, etc."
+                  className="w-full border border-[var(--color-border)] rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-transparent bg-[var(--color-input-bg)] text-[var(--color-text)]"
                 />
               </div>
 
@@ -166,8 +165,8 @@ export default function AdminCoinManagement({ onPageChange }: AdminCoinManagemen
           </div>
 
           {/* Team Wallets Overview */}
-          <div className="bg-white rounded-lg shadow p-6">
-            <h2 className="text-xl font-semibold text-gray-900 mb-6">Team Wallets Overview</h2>
+          <div className="bg-[var(--color-card-bg)] rounded-lg shadow p-6 border border-[var(--color-border)]">
+            <h2 className="text-xl font-semibold text-[var(--color-text)] mb-6">Team Wallets Overview</h2>
             
             <div className="space-y-4">
               {wallets.map((wallet) => (
@@ -177,16 +176,16 @@ export default function AdminCoinManagement({ onPageChange }: AdminCoinManagemen
                       <div className={`w-4 h-4 rounded-full ${TEAM_COLORS[wallet.team_id]} mr-3`} />
                       <div>
                         <h3 className="font-medium text-sm sm:text-base">{TEAM_NAMES[wallet.team_id]}</h3>
-                        <p className="text-xs sm:text-sm text-gray-500">
+                        <p className="text-xs sm:text-sm text-[var(--color-text-muted)]">
                           Last updated: {new Date(wallet.updated_at).toLocaleString()}
                         </p>
                       </div>
                     </div>
                     <div className="text-center sm:text-right">
                       <p className="font-semibold text-base sm:text-lg">{wallet.coins.toLocaleString()}</p>
-                      <p className="text-xs sm:text-sm text-gray-500">coins</p>
+                      <p className="text-xs sm:text-sm text-[var(--color-text-muted)]">coins</p>
                       <p className="font-semibold text-green-600 text-base sm:text-lg">${wallet.net_worth.toLocaleString()}</p>
-                      <p className="text-xs sm:text-sm text-gray-500">net worth</p>
+                      <p className="text-xs sm:text-sm text-[var(--color-text-muted)]">net worth</p>
                     </div>
                   </div>
                 </div>
@@ -196,38 +195,38 @@ export default function AdminCoinManagement({ onPageChange }: AdminCoinManagemen
         </div>
 
         {/* Transaction History */}
-        <div className="mt-8 bg-white rounded-lg shadow p-6">
-          <h2 className="text-xl font-semibold text-gray-900 mb-6">Transaction History</h2>
+        <div className="mt-8 bg-[var(--color-card-bg)] rounded-lg shadow p-6 border border-[var(--color-border)]">
+          <h2 className="text-xl font-semibold text-[var(--color-text)] mb-6">Transaction History</h2>
           
           {transactions.length > 0 ? (
             <div className="overflow-x-auto">
-              <table className="min-w-full divide-y divide-gray-200">
-                <thead className="bg-gray-50">
+              <table className="min-w-full divide-y divide-[var(--color-border)]">
+                <thead className="bg-[var(--color-bg-muted)]">
                   <tr>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    <th className="px-6 py-3 text-left text-xs font-medium text-[var(--color-text-muted)] uppercase tracking-wider">
                       Admin
                     </th>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    <th className="px-6 py-3 text-left text-xs font-medium text-[var(--color-text-muted)] uppercase tracking-wider">
                       Team
                     </th>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    <th className="px-6 py-3 text-left text-xs font-medium text-[var(--color-text-muted)] uppercase tracking-wider">
                       Amount
                     </th>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                      Description
+                    <th className="px-6 py-3 text-left text-xs font-medium text-[var(--color-text-muted)] uppercase tracking-wider">
+                      Reason
                     </th>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    <th className="px-6 py-3 text-left text-xs font-medium text-[var(--color-text-muted)] uppercase tracking-wider">
                       Date
                     </th>
                   </tr>
                 </thead>
-                <tbody className="bg-white divide-y divide-gray-200">
+                <tbody className="bg-[var(--color-bg)] divide-y divide-[var(--color-border)]">
                   {transactions.map((transaction) => (
-                    <tr key={transaction.id} className="hover:bg-gray-50">
+                    <tr key={transaction.id} className="hover:bg-[var(--color-bg-muted)]">
                       <td className="px-6 py-4 whitespace-nowrap">
                         <div className="flex items-center">
-                          <User className="h-4 w-4 text-gray-400 mr-2" />
-                          <span className="text-sm font-medium text-gray-900">
+                          <User className="h-4 w-4 text-[var(--color-text-muted)] mr-2" />
+                          <span className="text-sm font-medium text-[var(--color-text)]">
                             {transaction.admin_name}
                           </span>
                         </div>
@@ -235,7 +234,7 @@ export default function AdminCoinManagement({ onPageChange }: AdminCoinManagemen
                       <td className="px-6 py-4 whitespace-nowrap">
                         <div className="flex items-center">
                           <div className={`w-3 h-3 rounded-full ${TEAM_COLORS[transaction.team_id as keyof typeof TEAM_COLORS]} mr-2`} />
-                          <span className="text-sm text-gray-900">
+                          <span className="text-sm text-[var(--color-text)]">
                             {TEAM_NAMES[transaction.team_id as keyof typeof TEAM_NAMES]}
                           </span>
                         </div>
@@ -248,14 +247,14 @@ export default function AdminCoinManagement({ onPageChange }: AdminCoinManagemen
                         </span>
                       </td>
                       <td className="px-6 py-4">
-                        <span className="text-sm text-gray-900">
+                        <span className="text-sm text-[var(--color-text)]">
                           {transaction.description || 'No description'}
                         </span>
                       </td>
                       <td className="px-6 py-4 whitespace-nowrap">
                         <div className="flex items-center">
-                          <Clock className="h-4 w-4 text-gray-400 mr-2" />
-                          <span className="text-sm text-gray-500">
+                          <Clock className="h-4 w-4 text-[var(--color-text-muted)] mr-2" />
+                          <span className="text-sm text-[var(--color-text-muted)]">
                             {formatTransactionDate(transaction.created_at)}
                           </span>
                         </div>
@@ -267,8 +266,8 @@ export default function AdminCoinManagement({ onPageChange }: AdminCoinManagemen
             </div>
           ) : (
             <div className="text-center py-8">
-              <DollarSign className="h-12 w-12 text-gray-400 mx-auto mb-4" />
-              <p className="text-gray-500">No transactions yet</p>
+              <DollarSign className="h-12 w-12 text-[var(--color-text-muted)] mx-auto mb-4" />
+              <p className="text-[var(--color-text-muted)]">No transactions yet</p>
             </div>
           )}
         </div>

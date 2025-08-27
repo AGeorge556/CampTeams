@@ -81,14 +81,14 @@ export default function PhotoModal({
           <div className="flex items-center space-x-2">
             <button
               onClick={handleDownload}
-              className="p-2 sm:p-2.5 hover:bg-white hover:bg-opacity-20 rounded-full transition-colors touch-target"
+              className="p-2 sm:p-2.5 hover:bg-[var(--color-bg)] hover:bg-opacity-20 rounded-full transition-colors touch-target"
               title={isVideo ? t('downloadVideo' as keyof Translations) : t('downloadPhoto' as keyof Translations)}
             >
               <Download className="h-4 w-4 sm:h-5 sm:w-5" />
             </button>
             <button
               onClick={onClose}
-              className="p-2 sm:p-2.5 hover:bg-white hover:bg-opacity-20 rounded-full transition-colors touch-target"
+              className="p-2 sm:p-2.5 hover:bg-[var(--color-bg)] hover:bg-opacity-20 rounded-full transition-colors touch-target"
               title={t('closePreview')}
             >
               <X className="h-4 w-4 sm:h-5 sm:w-5" />
@@ -148,7 +148,7 @@ export default function PhotoModal({
                 <MessageCircle className="h-4 w-4 sm:h-5 sm:w-5 mt-0.5 flex-shrink-0" />
                 <div>
                   <p className="text-xs sm:text-sm font-medium">{t('description')}</p>
-                  <p className="text-xs sm:text-sm text-gray-300">{photo.caption}</p>
+                  <p className="text-xs sm:text-sm text-[var(--color-text-muted)]">{photo.caption}</p>
                 </div>
               </div>
             )}
@@ -157,11 +157,11 @@ export default function PhotoModal({
             <div className="flex flex-col space-y-2">
               <div className="flex items-center space-x-2">
                 <User className="h-3 w-3 sm:h-4 sm:w-4" />
-                <span className="text-xs sm:text-sm text-gray-300">{t('uploadedBy')}: {photo.user_id}</span>
+                <span className="text-xs sm:text-sm text-[var(--color-text-muted)]">{t('uploadedBy')}: {photo.user_id}</span>
               </div>
               <div className="flex items-center space-x-2">
                 <Calendar className="h-3 w-3 sm:h-4 sm:w-4" />
-                <span className="text-xs sm:text-sm text-gray-300">{t('submittedOn')}: {formatDate(photo.submitted_at)}</span>
+                <span className="text-xs sm:text-sm text-[var(--color-text-muted)]">{t('submittedOn')}: {formatDate(photo.submitted_at)}</span>
               </div>
             </div>
           </div>

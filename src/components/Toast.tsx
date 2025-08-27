@@ -79,13 +79,26 @@ export const ToastProvider: React.FC<ToastProviderProps> = ({ children }) => {
   const getBackgroundColor = (type: Toast['type']) => {
     switch (type) {
       case 'success':
-        return 'bg-green-50 border-green-200'
+        return 'bg-[var(--toast-success-bg)] border-[var(--toast-success-border)]'
       case 'error':
-        return 'bg-red-50 border-red-200'
+        return 'bg-[var(--toast-error-bg)] border-[var(--toast-error-border)]'
       case 'warning':
-        return 'bg-yellow-50 border-yellow-200'
+        return 'bg-[var(--toast-warning-bg)] border-[var(--toast-warning-border)]'
       case 'info':
-        return 'bg-blue-50 border-blue-200'
+        return 'bg-[var(--toast-info-bg)] border-[var(--toast-info-border)]'
+    }
+  }
+
+  const getTextColor = (type: Toast['type']) => {
+    switch (type) {
+      case 'success':
+        return 'text-[var(--toast-success-text)]'
+      case 'error':
+        return 'text-[var(--toast-error-text)]'
+      case 'warning':
+        return 'text-[var(--toast-warning-text)]'
+      case 'info':
+        return 'text-[var(--toast-info-text)]'
     }
   }
 
@@ -111,19 +124,19 @@ export const ToastProvider: React.FC<ToastProviderProps> = ({ children }) => {
               
               <div className="flex-1 min-w-0">
                 <div className="flex items-center justify-between">
-                  <h4 className="text-sm font-medium text-gray-900">
+                  <h4 className={`text-sm font-medium ${getTextColor(toast.type)}`}>
                     {toast.title}
                   </h4>
                   <button
                     onClick={() => removeToast(toast.id)}
-                    className="flex-shrink-0 ml-2 text-gray-400 hover:text-gray-600 transition-colors"
+                    className="flex-shrink-0 ml-2 text-[var(--color-text-muted)] hover:text-[var(--color-text)] transition-colors"
                   >
                     <X className="h-4 w-4" />
                   </button>
                 </div>
                 
                 {toast.message && (
-                  <p className="mt-1 text-sm text-gray-600">
+                  <p className={`mt-1 text-sm ${getTextColor(toast.type)}`}>
                     {toast.message}
                   </p>
                 )}
@@ -131,7 +144,7 @@ export const ToastProvider: React.FC<ToastProviderProps> = ({ children }) => {
                 {toast.action && (
                   <button
                     onClick={toast.action.onClick}
-                    className="mt-2 text-sm font-medium text-blue-600 hover:text-blue-500 transition-colors"
+                    className="mt-2 text-sm font-medium text-[var(--color-primary)] hover:text-[var(--color-accent)] transition-colors"
                   >
                     {toast.action.label}
                   </button>

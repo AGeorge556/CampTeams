@@ -176,7 +176,9 @@ export default function ScheduleSessionManager() {
       })
 
       const results = await Promise.all(sessionPromises)
-      const createdSessions = results.filter(session => session !== null)
+      const createdSessions = results.filter(
+        (session: any): session is Record<string, unknown> => session !== null
+      )
 
       addToast({
         type: 'success',

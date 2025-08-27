@@ -100,7 +100,7 @@ export default function AttendanceReports() {
       case 'excused':
         return 'text-blue-600 bg-blue-100'
       default:
-        return 'text-gray-600 bg-gray-100'
+        return 'text-[var(--color-text-muted)] bg-[var(--color-bg-muted)]'
     }
   }
 

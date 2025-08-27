@@ -206,7 +206,7 @@ export default function Gallery() {
 
           {/* File Selection */}
           <div className="mb-4">
-            <label className="block text-sm font-medium text-gray-700 mb-2">
+            <label className="block text-sm font-medium text-[var(--color-text)] mb-2">
               {t('selectPhotos')} (Images and videos)
             </label>
             <input

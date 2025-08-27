@@ -39,7 +39,7 @@ export function MobileLayout({ children, className = '' }: { children: React.Rea
 // Compact layout for mobile
 export function CompactLayout({ children, className = '' }: { children: React.ReactNode, className?: string }) {
   return (
-    <div className="min-h-screen bg-gradient-to-br from-orange-50 to-yellow-50">
+    <div className="min-h-screen bg-[var(--gradient-app-bg)]">
       <main className={`
         max-w-7xl mx-auto px-3 py-3
         mobile-safe-area
@@ -54,7 +54,7 @@ export function CompactLayout({ children, className = '' }: { children: React.Re
 // Full-width layout for mobile
 export function FullWidthLayout({ children, className = '' }: { children: React.ReactNode, className?: string }) {
   return (
-    <div className="min-h-screen bg-gradient-to-br from-orange-50 to-yellow-50">
+    <div className="min-h-screen bg-[var(--gradient-app-bg)]">
       <main className={`
         w-full px-0 py-0
         mobile-safe-area

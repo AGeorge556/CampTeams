@@ -99,64 +99,60 @@ export default function OnboardingForm() {
 
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-orange-50 to-yellow-50 px-4 sm:px-6 lg:px-8">
+    <div className="min-h-screen flex items-center justify-center bg-[var(--gradient-app-bg)] px-4 sm:px-6 lg:px-8">
       <div className="max-w-md w-full space-y-8">
         <div className="text-center">
-          <Users className="h-16 w-16 text-orange-500 mx-auto" />
-          <h2 className="mt-6 text-3xl font-extrabold text-gray-900">
-            Welcome to Camp!
+          <div className="flex justify-center">
+            <Users className="h-16 w-16 text-orange-500" />
+          </div>
+          <h2 className="mt-6 text-3xl font-extrabold text-[var(--color-text)]">
+            Welcome to Camp Teams!
           </h2>
-          <p className="mt-2 text-sm text-gray-600">
-            Tell us about yourself to get started
+          <p className="mt-2 text-sm text-[var(--color-text-muted)]">
+            Please provide some information to complete your profile
           </p>
         </div>
-
-        <form className="mt-8 space-y-6" onSubmit={handleSubmit}>
+        
+        <form className="mt-8 space-y-6 bg-[var(--color-card-bg)] p-6 rounded-lg border border-[var(--color-border)]" onSubmit={handleSubmit}>
           <div className="space-y-4">
-            {/* Full Name */}
             <Input
               label="Full Name"
+              type="text"
               icon={<User />}
               value={formData.full_name}
-              onChange={(e) => {
-                setFormData({ ...formData, full_name: e.target.value })
-                if (errors.full_name) {
-                  setErrors({ ...errors, full_name: undefined })
-                }
-              }}
+              onChange={(e) => setFormData({ ...formData, full_name: e.target.value })}
               error={errors.full_name}
               placeholder="Enter your full name"
               required
             />
 
-            {/* Grade */}
             <div>
-              <label htmlFor="grade" className="block text-sm font-medium text-gray-700 mb-1">
-                Grade
+              <label htmlFor="grade" className="block text-sm font-medium text-[var(--color-text)] mb-1">
+                Grade Level
               </label>
               <div className="relative">
                 <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                  <GraduationCap className="h-5 w-5 text-gray-400" />
+                  <GraduationCap className="h-5 w-5 text-[var(--color-text-muted)]" />
                 </div>
                 <select
                   id="grade"
                   value={formData.grade}
                   onChange={(e) => setFormData({ ...formData, grade: Number(e.target.value) })}
-                  className="appearance-none block w-full pl-10 pr-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-orange-500 focus:border-orange-500 sm:text-sm"
+                  className="appearance-none block w-full pl-10 pr-3 py-2 border border-[var(--color-border)] rounded-md focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-orange-500 focus:border-orange-500 sm:text-sm bg-[var(--color-input-bg)] text-[var(--color-text)]"
+                  required
                 >
-                  <option value={7}>1st Preparatory (7)</option>
-                  <option value={8}>2nd Preparatory (8)</option>
-                  <option value={9}>3rd Preparatory (9)</option>
-                  <option value={10}>1st Secondary (10)</option>
-                  <option value={11}>2nd Secondary (11)</option>
-                  <option value={12}>3rd Secondary (12)</option>
+                  <option value={7}>Grade 7</option>
+                  <option value={8}>Grade 8</option>
+                  <option value={9}>Grade 9</option>
+                  <option value={10}>Grade 10</option>
+                  <option value={11}>Grade 11</option>
+                  <option value={12}>Grade 12</option>
                 </select>
               </div>
             </div>
 
-            {/* Gender */}
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">
+              <label className="block text-sm font-medium text-[var(--color-text)] mb-2">
                 Gender
               </label>
               <div className="space-y-2">
@@ -171,20 +167,19 @@ export default function OnboardingForm() {
                       value={option.value}
                       checked={formData.gender === option.value}
                       onChange={(e) => setFormData({ ...formData, gender: e.target.value as 'male' | 'female' })}
-                      className="focus:ring-orange-500 h-4 w-4 text-orange-600 border-gray-300"
+                      className="focus:ring-orange-500 h-4 w-4 text-orange-600 border-[var(--color-border)]"
                     />
-                    <span className="ml-2 text-sm text-gray-700">{option.label}</span>
+                    <span className="ml-2 text-sm text-[var(--color-text)]">{option.label}</span>
                   </label>
                 ))}
               </div>
             </div>
 
-            {/* Preferred Team */}
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">
+              <label className="block text-sm font-medium text-[var(--color-text)] mb-2">
                 Preferred Team
               </label>
-              <div className="grid grid-cols-2 gap-2">
+              <div className="space-y-2">
                 {Object.entries(TEAMS).map(([key, team]) => (
                   <label key={key} className="flex items-center">
                     <input
@@ -193,17 +188,15 @@ export default function OnboardingForm() {
                       value={key}
                       checked={formData.preferred_team === key}
                       onChange={(e) => setFormData({ ...formData, preferred_team: e.target.value as TeamColor })}
-                      className="focus:ring-orange-500 h-4 w-4 text-orange-600 border-gray-300"
+                      className="focus:ring-orange-500 h-4 w-4 text-orange-600 border-[var(--color-border)]"
                     />
                     <span className={`ml-2 inline-flex items-center px-3 py-1 rounded-full text-sm font-medium ${team.lightColor} ${team.textColor}`}>
-                      {team.name}
+                      {team.name} Team
                     </span>
                   </label>
                 ))}
               </div>
             </div>
-
-
           </div>
 
           <Button
@@ -212,7 +205,7 @@ export default function OnboardingForm() {
             icon={<Save />}
             className="w-full"
           >
-            Join Camp
+            {loading ? 'Creating Profile...' : 'Complete Profile'}
           </Button>
         </form>
       </div>

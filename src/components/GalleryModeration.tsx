@@ -156,7 +156,7 @@ export default function GalleryModeration() {
       {stats && (
         <div className="bg-[var(--color-card-bg)] rounded-lg shadow-sm p-6">
           <div className="flex items-center space-x-2 mb-4">
-            <BarChart3 className="h-5 w-5 text-gray-600" />
+            <BarChart3 className="h-5 w-5 text-[var(--color-text-muted)]" />
             <h2 className="text-lg font-semibold text-[var(--color-text)]">{t('galleryStats')}</h2>
           </div>
           <div className="grid grid-cols-2 md:grid-cols-5 gap-4">
@@ -229,8 +229,8 @@ export default function GalleryModeration() {
 
         {photosWithInfo.length === 0 ? (
           <div className="text-center py-8">
-            <Image className="h-12 w-12 text-gray-400 mx-auto mb-4" />
-            <p className="text-gray-600">{t('noPhotosFound')}</p>
+            <Image className="h-12 w-12 text-[var(--color-text-muted)] mx-auto mb-4" />
+            <p className="text-[var(--color-text-muted)]">{t('noPhotosFound')}</p>
           </div>
         ) : (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
@@ -309,7 +309,7 @@ export default function GalleryModeration() {
                 <div className="p-4">
                   {/* Caption */}
                   {photo.caption && (
-                    <p className="text-sm text-gray-600 mb-2">{photo.caption}</p>
+                    <p className="text-sm text-[var(--color-text-muted)] mb-2">{photo.caption}</p>
                   )}
 
                   {/* Metadata */}

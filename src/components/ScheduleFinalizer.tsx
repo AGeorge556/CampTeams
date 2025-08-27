@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react'
+import React, { useState, useEffect } from 'react'
 import { Calendar, Clock, AlertTriangle, CheckCircle, Edit, Save, X } from 'lucide-react'
 import { supabase } from '../lib/supabase'
 import { useProfile } from '../hooks/useProfile'
@@ -71,7 +71,7 @@ export default function ScheduleFinalizer() {
         let hasDelay = false
         let delayMinutes = 0
         
-          if (scheduleItem && settingsData?.camp_start_date) {
+        if (scheduleItem && settingsData?.camp_start_date) {
           const originalTime = new Date(settingsData.camp_start_date)
           originalTime.setDate(originalTime.getDate() + (scheduleItem.day - 1))
           
@@ -79,8 +79,8 @@ export default function ScheduleFinalizer() {
           originalTime.setHours(parseInt(hours), parseInt(minutes), 0, 0)
           
           originalStartTime = originalTime.toISOString()
-          const currentTime = session.start_time ? new Date(session.start_time) : originalTime
-          hasDelay = Boolean(session.start_time) && Math.abs(currentTime.getTime() - originalTime.getTime()) > 60000 // 1 minute tolerance
+          const currentTime = new Date(session.start_time || '')
+          hasDelay = Math.abs(currentTime.getTime() - originalTime.getTime()) > 60000 // 1 minute tolerance
           delayMinutes = hasDelay ? Math.round((currentTime.getTime() - originalTime.getTime()) / 60000) : 0
         }
         
@@ -151,12 +151,12 @@ export default function ScheduleFinalizer() {
 
     setLoading(true)
     try {
-        const { error } = await supabase
+      const { error } = await supabase
         .rpc('update_session_times', {
           session_id: sessionId,
           new_start_time: editForm.start_time,
           new_end_time: editForm.end_time,
-          delay_reason: editForm.delay_reason || undefined
+          delay_reason: editForm.delay_reason || '' 
         })
 
       if (error) throw error
@@ -202,17 +202,17 @@ export default function ScheduleFinalizer() {
   }
 
   return (
-  <div className="space-y-6">
+    <div className="space-y-6">
       {/* Header */}
       <div>
-  <h3 className="text-lg font-semibold text-[var(--color-text)]">Schedule Finalization</h3>
-  <p className="text-sm text-[var(--color-text-muted)]">Finalize the camp schedule and manage session delays</p>
+        <h3 className="text-lg font-semibold text-gray-900">Schedule Finalization</h3>
+        <p className="text-sm text-gray-600">Finalize the camp schedule and manage session delays</p>
       </div>
 
       {/* Schedule Status */}
-  <div className="bg-[var(--color-card-bg)] rounded-lg shadow-sm p-6">
+      <div className="bg-white rounded-lg shadow-sm p-6">
         <div className="flex items-center justify-between mb-4">
-          <h4 className="text-lg font-medium text-[var(--color-text)]">Schedule Status</h4>
+          <h4 className="text-lg font-medium text-gray-900">Schedule Status</h4>
           {scheduleStatus?.finalized ? (
             <div className="flex items-center text-green-600">
               <CheckCircle className="h-5 w-5 mr-2" />
@@ -228,28 +228,28 @@ export default function ScheduleFinalizer() {
 
         {scheduleStatus && (
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-            <div className="bg-[var(--color-bg-muted)] rounded-lg p-4">
-              <h5 className="font-medium text-[var(--color-text)]">Camp Start Date</h5>
-              <p className="text-sm text-[var(--color-text-muted)]">
+            <div className="bg-gray-50 rounded-lg p-4">
+              <h5 className="font-medium text-gray-900">Camp Start Date</h5>
+              <p className="text-sm text-gray-600">
                 {scheduleStatus.camp_start_date 
                   ? new Date(scheduleStatus.camp_start_date).toLocaleDateString()
                   : 'Not set'
                 }
               </p>
             </div>
-            <div className="bg-[var(--color-bg-muted)] rounded-lg p-4">
-              <h5 className="font-medium text-[var(--color-text)]">Total Sessions</h5>
-              <p className="text-sm text-[var(--color-text-muted)]">{scheduleStatus.total_sessions}</p>
+            <div className="bg-gray-50 rounded-lg p-4">
+              <h5 className="font-medium text-gray-900">Total Sessions</h5>
+              <p className="text-sm text-gray-600">{scheduleStatus.total_sessions}</p>
             </div>
-            <div className="bg-[var(--color-bg-muted)] rounded-lg p-4">
-              <h5 className="font-medium text-[var(--color-text)]">Active Sessions</h5>
-              <p className="text-sm text-[var(--color-text-muted)]">{scheduleStatus.active_sessions}</p>
+            <div className="bg-gray-50 rounded-lg p-4">
+              <h5 className="font-medium text-gray-900">Active Sessions</h5>
+              <p className="text-sm text-gray-600">{scheduleStatus.active_sessions}</p>
             </div>
           </div>
         )}
 
         {!scheduleStatus?.finalized && (
-          <div className="mt-6 p-4 bg-orange-50 border border-orange-200 rounded-lg">
+          <div className="mt-6 p-4 bg-[var(--color-bg-muted)] border border-[var(--color-border)] rounded-lg">
             <h5 className="font-medium text-orange-900 mb-2">Finalize Schedule</h5>
             <p className="text-sm text-orange-700 mb-4">
               Set the camp start date and create all sessions from the schedule.
@@ -259,7 +259,7 @@ export default function ScheduleFinalizer() {
                 type="date"
                 value={campStartDate}
                 onChange={(e) => setCampStartDate(e.target.value)}
-                className="px-3 py-2 border border-[var(--color-border)] rounded-md focus:outline-none focus:ring-2 focus:ring-orange-500 bg-[var(--color-bg)] text-[var(--color-text)]"
+                className="px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-orange-500"
               />
               <button
                 onClick={finalizeSchedule}
@@ -279,20 +279,20 @@ export default function ScheduleFinalizer() {
       </div>
 
       {/* Sessions with Delays */}
-      <div className="bg-[var(--color-card-bg)] rounded-lg shadow-sm">
-        <div className="px-6 py-4 border-b border-[var(--color-border)]">
-          <h4 className="text-lg font-medium text-[var(--color-text)]">Session Management</h4>
+      <div className="bg-white rounded-lg shadow-sm">
+        <div className="px-6 py-4 border-b border-gray-200">
+          <h4 className="text-lg font-medium text-gray-900">Session Management</h4>
         </div>
-        <div className="divide-y divide-[var(--color-border)]">
+        <div className="divide-y divide-gray-200">
           {sessions.length === 0 ? (
-            <div className="p-6 text-center text-[var(--color-text-muted)]">No sessions found</div>
+            <div className="p-6 text-center text-gray-500">No sessions found</div>
           ) : (
             sessions.map((session) => (
-        <div key={session.id} className="p-6">
+              <div key={session.id} className="p-6">
                 <div className="flex items-center justify-between">
                   <div className="flex-1">
                     <div className="flex items-center space-x-3">
-          <h5 className="text-lg font-medium text-[var(--color-text)]">{session.name}</h5>
+                      <h5 className="text-lg font-medium text-gray-900">{session.name}</h5>
                       {session.has_delay && (
                         <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-red-100 text-red-800">
                           <AlertTriangle className="h-3 w-3 mr-1" />
@@ -305,7 +305,7 @@ export default function ScheduleFinalizer() {
                         </span>
                       )}
                     </div>
-                    <div className="flex items-center space-x-4 mt-2 text-sm text-[var(--color-text-muted)]">
+                    <div className="flex items-center space-x-4 mt-2 text-sm text-gray-500">
                       <div className="flex items-center">
                         <Clock className="h-4 w-4 mr-1" />
                         {formatDateTime(session.start_time)} - {formatDateTime(session.end_time)}
@@ -318,7 +318,7 @@ export default function ScheduleFinalizer() {
                       )}
                     </div>
                     {session.has_delay && session.original_start_time && (
-                      <div className="mt-2 text-sm text-[var(--color-text-muted)]">
+                      <div className="mt-2 text-sm text-gray-600">
                         <span className="font-medium">Original time:</span> {formatDateTime(session.original_start_time)}
                       </div>
                     )}
@@ -339,14 +339,14 @@ export default function ScheduleFinalizer() {
                             setEditingSession(null)
                             setEditForm({ start_time: '', end_time: '', delay_reason: '' })
                           }}
-                          className="inline-flex items-center px-3 py-2 border border-[var(--color-border)] text-sm font-medium rounded-md text-[var(--color-text)] bg-[var(--color-bg)] hover:bg-[var(--color-bg-muted)] focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-orange-500"
+                          className="inline-flex items-center px-3 py-2 border border-gray-300 text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-orange-500"
                         >
                           <X className="h-4 w-4 mr-2" />
                           Cancel
                         </button>
                       </div>
                     ) : (
-                        <button
+                      <button
                         onClick={() => {
                           setEditingSession(session.id)
                           setEditForm({
@@ -355,7 +355,7 @@ export default function ScheduleFinalizer() {
                             delay_reason: ''
                           })
                         }}
-                        className="inline-flex items-center px-3 py-2 border border-[var(--color-border)] shadow-sm text-sm font-medium rounded-md text-[var(--color-text)] bg-[var(--color-bg)] hover:bg-[var(--color-bg-muted)] focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-orange-500"
+                        className="inline-flex items-center px-3 py-2 border border-gray-300 shadow-sm text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-orange-500"
                       >
                         <Edit className="h-4 w-4 mr-2" />
                         Edit Times
@@ -366,7 +366,7 @@ export default function ScheduleFinalizer() {
 
                 {/* Edit Form */}
                 {editingSession === session.id && (
-                  <div className="mt-4 p-4 bg-[var(--color-bg-muted)] rounded-lg">
+                  <div className="mt-4 p-4 bg-gray-50 rounded-lg">
                     <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                       <div>
                         <label className="block text-sm font-medium text-gray-700 mb-1">
@@ -376,7 +376,7 @@ export default function ScheduleFinalizer() {
                           type="datetime-local"
                           value={editForm.start_time}
                           onChange={(e) => setEditForm({ ...editForm, start_time: e.target.value })}
-                          className="w-full px-3 py-2 border border-[var(--color-border)] rounded-md focus:outline-none focus:ring-2 focus:ring-orange-500 bg-[var(--color-bg)] text-[var(--color-text)]"
+                          className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-orange-500"
                         />
                       </div>
                       <div>
@@ -387,7 +387,7 @@ export default function ScheduleFinalizer() {
                           type="datetime-local"
                           value={editForm.end_time}
                           onChange={(e) => setEditForm({ ...editForm, end_time: e.target.value })}
-                          className="w-full px-3 py-2 border border-[var(--color-border)] rounded-md focus:outline-none focus:ring-2 focus:ring-orange-500 bg-[var(--color-bg)] text-[var(--color-text)]"
+                          className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-orange-500"
                         />
                       </div>
                       <div>
@@ -399,7 +399,7 @@ export default function ScheduleFinalizer() {
                           value={editForm.delay_reason}
                           onChange={(e) => setEditForm({ ...editForm, delay_reason: e.target.value })}
                           placeholder="e.g., Weather delay, equipment issue"
-                          className="w-full px-3 py-2 border border-[var(--color-border)] rounded-md focus:outline-none focus:ring-2 focus:ring-orange-500 bg-[var(--color-bg)] text-[var(--color-text)]"
+                          className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-orange-500"
                         />
                       </div>
                     </div>

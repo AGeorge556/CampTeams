@@ -83,13 +83,13 @@ function App() {
   // Show auth callback UI if processing
   if (authCallbackStatus === 'loading') {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-orange-50 to-yellow-50 px-4">
+      <div className="min-h-screen flex items-center justify-center bg-[var(--gradient-app-bg)] px-4">
         <div className="max-w-md w-full text-center">
           <div className="mb-6">
             <Loader2 className="h-16 w-16 text-orange-500 mx-auto animate-spin" />
           </div>
-          <h1 className="text-2xl font-bold text-gray-900 mb-4">Processing Authentication</h1>
-          <p className="text-gray-600">Please wait while we complete your sign-in...</p>
+          <h1 className="text-2xl font-bold text-[var(--color-text)] mb-4">Processing Authentication</h1>
+          <p className="text-[var(--color-text-muted)]">Please wait while we complete your sign-in...</p>
         </div>
       </div>
     )
@@ -97,13 +97,13 @@ function App() {
 
   if (authCallbackStatus === 'success') {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-orange-50 to-yellow-50 px-4">
+      <div className="min-h-screen flex items-center justify-center bg-[var(--gradient-app-bg)] px-4">
         <div className="max-w-md w-full text-center">
           <div className="mb-6">
             <CheckCircle className="h-16 w-16 text-green-500 mx-auto" />
           </div>
-          <h1 className="text-2xl font-bold text-gray-900 mb-4">Authentication Successful</h1>
-          <p className="text-gray-600 mb-6">Redirecting to the app...</p>
+          <h1 className="text-2xl font-bold text-[var(--color-text)] mb-4">Authentication Successful</h1>
+          <p className="text-[var(--color-text-muted)] mb-6">Redirecting to the app...</p>
           <div className="flex items-center justify-center">
             <Loader2 className="h-5 w-5 text-green-500 animate-spin mr-2" />
             <span className="text-green-600">Loading...</span>
@@ -115,13 +115,13 @@ function App() {
 
   if (authCallbackStatus === 'error') {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-orange-50 to-yellow-50 px-4">
+      <div className="min-h-screen flex items-center justify-center bg-[var(--gradient-app-bg)] px-4">
         <div className="max-w-md w-full text-center">
           <div className="mb-6">
             <XCircle className="h-16 w-16 text-red-500 mx-auto" />
           </div>
-          <h1 className="text-2xl font-bold text-gray-900 mb-4">Authentication Failed</h1>
-          <p className="text-gray-600 mb-6">There was an error processing your authentication. Please try signing in again.</p>
+          <h1 className="text-2xl font-bold text-[var(--color-text)] mb-4">Authentication Failed</h1>
+          <p className="text-[var(--color-text-muted)] mb-6">There was an error processing your authentication. Please try signing in again.</p>
           <button
             onClick={() => window.location.reload()}
             className="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md text-white bg-orange-600 hover:bg-orange-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-orange-500"
@@ -203,7 +203,7 @@ function AppContent({
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-orange-50 to-yellow-50">
+    <div className="min-h-screen bg-[var(--gradient-app-bg)]">
       <Navigation currentPage={currentPage} onPageChange={setCurrentPage} />
       <Layout>
         {(() => {

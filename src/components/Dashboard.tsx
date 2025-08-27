@@ -53,7 +53,7 @@ export default function Dashboard({ onPageChange }: DashboardProps) {
       description: t('chooseSportsToParticipate'),
       icon: Trophy,
       action: () => onPageChange?.('sports'),
-      color: 'bg-blue-500 hover:bg-blue-600',
+      color: 'bg-gradient-to-br from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800',
       available: true
     },
     {
@@ -62,7 +62,7 @@ export default function Dashboard({ onPageChange }: DashboardProps) {
       description: t('campSchedule'),
       icon: Calendar,
       action: () => onPageChange?.('schedule'),
-      color: 'bg-green-500 hover:bg-green-600',
+      color: 'bg-gradient-to-br from-emerald-600 to-emerald-700 hover:from-emerald-700 hover:to-emerald-800',
       available: profile?.is_admin || false
     },
     {
@@ -71,7 +71,7 @@ export default function Dashboard({ onPageChange }: DashboardProps) {
       description: 'Review and moderate photo submissions',
       icon: Camera,
       action: () => onPageChange?.('gallery-moderation'),
-      color: 'bg-purple-500 hover:bg-purple-600',
+      color: 'bg-gradient-to-br from-violet-600 to-violet-700 hover:from-violet-700 hover:to-violet-800',
       available: profile?.is_admin || false
     },
     // {
@@ -400,19 +400,19 @@ export default function Dashboard({ onPageChange }: DashboardProps) {
                   }}
                 >
                   {/* Hover effect overlay */}
-                  <div className="absolute inset-0 bg-[var(--color-bg)] bg-opacity-0 group-hover:bg-opacity-10 transition-all duration-300"></div>
+                  <div className="absolute inset-0 bg-white bg-opacity-0 group-hover:bg-opacity-10 transition-all duration-300"></div>
                   
                   {/* Icon with enhanced styling */}
                   <div className="relative z-10">
-                    <Icon className="h-6 w-6 sm:h-7 sm:w-7 lg:h-8 lg:w-8 drop-shadow-sm" />
+                    <Icon className="h-6 w-6 sm:h-7 sm:w-7 lg:h-8 lg:w-8 drop-shadow-sm text-white" />
                   </div>
                   
                   {/* Text content */}
                   <div className="relative z-10 text-center space-y-1">
-                    <div className="font-semibold text-sm sm:text-base lg:text-lg leading-tight">
+                    <div className="font-semibold text-sm sm:text-base lg:text-lg leading-tight text-white drop-shadow-sm">
                       {action.title}
                     </div>
-                    <div className="text-xs sm:text-sm opacity-90 leading-relaxed px-1">
+                    <div className="text-xs sm:text-sm text-white text-opacity-90 leading-relaxed px-1 drop-shadow-sm">
                       {action.description}
                     </div>
                   </div>

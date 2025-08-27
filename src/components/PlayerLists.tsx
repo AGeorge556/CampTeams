@@ -108,7 +108,7 @@ export default function PlayerLists() {
               <div key={balance.team} className="text-center">
                 <div className="font-semibold text-[var(--color-text)]">{TEAMS[balance.team as TeamColor].name}</div>
                 <div className="text-sm text-[var(--color-text-muted)]">
-                  {balance.total_count} {t('players')}  {balance.male_count} {t('male')}  {balance.female_count} {t('female')}
+                  {balance.total_count} {t('players')}  {balance.male_count} {t('male')}  {balance.female_count} {t('female')}
                 </div>
               </div>
             ))}
@@ -148,7 +148,7 @@ export default function PlayerLists() {
                         size="sm"
                         className={`${
                           teamAcceptance.canAccept 
-                            ? 'bg-white bg-opacity-20 text-white border-white hover:bg-opacity-30' 
+                            ? 'bg-[var(--color-bg)] bg-opacity-20 text-[var(--color-text)] border-[var(--color-border)] hover:bg-opacity-30' 
                             : 'bg-red-100 text-red-800 border-red-300 opacity-90 cursor-not-allowed'
                         }`}
                         title={!teamAcceptance.canAccept ? teamAcceptance.reason : undefined}
