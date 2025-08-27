@@ -248,7 +248,23 @@ export default function AttendanceCheckIn() {
           <h2 className="text-2xl font-bold text-[var(--color-text)]">Attendance Check-in</h2>
           <p className="text-[var(--color-text-muted)]">Check in to active sessions</p>
         </div>
-        <QrCode className="h-8 w-8 text-[var(--color-primary)]" />
+        <div className="flex items-center space-x-2">
+          <QrCode className="h-8 w-8 text-[var(--color-primary)]" />
+          {/* Test button for debugging */}
+          {activeSessions.length > 0 && (
+            <button
+              onClick={() => {
+                console.log('Test button clicked')
+                const firstSession = activeSessions[0]
+                console.log('Testing check-in for session:', firstSession)
+                handleCheckIn(firstSession.id)
+              }}
+              className="px-3 py-1 text-xs bg-blue-500 text-white rounded hover:bg-blue-600"
+            >
+              Test Check-in
+            </button>
+          )}
+        </div>
       </div>
 
       {/* Active Sessions */}
