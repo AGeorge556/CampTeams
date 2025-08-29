@@ -1,11 +1,11 @@
 import React, { useState, useEffect, useRef } from 'react'
-import { Users, BarChart3, Sun, Star, Flame, Trees, Mountain, UserPlus, Download, RefreshCw, Calendar, Trophy, Activity, Camera } from 'lucide-react'
+import { Users, BarChart3, UserPlus, Download, RefreshCw, Calendar, Trophy, Activity, Camera } from 'lucide-react'
 import { useProfile } from '../hooks/useProfile'
 import { useTeamBalance } from '../hooks/useTeamBalance'
 import { TEAMS, TeamColor } from '../lib/supabase'
 import AdminPanel from './AdminPanel'
 import PlayerLists from './PlayerLists'
-import CountdownTimer from './CountdownTimer'
+
 import Scoreboard from './Scoreboard'
 import { useLanguage } from '../contexts/LanguageContext'
 import { SkeletonCard } from './LoadingSpinner'
@@ -549,18 +549,7 @@ export default function Dashboard({ onPageChange }: DashboardProps) {
         )}
       </div>
 
-      {/* Large, Fun Countdown Section with Summer Icons */}
-      <div className="relative p-4 sm:p-6">
-        {/* Summer Icons - background/floating */}
-        <Sun className="absolute left-2 sm:left-4 top-1 sm:top-2 text-orange-200 opacity-30 w-16 h-16 sm:w-24 sm:h-24 animate-spin-slow" />
-        <Star className="absolute right-4 sm:right-8 top-4 sm:top-8 text-yellow-200 opacity-30 w-12 h-12 sm:w-16 sm:h-16 animate-bounce" />
-        <Flame className="absolute left-1/2 -translate-x-1/2 bottom-1 sm:bottom-2 text-orange-300 opacity-20 w-16 h-16 sm:w-20 sm:h-20" />
-        <Trees className="absolute left-4 sm:left-8 bottom-4 sm:bottom-8 text-green-200 opacity-30 w-16 h-16 sm:w-20 sm:h-20" />
-        <Mountain className="absolute right-2 sm:right-4 bottom-2 sm:bottom-4 text-blue-200 opacity-30 w-20 h-20 sm:w-24 sm:h-24" />
-        <div className="relative z-10 w-full">
-          <CountdownTimer targetDate="2025-08-28T00:00:00" compact={false} />
-        </div>
-      </div>
+
 
       {/* Scoreboard visible after Daily Inspiration */}
       <Scoreboard />
