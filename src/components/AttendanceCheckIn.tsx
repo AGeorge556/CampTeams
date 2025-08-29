@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react'
-import { QrCode, CheckCircle, XCircle, Clock, Users } from 'lucide-react'
+import { QrCode, CheckCircle, XCircle, Clock, Users, AlertCircle } from 'lucide-react'
 import { supabase } from '../lib/supabase'
 import { useProfile } from '../hooks/useProfile'
 import { useToast } from './Toast'
@@ -13,6 +13,7 @@ export default function AttendanceCheckIn() {
   const [checkingIn, setCheckingIn] = useState<string | null>(null)
   const [myAttendance, setMyAttendance] = useState<AttendanceRecord[]>([])
   const [qrSessionId, setQrSessionId] = useState<string | null>(null)
+  const [qrValidationError, setQrValidationError] = useState<string | null>(null)
 
   useEffect(() => {
     loadActiveSessions()
@@ -75,46 +76,61 @@ export default function AttendanceCheckIn() {
     if (!profile) return
 
     setCheckingIn(sessionId)
+    setQrValidationError(null)
+    
     try {
       console.log('QR Code Check-in initiated for session ID:', sessionId)
       
-      // For testing: use the most recent active session
-      // This bypasses the QR code URL matching issue
-      const { data: sessions, error: sessionError } = await supabase
+      // Validate that the session exists and is active
+      const { data: session, error: sessionError } = await supabase
         .from('camp_sessions')
         .select('*')
+        .eq('id', sessionId)
         .eq('is_active', true)
-        .order('created_at', { ascending: false })
-        .limit(1)
+        .single()
 
-      console.log('Session lookup result:', { sessions, sessionError })
-
-      if (sessionError) {
-        console.error('Database error:', sessionError)
+      if (sessionError || !session) {
+        console.error('Session validation failed:', sessionError)
+        setQrValidationError('Invalid or inactive session. Please scan a valid QR code.')
         addToast({
           type: 'error',
-          title: 'Database Error',
-          message: 'Failed to connect to database'
+          title: 'Invalid Session',
+          message: 'This QR code is not valid or the session is not active.'
         })
         return
       }
 
-      if (!sessions || sessions.length === 0) {
-        console.log('No active sessions found')
+      console.log('Validated session:', session)
+
+      // Check if session is currently active (within time window)
+      const now = new Date()
+      const startTime = new Date(session.start_time)
+      const endTime = new Date(session.end_time)
+      
+      if (now < startTime) {
+        setQrValidationError('Session has not started yet. Please wait until the session begins.')
         addToast({
-          type: 'error',
-          title: 'No Active Sessions',
-          message: 'No active sessions found for check-in'
+          type: 'warning',
+          title: 'Session Not Started',
+          message: 'This session has not started yet. Please wait until the scheduled time.'
         })
         return
       }
-
-      const session = sessions[0]
-      console.log('Using session:', session)
+      
+      if (now > endTime) {
+        setQrValidationError('Session has ended. Check-in is no longer available.')
+        addToast({
+          type: 'warning',
+          title: 'Session Ended',
+          message: 'This session has ended. Check-in is no longer available.'
+        })
+        return
+      }
 
       // Check if already attended
       const existingAttendance = myAttendance.find(att => att.session_id === session.id)
       if (existingAttendance) {
+        setQrValidationError('You have already checked in to this session.')
         addToast({
           type: 'warning',
           title: 'Already Checked In',
@@ -123,7 +139,8 @@ export default function AttendanceCheckIn() {
         return
       }
 
-      const { error } = await supabase
+      // Create attendance record
+      const { error: attendanceError } = await supabase
         .from('attendance_records')
         .insert({
           session_id: session.id,
@@ -131,7 +148,7 @@ export default function AttendanceCheckIn() {
           status: 'present'
         })
 
-      if (error) throw error
+      if (attendanceError) throw attendanceError
 
       addToast({
         type: 'success',
@@ -139,54 +156,12 @@ export default function AttendanceCheckIn() {
         message: `You have been marked as present for ${session.name}`
       })
 
+      // Clear QR session ID and reload data
+      setQrSessionId(null)
       loadMyAttendance()
     } catch (error) {
       console.error('Error checking in via QR code:', error)
-      addToast({
-        type: 'error',
-        title: 'Check-in Failed',
-        message: 'Failed to check in. Please try again.'
-      })
-    } finally {
-      setCheckingIn(null)
-    }
-  }
-
-  const handleCheckIn = async (sessionId: string) => {
-    if (!profile) return
-
-    setCheckingIn(sessionId)
-    try {
-      // Check if already attended
-      const existingAttendance = myAttendance.find(att => att.session_id === sessionId)
-      if (existingAttendance) {
-        addToast({
-          type: 'warning',
-          title: 'Already Checked In',
-          message: 'You have already checked in to this session'
-        })
-        return
-      }
-
-      const { error } = await supabase
-        .from('attendance_records')
-        .insert({
-          session_id: sessionId,
-          user_id: profile.id,
-          status: 'present'
-        })
-
-      if (error) throw error
-
-      addToast({
-        type: 'success',
-        title: 'Check-in Successful',
-        message: 'You have been marked as present for this session'
-      })
-
-      loadMyAttendance()
-    } catch (error) {
-      console.error('Error checking in:', error)
+      setQrValidationError('Failed to check in. Please try again.')
       addToast({
         type: 'error',
         title: 'Check-in Failed',
@@ -220,25 +195,31 @@ export default function AttendanceCheckIn() {
 
   return (
     <div className="space-y-4 sm:space-y-6">
-      {/* Debug Information (only show if QR session ID is present) */}
-      {qrSessionId && (
-        <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-4">
-          <h3 className="text-lg font-medium text-yellow-800 mb-2">QR Code Debug Info</h3>
-          <div className="text-sm text-yellow-700 space-y-1">
-            <p><strong>QR Session ID:</strong> {qrSessionId}</p>
-            <p><strong>Current URL:</strong> {window.location.href}</p>
-            <p><strong>Origin:</strong> {window.location.origin}</p>
-            <p><strong>Active Sessions Count:</strong> {activeSessions.length}</p>
-            <p><strong>My Attendance Count:</strong> {myAttendance.length}</p>
-            <p><strong>Profile ID:</strong> {profile?.id || 'Not loaded'}</p>
-            <p><strong>Check-in Status:</strong> {checkingIn ? 'Processing...' : 'Ready'}</p>
+      {/* QR Code Validation Error */}
+      {qrValidationError && (
+        <div className="bg-red-50 border border-red-200 rounded-lg p-4">
+          <div className="flex items-center">
+            <AlertCircle className="h-5 w-5 text-red-400 mr-2" />
+            <h3 className="text-lg font-medium text-red-800">QR Code Error</h3>
           </div>
-          <div className="mt-3 pt-3 border-t border-yellow-200">
-            <p className="text-xs text-yellow-600">
-              <strong>Note:</strong> This debug panel will help identify QR code issues. 
-              Check the browser console for detailed logs.
-            </p>
+          <p className="text-sm text-red-700 mt-1">{qrValidationError}</p>
+          <button
+            onClick={() => setQrValidationError(null)}
+            className="mt-2 text-sm text-red-600 hover:text-red-800 underline"
+          >
+            Dismiss
+          </button>
+        </div>
+      )}
+
+      {/* QR Code Processing Status */}
+      {checkingIn && (
+        <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
+          <div className="flex items-center">
+            <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-blue-600 mr-2"></div>
+            <h3 className="text-lg font-medium text-blue-800">Processing QR Code</h3>
           </div>
+          <p className="text-sm text-blue-700 mt-1">Validating your check-in...</p>
         </div>
       )}
       
@@ -246,28 +227,28 @@ export default function AttendanceCheckIn() {
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between space-y-3 sm:space-y-0">
         <div>
           <h2 className="text-xl sm:text-2xl font-bold text-[var(--color-text)]">Attendance Check-in</h2>
-          <p className="text-[var(--color-text-muted)]">Check in to active sessions</p>
+          <p className="text-[var(--color-text-muted)]">Scan QR codes to check in to sessions</p>
         </div>
         <div className="flex items-center space-x-2">
           <QrCode className="h-6 w-6 sm:h-8 sm:w-8 text-[var(--color-primary)]" />
-          {/* Test button for debugging */}
-          {activeSessions.length > 0 && (
-            <button
-              onClick={() => {
-                console.log('Test button clicked')
-                const firstSession = activeSessions[0]
-                console.log('Testing check-in for session:', firstSession)
-                handleCheckIn(firstSession.id)
-              }}
-              className="px-3 py-2 text-xs sm:text-sm bg-blue-500 text-white rounded hover:bg-blue-600 min-h-[44px] touch-manipulation"
-            >
-              Test Check-in
-            </button>
-          )}
         </div>
       </div>
 
-      {/* Active Sessions */}
+      {/* QR Code Instructions */}
+      <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
+        <div className="flex items-start">
+          <QrCode className="h-5 w-5 text-blue-600 mr-2 mt-0.5 flex-shrink-0" />
+          <div>
+            <h3 className="text-lg font-medium text-blue-800">How to Check In</h3>
+            <p className="text-sm text-blue-700 mt-1">
+              To check in to a session, you must scan the QR code provided by your camp leader. 
+              Manual check-in is not available. Please ask your leader for the QR code if you need to check in.
+            </p>
+          </div>
+        </div>
+      </div>
+
+      {/* Active Sessions (Read-only) */}
       <div className="bg-[var(--color-card-bg)] rounded-lg shadow-sm border border-[var(--color-border)]">
         <div className="px-4 sm:px-6 py-3 sm:py-4 border-b border-[var(--color-border)]">
           <h4 className="text-lg font-medium text-[var(--color-text)] flex items-center">
@@ -311,7 +292,7 @@ export default function AttendanceCheckIn() {
                         </div>
                       </div>
                     </div>
-                    <div className="flex items-center justify-start sm:justify-end space-x-3">
+                    <div className="flex items-center justify-start sm:justify-end">
                       {attendanceStatus === 'present' ? (
                         <div className="flex items-center text-green-600">
                           <CheckCircle className="h-5 w-5 mr-2" />
@@ -323,18 +304,10 @@ export default function AttendanceCheckIn() {
                           <span className="text-sm font-medium">Absent</span>
                         </div>
                       ) : (
-                        <button
-                          onClick={() => handleCheckIn(session.id)}
-                          disabled={checkingIn === session.id || !isActive}
-                          className="inline-flex items-center justify-center px-4 py-3 border border-transparent text-sm font-medium rounded-md text-white bg-orange-600 hover:bg-orange-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-orange-500 disabled:opacity-50 disabled:cursor-not-allowed min-h-[44px] touch-manipulation"
-                        >
-                          {checkingIn === session.id ? (
-                            <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white mr-2"></div>
-                          ) : (
-                            <CheckCircle className="h-4 w-4 mr-2" />
-                          )}
-                          <span className="whitespace-nowrap">Check In</span>
-                        </button>
+                        <div className="flex items-center text-gray-500">
+                          <QrCode className="h-4 w-4 mr-2" />
+                          <span className="text-sm font-medium">Scan QR Code to Check In</span>
+                        </div>
                       )}
                     </div>
                   </div>

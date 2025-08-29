@@ -61,11 +61,6 @@ export default function SessionManager({ onSessionCreated }: SessionManagerProps
 
     setLoading(true)
     try {
-      // Generate a proper QR code URL for attendance check-in using query parameters
-      const siteUrl = window.location.origin
-      const sessionId = `session_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`
-      const qrCodeUrl = `${siteUrl}/?attendance=${sessionId}`
-
       // Convert datetime-local values to proper ISO strings with timezone
       const convertToISOString = (datetimeLocal: string) => {
         if (!datetimeLocal) return null
@@ -79,8 +74,8 @@ export default function SessionManager({ onSessionCreated }: SessionManagerProps
         ...formData,
         start_time: convertToISOString(formData.start_time),
         end_time: convertToISOString(formData.end_time),
-        created_by: profile.id,
-        qr_code: qrCodeUrl
+        created_by: profile.id
+        // Remove qr_code from here - we'll generate it after the session is created
       }
 
       if (editingSession) {
@@ -103,6 +98,21 @@ export default function SessionManager({ onSessionCreated }: SessionManagerProps
           .single()
 
         if (error) throw error
+
+        // Generate QR code URL with the actual session ID
+        const siteUrl = window.location.origin
+        const qrCodeUrl = `${siteUrl}/?attendance=${data.id}`
+
+        // Update the session with the QR code
+        const { error: qrError } = await supabase
+          .from('camp_sessions')
+          .update({ qr_code: qrCodeUrl })
+          .eq('id', data.id)
+
+        if (qrError) {
+          console.error('Error updating QR code:', qrError)
+        }
+
         addToast({
           type: 'success',
           title: 'Success',

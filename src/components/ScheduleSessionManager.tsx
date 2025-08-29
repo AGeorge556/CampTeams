@@ -150,7 +150,7 @@ export default function ScheduleSessionManager() {
         const sessionEnd = new Date(sessionStart)
         sessionEnd.setHours(sessionStart.getHours() + 1) // Default 1 hour duration
 
-        // Create the session
+        // Create the session first without QR code
         const { data: newSession, error: sessionError } = await supabase
           .from('camp_sessions')
           .insert({
@@ -160,7 +160,6 @@ export default function ScheduleSessionManager() {
             start_time: sessionStart.toISOString(),
             end_time: sessionEnd.toISOString(),
             schedule_id: item.id,
-            qr_code: btoa(Math.random().toString(36) + Date.now().toString(36)), // Simple QR code generation
             created_by: profile.id,
             is_active: false // Start as inactive
           })
@@ -170,6 +169,20 @@ export default function ScheduleSessionManager() {
         if (sessionError) {
           console.error(`Error creating session for ${item.activity}:`, sessionError)
           return null
+        }
+
+        // Generate QR code URL with the actual session ID
+        const siteUrl = window.location.origin
+        const qrCodeUrl = `${siteUrl}/?attendance=${newSession.id}`
+
+        // Update the session with the QR code
+        const { error: qrError } = await supabase
+          .from('camp_sessions')
+          .update({ qr_code: qrCodeUrl })
+          .eq('id', newSession.id)
+
+        if (qrError) {
+          console.error(`Error updating QR code for ${item.activity}:`, qrError)
         }
 
         return newSession
