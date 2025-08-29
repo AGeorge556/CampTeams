@@ -17,13 +17,28 @@ export function useGalleryVisibility() {
         .from('camp_settings')
         .select('gallery_visible')
         .single()
-      if (error && (error as any).code !== 'PGRST116') {
-        console.error('Error fetching gallery visibility:', error)
+      
+      if (error) {
+        // Handle different error types gracefully
+        if (error.code === 'PGRST116') {
+          // No rows returned - use default value
+          setGalleryVisible(true)
+        } else if (error.code === 'PGRST301' || error.code === '42501') {
+          // Permission denied or insufficient privileges - use default value
+          console.warn('Permission denied accessing camp_settings, using default visibility')
+          setGalleryVisible(true)
+        } else {
+          console.error('Error fetching gallery visibility:', error)
+          // Use default value on error
+          setGalleryVisible(true)
+        }
       } else {
-        setGalleryVisible((data as any)?.gallery_visible ?? true)
+        setGalleryVisible(data?.gallery_visible ?? true)
       }
     } catch (error) {
       console.error('Error fetching gallery visibility:', error)
+      // Use default value on any error
+      setGalleryVisible(true)
     } finally {
       setLoading(false)
     }
@@ -59,7 +74,7 @@ export function useGalleryVisibility() {
         .from('camp_settings')
         .update({ gallery_visible: newVisibility })
         .neq('id', '00000000-0000-0000-0000-000000000000')
-      if (updateError && (updateError as any).code !== 'PGRST116') {
+      if (updateError && updateError.code !== 'PGRST116') {
         throw updateError
       }
       setGalleryVisible(newVisibility)

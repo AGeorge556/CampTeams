@@ -18,13 +18,27 @@ export function useOilExtractionVisibility() {
         .select('oil_extraction_visible')
         .single()
 
-      if (error && error.code !== 'PGRST116') {
-        console.error('Error fetching oil extraction visibility:', error)
+      if (error) {
+        // Handle different error types gracefully
+        if (error.code === 'PGRST116') {
+          // No rows returned - use default value
+          setOilExtractionVisible(true)
+        } else if (error.code === 'PGRST301' || error.code === '42501') {
+          // Permission denied or insufficient privileges - use default value
+          console.warn('Permission denied accessing camp_settings, using default visibility')
+          setOilExtractionVisible(true)
+        } else {
+          console.error('Error fetching oil extraction visibility:', error)
+          // Use default value on error
+          setOilExtractionVisible(true)
+        }
       } else {
         setOilExtractionVisible(data?.oil_extraction_visible ?? true)
       }
     } catch (error) {
       console.error('Error fetching oil extraction visibility:', error)
+      // Use default value on any error
+      setOilExtractionVisible(true)
     } finally {
       setLoading(false)
     }

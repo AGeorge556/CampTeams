@@ -187,6 +187,21 @@ function App() {
     )
   }
 
+  // Show password reset if needed
+  if (showPasswordReset) {
+    return (
+      <ErrorBoundary>
+        <ThemeProvider>
+          <LanguageProvider>
+            <ToastProvider>
+              <PasswordReset onComplete={() => setShowPasswordReset(false)} />
+            </ToastProvider>
+          </LanguageProvider>
+        </ThemeProvider>
+      </ErrorBoundary>
+    )
+  }
+
   return (
     <ErrorBoundary>
       <ThemeProvider>
@@ -254,20 +269,6 @@ function AppContent({
 
   if (authLoading || profileLoading || rulesLoading) {
     return <LoadingSpinner fullScreen text="Loading..." />
-  }
-
-  if (showPasswordReset) {
-    return (
-      <ErrorBoundary>
-        <ThemeProvider>
-          <LanguageProvider>
-            <ToastProvider>
-              <PasswordReset onComplete={() => setShowPasswordReset(false)} />
-            </ToastProvider>
-          </LanguageProvider>
-        </ThemeProvider>
-      </ErrorBoundary>
-    )
   }
 
   if (!user) {
