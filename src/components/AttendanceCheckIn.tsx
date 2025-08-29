@@ -14,6 +14,8 @@ export default function AttendanceCheckIn() {
   const [myAttendance, setMyAttendance] = useState<AttendanceRecord[]>([])
   const [qrSessionId, setQrSessionId] = useState<string | null>(null)
   const [qrValidationError, setQrValidationError] = useState<string | null>(null)
+  const [scannedSessionId, setScannedSessionId] = useState<string | null>(null)
+  const [scannedSessionValid, setScannedSessionValid] = useState(false)
 
   useEffect(() => {
     loadActiveSessions()
@@ -23,10 +25,15 @@ export default function AttendanceCheckIn() {
     const storedSessionId = sessionStorage.getItem('qr_session_id')
     if (storedSessionId) {
       setQrSessionId(storedSessionId)
+      setScannedSessionId(storedSessionId)
       sessionStorage.removeItem('qr_session_id') // Clear it after reading
       
-      // Auto-check in if we have a valid session
-      handleQRCodeCheckIn(storedSessionId)
+      // Validate the scanned session
+      validateScannedSession(storedSessionId)
+    } else {
+      // Clear any existing scanned session state if no QR code was scanned
+      setScannedSessionId(null)
+      setScannedSessionValid(false)
     }
   }, [])
 
@@ -156,8 +163,10 @@ export default function AttendanceCheckIn() {
         message: `You have been marked as present for ${session.name}`
       })
 
-      // Clear QR session ID and reload data
+      // Clear QR session ID and scanned session state, then reload data
       setQrSessionId(null)
+      setScannedSessionId(null)
+      setScannedSessionValid(false)
       loadMyAttendance()
     } catch (error) {
       console.error('Error checking in via QR code:', error)
@@ -170,6 +179,49 @@ export default function AttendanceCheckIn() {
     } finally {
       setCheckingIn(null)
     }
+  }
+
+  const validateScannedSession = async (sessionId: string) => {
+    try {
+      const { data: session, error } = await supabase
+        .from('camp_sessions')
+        .select('*')
+        .eq('id', sessionId)
+        .eq('is_active', true)
+        .single()
+
+      if (error || !session) {
+        setScannedSessionValid(false)
+        return
+      }
+
+      // Check if session is currently active (within time window)
+      const now = new Date()
+      const startTime = new Date(session.start_time)
+      const endTime = new Date(session.end_time)
+      
+      if (now >= startTime && now <= endTime) {
+        setScannedSessionValid(true)
+      } else {
+        setScannedSessionValid(false)
+      }
+    } catch (error) {
+      console.error('Error validating scanned session:', error)
+      setScannedSessionValid(false)
+    }
+  }
+
+  const handleManualCheckIn = async (sessionId: string) => {
+    if (!profile || !scannedSessionId || sessionId !== scannedSessionId) {
+      addToast({
+        type: 'error',
+        title: 'Invalid Check-in',
+        message: 'You must scan a QR code to check in to this session.'
+      })
+      return
+    }
+
+    await handleQRCodeCheckIn(sessionId)
   }
 
   const getAttendanceStatus = (sessionId: string) => {
@@ -222,6 +274,19 @@ export default function AttendanceCheckIn() {
           <p className="text-sm text-blue-700 mt-1">Validating your check-in...</p>
         </div>
       )}
+
+      {/* QR Code Scanned Successfully */}
+      {scannedSessionId && scannedSessionValid && !checkingIn && (
+        <div className="bg-green-50 border border-green-200 rounded-lg p-4">
+          <div className="flex items-center">
+            <CheckCircle className="h-5 w-5 text-green-600 mr-2" />
+            <h3 className="text-lg font-medium text-green-800">QR Code Scanned Successfully</h3>
+          </div>
+          <p className="text-sm text-green-700 mt-1">
+            You can now check in to the session below. The check-in button will only appear for the session you scanned.
+          </p>
+        </div>
+      )}
       
       {/* Header */}
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between space-y-3 sm:space-y-0">
@@ -242,7 +307,8 @@ export default function AttendanceCheckIn() {
             <h3 className="text-lg font-medium text-blue-800">How to Check In</h3>
             <p className="text-sm text-blue-700 mt-1">
               To check in to a session, you must scan the QR code provided by your camp leader. 
-              Manual check-in is not available. Please ask your leader for the QR code if you need to check in.
+              Once you scan a valid QR code, a check-in button will appear for that specific session. 
+              Manual check-in is not available without scanning a QR code first.
             </p>
           </div>
         </div>
@@ -303,6 +369,24 @@ export default function AttendanceCheckIn() {
                           <XCircle className="h-5 w-5 mr-2" />
                           <span className="text-sm font-medium">Absent</span>
                         </div>
+                      ) : scannedSessionId === session.id && scannedSessionValid ? (
+                        <button
+                          onClick={() => handleManualCheckIn(session.id)}
+                          disabled={checkingIn === session.id}
+                          className="inline-flex items-center px-3 py-2 border border-transparent text-sm leading-4 font-medium rounded-md text-white bg-[var(--color-primary)] hover:bg-[var(--color-primary-hover)] focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-[var(--color-primary)] disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+                        >
+                          {checkingIn === session.id ? (
+                            <>
+                              <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white mr-2"></div>
+                              Checking In...
+                            </>
+                          ) : (
+                            <>
+                              <CheckCircle className="h-4 w-4 mr-2" />
+                              Check In
+                            </>
+                          )}
+                        </button>
                       ) : (
                         <div className="flex items-center text-gray-500">
                           <QrCode className="h-4 w-4 mr-2" />
