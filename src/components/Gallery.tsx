@@ -9,6 +9,7 @@ import { PHOTO_STATUS_LABELS, PHOTO_STATUS_COLORS } from '../lib/types'
 import Button from './ui/Button'
 import LoadingSpinner from './LoadingSpinner'
 import PhotoModal from './PhotoModal'
+import { testGalleryUpload, logGalleryUploadDebug } from '../utils/galleryUploadTest'
 
 export default function Gallery() {
   const { t } = useLanguage()
@@ -95,8 +96,23 @@ export default function Gallery() {
 
     let successCount = 0
     let errorCount = 0
+    const errors: string[] = []
 
-    for (const upload of selectedFiles) {
+    addToast({
+      type: 'info',
+      title: 'Uploading...',
+      message: `Starting upload of ${selectedFiles.length} file${selectedFiles.length > 1 ? 's' : ''}`
+    })
+
+    for (let i = 0; i < selectedFiles.length; i++) {
+      const upload = selectedFiles[i]
+      
+      addToast({
+        type: 'info',
+        title: 'Uploading...',
+        message: `Uploading ${upload.file.name} (${i + 1}/${selectedFiles.length})`
+      })
+
       const result = await uploadPhoto({
         ...upload,
         caption: captions[upload.file.name] || undefined
@@ -104,22 +120,34 @@ export default function Gallery() {
 
       if (result.success) {
         successCount++
+        addToast({
+          type: 'success',
+          title: 'Upload Successful',
+          message: `${upload.file.name} uploaded successfully`
+        })
       } else {
         errorCount++
+        const errorMsg = result.error || 'Failed to upload photo'
+        errors.push(`${upload.file.name}: ${errorMsg}`)
         addToast({
           type: 'error',
-          title: t('uploadError'),
-          message: result.error || 'Failed to upload photo'
+          title: 'Upload Failed',
+          message: `${upload.file.name}: ${errorMsg}`
         })
       }
     }
 
+    // Final summary
     if (successCount > 0) {
       addToast({
         type: 'success',
-        title: t('uploadSuccess'),
-        message: `Successfully uploaded ${successCount} file${successCount > 1 ? 's' : ''}`
+        title: 'Upload Complete',
+        message: `Successfully uploaded ${successCount} file${successCount > 1 ? 's' : ''}${errorCount > 0 ? `, ${errorCount} failed` : ''}`
       })
+    }
+
+    if (errorCount > 0) {
+      console.error('Upload errors:', errors)
     }
 
     // Clean up
@@ -149,6 +177,24 @@ export default function Gallery() {
       })
     }
     setShowDeleteConfirm(null)
+  }
+
+  const handleDebugUpload = async () => {
+    logGalleryUploadDebug()
+    const result = await testGalleryUpload()
+    if (result.success) {
+      addToast({
+        type: 'success',
+        title: 'Debug Test',
+        message: 'Gallery upload test passed! Check console for details.'
+      })
+    } else {
+      addToast({
+        type: 'error',
+        title: 'Debug Test Failed',
+        message: result.error || 'Test failed. Check console for details.'
+      })
+    }
   }
 
   const getStatusIcon = (status: PhotoStatus) => {
@@ -182,12 +228,23 @@ export default function Gallery() {
               <p className="text-[var(--color-text-muted)]">Share your camp memories with photos</p>
             </div>
           </div>
-          <Button
-            onClick={() => setShowUpload(true)}
-            icon={<Plus className="h-4 w-4" />}
-          >
-            {t('uploadPhoto')}
-          </Button>
+          <div className="flex space-x-2">
+            <Button
+              onClick={() => setShowUpload(true)}
+              icon={<Plus className="h-4 w-4" />}
+            >
+              {t('uploadPhoto')}
+            </Button>
+            {process.env.NODE_ENV === 'development' && (
+              <Button
+                variant="outline"
+                onClick={handleDebugUpload}
+                size="sm"
+              >
+                Debug Upload
+              </Button>
+            )}
+          </div>
         </div>
       </div>
 

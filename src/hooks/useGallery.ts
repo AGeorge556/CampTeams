@@ -114,6 +114,24 @@ export function useGallery() {
     return data?.signedUrl || null
   }
 
+  const checkStorageBucket = async (): Promise<{ exists: boolean; error?: string }> => {
+    try {
+      const { data, error } = await supabase.storage.listBuckets()
+      if (error) {
+        return { exists: false, error: `Failed to list buckets: ${error.message}` }
+      }
+      
+      const galleryBucket = data?.find(bucket => bucket.name === 'gallery-photos')
+      if (!galleryBucket) {
+        return { exists: false, error: 'Gallery storage bucket does not exist. Please contact an administrator.' }
+      }
+      
+      return { exists: true }
+    } catch (err) {
+      return { exists: false, error: `Storage check failed: ${err instanceof Error ? err.message : 'Unknown error'}` }
+    }
+  }
+
   const uploadPhoto = async (photoUpload: PhotoUpload): Promise<{ success: boolean; error?: string }> => {
     if (!user || !profile) {
       return { success: false, error: 'User not authenticated' }
@@ -122,6 +140,14 @@ export function useGallery() {
     try {
       setUploading(true)
       setError(null)
+
+      console.log('Starting upload for file:', photoUpload.file.name, 'Size:', photoUpload.file.size)
+
+      // Check storage bucket first
+      const bucketCheck = await checkStorageBucket()
+      if (!bucketCheck.exists) {
+        return { success: false, error: bucketCheck.error || 'Storage not configured properly' }
+      }
 
       // Check file type (now including videos)
       const allowedTypes = [
@@ -132,9 +158,18 @@ export function useGallery() {
         return { success: false, error: 'Only image and video files are allowed (JPEG, PNG, GIF, WebP, MP4, WebM, OGG, MOV)' }
       }
 
+      // Check file size (50MB limit)
+      const maxSize = 50 * 1024 * 1024 // 50MB
+      if (photoUpload.file.size > maxSize) {
+        return { success: false, error: 'File size must be less than 50MB' }
+      }
+
       // Upload to Supabase Storage (private bucket)
       const fileExt = photoUpload.file.name.split('.').pop()
       const storage_path = `${user.id}/${Date.now()}.${fileExt}`
+      
+      console.log('Uploading to storage path:', storage_path)
+      
       const { error: uploadError } = await supabase.storage
         .from('gallery-photos')
         .upload(storage_path, photoUpload.file, {
@@ -142,23 +177,47 @@ export function useGallery() {
           upsert: false
         })
 
-      if (uploadError) throw uploadError
+      if (uploadError) {
+        console.error('Storage upload error:', uploadError)
+        throw new Error(`Storage upload failed: ${uploadError.message}`)
+      }
 
-      // Save to database (do not store publicUrl)
+      console.log('Storage upload successful, saving to database...')
+
+      // Get the public URL for the uploaded file
+      const { data: urlData } = supabase.storage
+        .from('gallery-photos')
+        .getPublicUrl(storage_path)
+
+      const publicUrl = urlData?.publicUrl || ''
+
+      // Save to database with both image_url and storage_path
       const { error: dbError } = await supabase
         .from('gallery_photos')
         .insert({
           user_id: user.id,
           team_id: profile.current_team,
-          storage_path,
+          image_url: publicUrl, // Required field
+          storage_path: storage_path, // New field for better management
           caption: photoUpload.caption || null
         })
 
-      if (dbError) throw dbError
+      if (dbError) {
+        console.error('Database insert error:', dbError)
+        
+        // If database insert fails, clean up the uploaded file
+        await supabase.storage
+          .from('gallery-photos')
+          .remove([storage_path])
+        
+        throw new Error(`Database insert failed: ${dbError.message}`)
+      }
 
+      console.log('Upload completed successfully')
       return { success: true }
     } catch (err) {
       const errorMessage = err instanceof Error ? err.message : 'Failed to upload photo'
+      console.error('Upload error:', err)
       setError(errorMessage)
       return { success: false, error: errorMessage }
     } finally {
