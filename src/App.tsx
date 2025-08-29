@@ -6,6 +6,7 @@ import { useOilExtractionVisibility } from './hooks/useOilExtractionVisibility'
 import { useGalleryVisibility } from './hooks/useGalleryVisibility'
 import { ThemeProvider } from './contexts/ThemeContext'
 import Auth from './components/Auth'
+import PasswordReset from './components/PasswordReset'
 import OnboardingForm from './components/OnboardingForm'
 import RulesAgreement from './components/RulesAgreement'
 import Dashboard from './components/Dashboard'
@@ -20,7 +21,6 @@ import Gallery from './components/Gallery'
 import GalleryModeration from './components/GalleryModeration'
 import Layout from './components/Layout'
 import Navigation from './components/Navigation'
-import LandingPage from './components/LandingPage'
 import ErrorBoundary from './components/ErrorBoundary'
 import { ToastProvider } from './components/Toast'
 import LoadingSpinner from './components/LoadingSpinner'
@@ -37,8 +37,9 @@ function App() {
   const { profile, loading: profileLoading } = useProfile()
   const [currentPage, setCurrentPage] = useState('dashboard')
   const [authCallbackStatus, setAuthCallbackStatus] = useState<'idle' | 'loading' | 'success' | 'error'>('idle')
+  const [showPasswordReset, setShowPasswordReset] = useState(false)
 
-  // Handle auth callback from email links
+  // Handle auth callback from email links and password reset
   useEffect(() => {
     const handleAuthCallback = async () => {
       // Check if we're on an auth callback URL
@@ -47,6 +48,15 @@ function App() {
       const refreshToken = urlParams.get('refresh_token')
       const error = urlParams.get('error')
       const errorDescription = urlParams.get('error_description')
+      const type = urlParams.get('type')
+
+      // Check if this is a password reset callback
+      if (type === 'recovery') {
+        setShowPasswordReset(true)
+        // Clear the URL parameters
+        window.history.replaceState({}, document.title, window.location.pathname)
+        return
+      }
 
       if (accessToken && refreshToken) {
         setAuthCallbackStatus('loading')
@@ -246,8 +256,22 @@ function AppContent({
     return <LoadingSpinner fullScreen text="Loading..." />
   }
 
+  if (showPasswordReset) {
+    return (
+      <ErrorBoundary>
+        <ThemeProvider>
+          <LanguageProvider>
+            <ToastProvider>
+              <PasswordReset onComplete={() => setShowPasswordReset(false)} />
+            </ToastProvider>
+          </LanguageProvider>
+        </ThemeProvider>
+      </ErrorBoundary>
+    )
+  }
+
   if (!user) {
-    return <LandingPage />
+    return <Auth />
   }
 
   // Only show onboarding if user exists but profile is null AND profile loading is complete

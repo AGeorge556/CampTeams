@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { Users, Mail, Lock, UserPlus, LogIn, Clock } from 'lucide-react'
+import { Users, Mail, Lock, UserPlus, LogIn, Clock, ArrowLeft, Key } from 'lucide-react'
 import { useAuth } from '../hooks/useAuth'
 import { useToast } from './Toast'
 import Button from './ui/Button'
@@ -15,16 +15,23 @@ interface FormErrors {
   password?: string
 }
 
+type AuthMode = 'signin' | 'signup' | 'forgot-password'
+
 export default function Auth({ initialMode = 'signin', onBack }: AuthProps) {
-  const { signUp, signIn } = useAuth()
+  const { signUp, signIn, resetPassword } = useAuth()
   const { addToast } = useToast()
-  const [isSignUp, setIsSignUp] = useState(initialMode === 'signup')
+  const [mode, setMode] = useState<AuthMode>(initialMode === 'signup' ? 'signup' : 'signin')
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
   const [loading, setLoading] = useState(false)
   const [errors, setErrors] = useState<FormErrors>({})
   const [rateLimitCooldown, setRateLimitCooldown] = useState(0)
   const [showEmailConfirmation, setShowEmailConfirmation] = useState(false)
+  const [showPasswordResetSent, setShowPasswordResetSent] = useState(false)
+
+  const isSignUp = mode === 'signup'
+  const isSignIn = mode === 'signin'
+  const isForgotPassword = mode === 'forgot-password'
 
   const validateForm = (): boolean => {
     const newErrors: FormErrors = {}
@@ -36,13 +43,13 @@ export default function Auth({ initialMode = 'signin', onBack }: AuthProps) {
       newErrors.email = 'Please enter a valid email address'
     }
 
-    // Password validation
-    if (!password) {
+    // Password validation (only for signup and signin)
+    if ((isSignUp || isSignIn) && !password) {
       newErrors.password = 'Password is required'
-    } else if (password.length < 6) {
-      newErrors.password = 'Password must be at least 6 characters'
     } else if (isSignUp && password.length < 8) {
       newErrors.password = 'Password must be at least 8 characters for signup'
+    } else if (isSignIn && password.length < 6) {
+      newErrors.password = 'Password must be at least 6 characters'
     }
 
     setErrors(newErrors)
@@ -64,7 +71,30 @@ export default function Auth({ initialMode = 'signin', onBack }: AuthProps) {
     setLoading(true)
 
     try {
-      if (isSignUp) {
+      if (isForgotPassword) {
+        const { error } = await resetPassword(email)
+        if (error) {
+          if (error.message.includes('over_email_send_rate_limit')) {
+            const match = error.message.match(/after (\d+) seconds/)
+            const seconds = match ? parseInt(match[1]) : 60
+            startCooldownTimer(seconds)
+            addToast({
+              type: 'warning',
+              title: 'Rate Limited',
+              message: `Please wait ${seconds} seconds before trying again due to rate limiting.`
+            })
+          } else {
+            throw error
+          }
+        } else {
+          setShowPasswordResetSent(true)
+          addToast({
+            type: 'success',
+            title: 'Password Reset Email Sent',
+            message: 'Please check your email and click the reset link.'
+          })
+        }
+      } else if (isSignUp) {
         const { error } = await signUp(email, password)
         if (error) {
           if (error.message.includes('over_email_send_rate_limit')) {
@@ -132,6 +162,67 @@ export default function Auth({ initialMode = 'signin', onBack }: AuthProps) {
     }
   }
 
+  const resetForm = () => {
+    setEmail('')
+    setPassword('')
+    setErrors({})
+    setShowEmailConfirmation(false)
+    setShowPasswordResetSent(false)
+  }
+
+  const handleModeChange = (newMode: AuthMode) => {
+    setMode(newMode)
+    resetForm()
+  }
+
+  const getTitle = () => {
+    switch (mode) {
+      case 'signup':
+        return 'Create Account'
+      case 'signin':
+        return 'Sign In'
+      case 'forgot-password':
+        return 'Reset Password'
+    }
+  }
+
+  const getDescription = () => {
+    switch (mode) {
+      case 'signup':
+        return 'Create your account to join a team'
+      case 'signin':
+        return 'Sign in to manage your team'
+      case 'forgot-password':
+        return 'Enter your email to receive a password reset link'
+    }
+  }
+
+  const getSubmitButtonText = () => {
+    if (loading || rateLimitCooldown > 0) {
+      return rateLimitCooldown > 0 ? `Wait ${rateLimitCooldown}s` : 'Processing...'
+    }
+    
+    switch (mode) {
+      case 'signup':
+        return 'Create Account'
+      case 'signin':
+        return 'Sign In'
+      case 'forgot-password':
+        return 'Send Reset Link'
+    }
+  }
+
+  const getSubmitIcon = () => {
+    switch (mode) {
+      case 'signup':
+        return <UserPlus />
+      case 'signin':
+        return <LogIn />
+      case 'forgot-password':
+        return <Key />
+    }
+  }
+
   return (
     <div className="min-h-screen flex items-center justify-center bg-[var(--color-bg)] px-4 sm:px-6 lg:px-8">
       {onBack && (
@@ -152,39 +243,41 @@ export default function Auth({ initialMode = 'signin', onBack }: AuthProps) {
             Summer Camp Team Selection
           </h2>
           <p className="mt-2 text-sm text-[var(--color-text-muted)]">
-            {isSignUp ? 'Create your account to join a team' : 'Sign in to manage your team'}
+            {getDescription()}
           </p>
         </div>
          
         <form className="mt-8 space-y-6 bg-[var(--color-card-bg)] p-6 rounded-lg border border-[var(--color-border)]" onSubmit={handleSubmit}>
-           <div className="space-y-4">
-             <Input
-               label="Email address"
-                  type="email"
+          <div className="space-y-4">
+            <Input
+              label="Email address"
+              type="email"
               icon={<Mail />}
-                  value={email}
+              value={email}
               onChange={(e) => {
                 setEmail(e.target.value)
                 clearErrors('email')
               }}
               error={errors.email}
               placeholder="Enter your email"
-                  required
+              required
             />
 
-            <Input
-              label="Password"
-                  type="password"
-              icon={<Lock />}
-                  value={password}
-              onChange={(e) => {
-                setPassword(e.target.value)
-                clearErrors('password')
-              }}
-              error={errors.password}
-              placeholder="Enter your password"
-                  required
-                />
+            {(isSignUp || isSignIn) && (
+              <Input
+                label="Password"
+                type="password"
+                icon={<Lock />}
+                value={password}
+                onChange={(e) => {
+                  setPassword(e.target.value)
+                  clearErrors('password')
+                }}
+                error={errors.password}
+                placeholder="Enter your password"
+                required
+              />
+            )}
           </div>
 
           {showEmailConfirmation && (
@@ -199,37 +292,60 @@ export default function Auth({ initialMode = 'signin', onBack }: AuthProps) {
             </div>
           )}
 
+          {showPasswordResetSent && (
+            <div className="rounded-md bg-[var(--color-bg-muted)] border border-[var(--color-border)] p-4">
+              <div className="flex">
+                <Mail className="h-5 w-5 text-green-500 mt-0.5 mr-3" />
+                <div className="text-sm text-green-700">
+                  <p className="font-medium">Check your email!</p>
+                  <p className="mt-1">We've sent you a password reset link. Please click it to reset your password, then return here to sign in.</p>
+                </div>
+              </div>
+            </div>
+          )}
+
           <Button
-              type="submit"
+            type="submit"
             loading={loading || rateLimitCooldown > 0}
-            icon={isSignUp ? <UserPlus /> : <LogIn />}
+            icon={getSubmitIcon()}
             className="w-full"
-            >
-              {loading || rateLimitCooldown > 0 ? (
-              rateLimitCooldown > 0 ? (
-                    <>
-                      <Clock className="h-5 w-5 mr-2" />
-                      Wait {rateLimitCooldown}s
-                </>
-              ) : (
-                'Processing...'
-              )
-            ) : (
-              isSignUp ? 'Create Account' : 'Sign In'
-              )}
+          >
+            {getSubmitButtonText()}
           </Button>
 
-          <div className="text-center">
-            <button
-              type="button"
-              onClick={() => setIsSignUp(!isSignUp)}
-              className="text-sm text-orange-600 hover:text-orange-700 font-medium"
-            >
-              {isSignUp
-                ? 'Already have an account? Sign in'
-                : "Don't have an account? Sign up"
-              }
-            </button>
+          <div className="text-center space-y-2">
+            {isSignIn && (
+              <button
+                type="button"
+                onClick={() => handleModeChange('forgot-password')}
+                className="text-sm text-orange-600 hover:text-orange-700 font-medium block"
+              >
+                Forgot your password?
+              </button>
+            )}
+
+            {isForgotPassword && (
+              <button
+                type="button"
+                onClick={() => handleModeChange('signin')}
+                className="text-sm text-orange-600 hover:text-orange-700 font-medium block"
+              >
+                ← Back to Sign In
+              </button>
+            )}
+
+            {!isForgotPassword && (
+              <button
+                type="button"
+                onClick={() => handleModeChange(isSignUp ? 'signin' : 'signup')}
+                className="text-sm text-orange-600 hover:text-orange-700 font-medium block"
+              >
+                {isSignUp
+                  ? 'Already have an account? Sign in'
+                  : "Don't have an account? Sign up"
+                }
+              </button>
+            )}
           </div>
         </form>
       </div>
