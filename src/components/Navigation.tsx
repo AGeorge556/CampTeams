@@ -4,6 +4,7 @@ import { useAuth } from '../hooks/useAuth'
 import { useProfile } from '../hooks/useProfile'
 import { useLanguage } from '../contexts/LanguageContext'
 import { useScheduleVisibility } from '../hooks/useScheduleVisibility'
+
 import { useGalleryVisibility } from '../hooks/useGalleryVisibility'
 import LanguageSwitcher from './LanguageSwitcher'
 import { ThemeToggle } from './ThemeToggle'

@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react'
 import { useAuth } from './hooks/useAuth'
 import { useProfile } from './hooks/useProfile'
 import { useRulesAcceptance } from './hooks/useRulesAcceptance'
-
+import { useOilExtractionVisibility } from './hooks/useOilExtractionVisibility'
 import { useGalleryVisibility } from './hooks/useGalleryVisibility'
 import { ThemeProvider } from './contexts/ThemeContext'
 import Auth from './components/Auth'
@@ -12,6 +12,11 @@ import RulesAgreement from './components/RulesAgreement'
 import Dashboard from './components/Dashboard'
 import Schedule from './components/Schedule'
 import SportsSelection from './components/SportsSelection'
+import OilExtractionGame from './components/OilExtractionGame'
+import AdminCoinManagement from './components/oil-extraction/AdminCoinManagement'
+import TeamExcavation from './components/oil-extraction/TeamExcavation'
+import OilShop from './components/oil-extraction/OilShop'
+import EconomyDashboard from './components/oil-extraction/EconomyDashboard'
 import Gallery from './components/Gallery'
 import GalleryModeration from './components/GalleryModeration'
 import Layout from './components/Layout'
@@ -23,6 +28,7 @@ import { LanguageProvider } from './contexts/LanguageContext'
 import LanguageNotification from './components/LanguageNotification'
 import Scoreboard from './components/Scoreboard'
 import ScoreboardAdmin from './components/ScoreboardAdmin'
+import AttendanceCheckIn from './components/AttendanceCheckIn'
 import { supabase } from './lib/supabase'
 import { CheckCircle, XCircle, Loader2 } from 'lucide-react'
 
@@ -85,7 +91,48 @@ function App() {
     handleAuthCallback()
   }, [])
 
+  // Handle QR code URLs for attendance check-in
+  useEffect(() => {
+    const handleQRCodeURL = () => {
+      // Check for attendance query parameter
+      const urlParams = new URLSearchParams(window.location.search)
+      const attendanceSessionId = urlParams.get('attendance')
+      
+      if (attendanceSessionId) {
+        // Navigate to attendance check-in page with session ID
+        setCurrentPage('attendance-checkin')
+        
+        // Store the session ID in sessionStorage for the attendance component to use
+        sessionStorage.setItem('qr_session_id', attendanceSessionId)
+        
+        // Clean up the URL by removing the query parameter
+        const newUrl = window.location.pathname
+        window.history.replaceState({}, document.title, newUrl)
+        
+        return
+      }
+      
+      // Also check for path-based attendance URLs (for backward compatibility)
+      const path = window.location.pathname
+      const attendanceMatch = path.match(/^\/attendance\/(session_.+)$/)
+      if (attendanceMatch) {
+        const sessionId = attendanceMatch[1]
+        
+        // Navigate to attendance check-in page with session ID
+        setCurrentPage('attendance-checkin')
+        
+        // Store the session ID in sessionStorage for the attendance component to use
+        sessionStorage.setItem('qr_session_id', sessionId)
+        
+        // Clean up the URL
+        window.history.replaceState({}, document.title, '/')
+        
+        return
+      }
+    }
 
+    handleQRCodeURL()
+  }, [])
 
   // Show auth callback UI if processing
   if (authCallbackStatus === 'loading') {
@@ -191,6 +238,7 @@ function AppContent({
   setCurrentPage: (page: string) => void
 }) {
   const { hasAccepted, loading: rulesLoading } = useRulesAcceptance()
+  const { oilExtractionVisible } = useOilExtractionVisibility()
   const { galleryVisible } = useGalleryVisibility()
 
   // Debug logging to track profile state
@@ -205,7 +253,12 @@ function AppContent({
     })
   }, [user, authLoading, profile, profileLoading, currentPage, hasAccepted])
 
-
+  // Redirect to dashboard if user is on oil extraction page but it's hidden and they're not admin
+  useEffect(() => {
+    if (currentPage.startsWith('oil-extraction') && !oilExtractionVisible && !profile?.is_admin) {
+      setCurrentPage('dashboard')
+    }
+  }, [currentPage, oilExtractionVisible, profile?.is_admin, setCurrentPage])
 
   // Redirect to dashboard if user is on gallery page but it's hidden and they're not admin
   useEffect(() => {
@@ -255,17 +308,17 @@ function AppContent({
             case 'scoreboard-admin':
               return <ScoreboardAdmin />
             case 'attendance-checkin':
-              // Redirect to dashboard since attendance check-in is no longer available
-              setCurrentPage('dashboard')
-              return <Dashboard onPageChange={setCurrentPage} />
+              return <AttendanceCheckIn />
             case 'oil-extraction':
+              return <OilExtractionGame onPageChange={setCurrentPage} />
             case 'oil-extraction-admin':
+              return <AdminCoinManagement onPageChange={setCurrentPage} />
             case 'oil-extraction-team':
+              return <TeamExcavation onPageChange={setCurrentPage} />
             case 'oil-extraction-shop':
+              return <OilShop onPageChange={setCurrentPage} />
             case 'oil-extraction-economy':
-              // Redirect to dashboard since oil extraction is no longer available
-              setCurrentPage('dashboard')
-              return <Dashboard onPageChange={setCurrentPage} />
+              return <EconomyDashboard onPageChange={setCurrentPage} />
             default:
               return <Dashboard onPageChange={setCurrentPage} />
           }
