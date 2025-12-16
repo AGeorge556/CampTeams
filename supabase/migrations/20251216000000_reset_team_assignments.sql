@@ -2,8 +2,9 @@
 -- Date: 2025-12-16
 -- Description: Reset all team assignments and switches for the new Winter Camp 2026
 
--- First, temporarily drop the NOT NULL constraint on preferred_team if it exists
+-- First, drop the NOT NULL constraints on team columns if they exist
 ALTER TABLE profiles ALTER COLUMN preferred_team DROP NOT NULL;
+ALTER TABLE profiles ALTER COLUMN current_team DROP NOT NULL;
 
 -- Reset all user team assignments (except admins)
 UPDATE profiles

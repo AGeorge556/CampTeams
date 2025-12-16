@@ -3,6 +3,7 @@ import { Users, BarChart3, Sun, Star, Flame, Trees, Mountain, UserPlus, Download
 import { useProfile } from '../hooks/useProfile'
 import { useTeamBalance } from '../hooks/useTeamBalance'
 import { TEAMS, TeamColor } from '../lib/supabase'
+import { CAMP_START_DATE } from '../lib/constants'
 import AdminPanel from './AdminPanel'
 import PlayerLists from './PlayerLists'
 import CountdownTimer from './CountdownTimer'
@@ -558,7 +559,7 @@ export default function Dashboard({ onPageChange }: DashboardProps) {
         <Trees className="absolute left-4 sm:left-8 bottom-4 sm:bottom-8 text-green-200 opacity-30 w-16 h-16 sm:w-20 sm:h-20" />
         <Mountain className="absolute right-2 sm:right-4 bottom-2 sm:bottom-4 text-blue-200 opacity-30 w-20 h-20 sm:w-24 sm:h-24" />
         <div className="relative z-10 w-full">
-          <CountdownTimer targetDate="2025-08-28T00:00:00" compact={false} />
+          <CountdownTimer targetDate={CAMP_START_DATE} compact={false} />
         </div>
       </div>
 
