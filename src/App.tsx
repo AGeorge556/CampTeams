@@ -6,16 +6,19 @@ import { useOilExtractionVisibility } from './hooks/useOilExtractionVisibility'
 import { useGalleryVisibility } from './hooks/useGalleryVisibility'
 import { ThemeProvider } from './contexts/ThemeContext'
 import Auth from './components/Auth'
+import ResetPassword from './components/ResetPassword'
 import OnboardingForm from './components/OnboardingForm'
+import TeamSelection from './components/TeamSelection'
 import RulesAgreement from './components/RulesAgreement'
 import Dashboard from './components/Dashboard'
 import Schedule from './components/Schedule'
 import SportsSelection from './components/SportsSelection'
-import OilExtractionGame from './components/OilExtractionGame'
-import AdminCoinManagement from './components/oil-extraction/AdminCoinManagement'
-import TeamExcavation from './components/oil-extraction/TeamExcavation'
-import OilShop from './components/oil-extraction/OilShop'
-import EconomyDashboard from './components/oil-extraction/EconomyDashboard'
+// Oil Extraction - Commented out
+// import OilExtractionGame from './components/OilExtractionGame'
+// import AdminCoinManagement from './components/oil-extraction/AdminCoinManagement'
+// import TeamExcavation from './components/oil-extraction/TeamExcavation'
+// import OilShop from './components/oil-extraction/OilShop'
+// import EconomyDashboard from './components/oil-extraction/EconomyDashboard'
 import Gallery from './components/Gallery'
 import GalleryModeration from './components/GalleryModeration'
 import Layout from './components/Layout'
@@ -37,6 +40,25 @@ function App() {
   const { profile, loading: profileLoading } = useProfile()
   const [currentPage, setCurrentPage] = useState('dashboard')
   const [authCallbackStatus, setAuthCallbackStatus] = useState<'idle' | 'loading' | 'success' | 'error'>('idle')
+
+  // Check if we're on the reset password page
+  const isResetPasswordPage = window.location.pathname.includes('/auth/reset-password') ||
+    (window.location.hash.includes('type=recovery') && window.location.hash.includes('access_token'))
+
+  // If on reset password page, show that component
+  if (isResetPasswordPage) {
+    return (
+      <ErrorBoundary>
+        <ThemeProvider>
+          <LanguageProvider>
+            <ToastProvider>
+              <ResetPassword />
+            </ToastProvider>
+          </LanguageProvider>
+        </ThemeProvider>
+      </ErrorBoundary>
+    )
+  }
 
   // Handle auth callback from email links
   useEffect(() => {
@@ -213,7 +235,7 @@ function AppContent({
   setCurrentPage: (page: string) => void
 }) {
   const { hasAccepted, loading: rulesLoading } = useRulesAcceptance()
-  const { oilExtractionVisible } = useOilExtractionVisibility()
+  // const { oilExtractionVisible } = useOilExtractionVisibility()
   const { galleryVisible } = useGalleryVisibility()
 
   // Debug logging to track profile state
@@ -229,11 +251,12 @@ function AppContent({
   }, [user, authLoading, profile, profileLoading, currentPage, hasAccepted])
 
   // Redirect to dashboard if user is on oil extraction page but it's hidden and they're not admin
-  useEffect(() => {
-    if (currentPage.startsWith('oil-extraction') && !oilExtractionVisible && !profile?.is_admin) {
-      setCurrentPage('dashboard')
-    }
-  }, [currentPage, oilExtractionVisible, profile?.is_admin, setCurrentPage])
+  // Oil Extraction - Commented out
+  // useEffect(() => {
+  //   if (currentPage.startsWith('oil-extraction') && !oilExtractionVisible && !profile?.is_admin) {
+  //     setCurrentPage('dashboard')
+  //   }
+  // }, [currentPage, oilExtractionVisible, profile?.is_admin, setCurrentPage])
 
   // Redirect to dashboard if user is on gallery page but it's hidden and they're not admin
   useEffect(() => {
@@ -264,6 +287,11 @@ function AppContent({
     return <RulesAgreement />
   }
 
+  // If user has profile but no team assigned, show team selection
+  if (profile && !profile.current_team && !profile.is_admin) {
+    return <TeamSelection />
+  }
+
   return (
     <div className="min-h-screen bg-[var(--gradient-app-bg)]">
       <Navigation currentPage={currentPage} onPageChange={setCurrentPage} />
@@ -284,16 +312,17 @@ function AppContent({
               return <ScoreboardAdmin />
             case 'attendance-checkin':
               return <AttendanceCheckIn />
-            case 'oil-extraction':
-              return <OilExtractionGame onPageChange={setCurrentPage} />
-            case 'oil-extraction-admin':
-              return <AdminCoinManagement onPageChange={setCurrentPage} />
-            case 'oil-extraction-team':
-              return <TeamExcavation onPageChange={setCurrentPage} />
-            case 'oil-extraction-shop':
-              return <OilShop onPageChange={setCurrentPage} />
-            case 'oil-extraction-economy':
-              return <EconomyDashboard onPageChange={setCurrentPage} />
+            // Oil Extraction - Commented out
+            // case 'oil-extraction':
+            //   return <OilExtractionGame onPageChange={setCurrentPage} />
+            // case 'oil-extraction-admin':
+            //   return <AdminCoinManagement onPageChange={setCurrentPage} />
+            // case 'oil-extraction-team':
+            //   return <TeamExcavation onPageChange={setCurrentPage} />
+            // case 'oil-extraction-shop':
+            //   return <OilShop onPageChange={setCurrentPage} />
+            // case 'oil-extraction-economy':
+            //   return <EconomyDashboard onPageChange={setCurrentPage} />
             default:
               return <Dashboard onPageChange={setCurrentPage} />
           }

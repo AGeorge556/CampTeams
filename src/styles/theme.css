@@ -1,18 +1,18 @@
-/* Base theme variables */
+/* Base theme variables - Winter Theme */
 :root {
   color-scheme: light;
   --color-bg: #ffffff;
-  --color-bg-muted: #f8f9ff;
-  --color-text: #1a1b4b;
-  --color-text-muted: #4a4f8c;
-  --color-border: #e2e4ff;
-  --color-primary: #6366f1;
+  --color-bg-muted: #f0f9ff;
+  --color-text: #0c4a6e;
+  --color-text-muted: #0369a1;
+  --color-border: #e0f2fe;
+  --color-primary: #0ea5e9;
   --color-primary-contrast: #ffffff;
-  --color-accent: #a855f7;
-  --color-accent-glow: rgba(168, 85, 247, 0.15);
+  --color-accent: #7c3aed;
+  --color-accent-glow: rgba(14, 165, 233, 0.15);
   --color-danger: #ff3d71;
-  --color-warning: #ffaa00;
-  --color-success: #00e3b0;
+  --color-warning: #f59e0b;
+  --color-success: #10b981;
 
   /* Additional semantic variables */
   --color-input-bg: var(--color-bg);
@@ -21,18 +21,18 @@
   --color-tooltip-text: var(--color-bg);
   
   /* Shadow effects */
-  --shadow-sm: 0 2px 4px rgba(99, 102, 241, 0.05);
-  --shadow-md: 0 4px 6px rgba(99, 102, 241, 0.1);
-  --shadow-lg: 0 8px 16px rgba(99, 102, 241, 0.1);
-  
+  --shadow-sm: 0 2px 4px rgba(14, 165, 233, 0.05);
+  --shadow-md: 0 4px 6px rgba(14, 165, 233, 0.1);
+  --shadow-lg: 0 8px 16px rgba(14, 165, 233, 0.1);
+
   /* Transitions */
   --transition-glow: box-shadow 0.3s ease;
 
-  /* Background gradients */
-  --gradient-primary: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-  --gradient-warm: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
-  --gradient-sunset: linear-gradient(135deg, #ffecd2 0%, #fcb69f 100%);
-  --gradient-app-bg: linear-gradient(135deg, #fff7ed 0%, #fed7aa 100%);
+  /* Background gradients - Winter Theme */
+  --gradient-primary: linear-gradient(135deg, #0ea5e9 0%, #7c3aed 100%);
+  --gradient-cool: linear-gradient(135deg, #06b6d4 0%, #3b82f6 100%);
+  --gradient-frost: linear-gradient(135deg, #f0f9ff 0%, #e0f2fe 100%);
+  --gradient-app-bg: linear-gradient(135deg, #f0f9ff 0%, #dbeafe 100%);
   
   /* Toast colors */
   --toast-success-bg: #f0fdf4;
@@ -59,11 +59,11 @@
   --color-border: #2e2b80;
   --color-primary: #818cf8;
   --color-primary-contrast: #ffffff;
-  --color-accent: #d8b4fe;
-  --color-accent-glow: rgba(216, 180, 254, 0.15);
+  --color-accent: #a78bfa;
+  --color-accent-glow: rgba(14, 165, 233, 0.15);
   --color-danger: #ff5c9e;
-  --color-warning: #ffd426;
-  --color-success: #34ffd1;
+  --color-warning: #fbbf24;
+  --color-success: #34d399;
   
   /* Additional semantic variables - dark mode */
   --color-input-bg: var(--color-bg-muted);
@@ -82,11 +82,11 @@
                0 0 30px rgba(129, 140, 248, 0.1);
   --neon-text-glow: 0 0 5px rgba(216, 180, 254, 0.3);
 
-  /* Background gradients - dark mode */
-  --gradient-primary: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-  --gradient-warm: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
-  --gradient-sunset: linear-gradient(135deg, #1e1b4b 0%, #312e81 100%);
-  --gradient-app-bg: linear-gradient(135deg, #0a0627 0%, #131045 100%);
+  /* Background gradients - dark mode winter */
+  --gradient-primary: linear-gradient(135deg, #0ea5e9 0%, #7c3aed 100%);
+  --gradient-cool: linear-gradient(135deg, #0891b2 0%, #2563eb 100%);
+  --gradient-frost: linear-gradient(135deg, #082f49 0%, #1e3a8a 100%);
+  --gradient-app-bg: linear-gradient(135deg, #0a0627 0%, #0c1e3a 100%);
 
   /* Toast colors - dark mode */
   --toast-success-bg: #064e3b;

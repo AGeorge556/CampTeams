@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { Users, Mail, Lock, UserPlus, LogIn, Clock } from 'lucide-react'
+import { Users, Mail, Lock, UserPlus, LogIn, Clock, ArrowLeft } from 'lucide-react'
 import { useAuth } from '../hooks/useAuth'
 import { useToast } from './Toast'
 import Button from './ui/Button'
@@ -16,15 +16,17 @@ interface FormErrors {
 }
 
 export default function Auth({ initialMode = 'signin', onBack }: AuthProps) {
-  const { signUp, signIn } = useAuth()
+  const { signUp, signIn, resetPassword } = useAuth()
   const { addToast } = useToast()
   const [isSignUp, setIsSignUp] = useState(initialMode === 'signup')
+  const [isForgotPassword, setIsForgotPassword] = useState(false)
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
   const [loading, setLoading] = useState(false)
   const [errors, setErrors] = useState<FormErrors>({})
   const [rateLimitCooldown, setRateLimitCooldown] = useState(0)
   const [showEmailConfirmation, setShowEmailConfirmation] = useState(false)
+  const [showResetEmailSent, setShowResetEmailSent] = useState(false)
 
   const validateForm = (): boolean => {
     const newErrors: FormErrors = {}
@@ -36,17 +38,69 @@ export default function Auth({ initialMode = 'signin', onBack }: AuthProps) {
       newErrors.email = 'Please enter a valid email address'
     }
 
-    // Password validation
-    if (!password) {
-      newErrors.password = 'Password is required'
-    } else if (password.length < 6) {
-      newErrors.password = 'Password must be at least 6 characters'
-    } else if (isSignUp && password.length < 8) {
-      newErrors.password = 'Password must be at least 8 characters for signup'
+    // Password validation (skip for forgot password)
+    if (!isForgotPassword) {
+      if (!password) {
+        newErrors.password = 'Password is required'
+      } else if (password.length < 6) {
+        newErrors.password = 'Password must be at least 6 characters'
+      } else if (isSignUp && password.length < 8) {
+        newErrors.password = 'Password must be at least 8 characters for signup'
+      }
     }
 
     setErrors(newErrors)
     return Object.keys(newErrors).length === 0
+  }
+
+  const handleForgotPassword = async (e: React.FormEvent) => {
+    e.preventDefault()
+
+    // Only validate email for forgot password
+    if (!email.trim()) {
+      setErrors({ email: 'Email is required' })
+      addToast({
+        type: 'error',
+        title: 'Validation Error',
+        message: 'Please enter your email address'
+      })
+      return
+    }
+
+    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+      setErrors({ email: 'Please enter a valid email address' })
+      addToast({
+        type: 'error',
+        title: 'Validation Error',
+        message: 'Please enter a valid email address'
+      })
+      return
+    }
+
+    setLoading(true)
+
+    try {
+      const { error } = await resetPassword(email)
+      if (error) {
+        throw error
+      }
+
+      setShowResetEmailSent(true)
+      addToast({
+        type: 'success',
+        title: 'Reset Email Sent',
+        message: 'Check your email for a password reset link.'
+      })
+    } catch (error: any) {
+      console.error('Password reset error:', error)
+      addToast({
+        type: 'error',
+        title: 'Reset Failed',
+        message: error.message || 'Failed to send reset email. Please try again.'
+      })
+    } finally {
+      setLoading(false)
+    }
   }
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -146,17 +200,21 @@ export default function Auth({ initialMode = 'signin', onBack }: AuthProps) {
       <div className="max-w-md w-full space-y-8">
         <div className="text-center">
           <div className="flex justify-center">
-            <Users className="h-16 w-16 text-orange-500" />
+            <Users className="h-16 w-16 text-sky-500" />
           </div>
           <h2 className="mt-6 text-3xl font-extrabold text-[var(--color-text)]">
-            Summer Camp Team Selection
+            {isForgotPassword ? 'Reset Password' : 'Winter Camp Team Selection'}
           </h2>
           <p className="mt-2 text-sm text-[var(--color-text-muted)]">
-            {isSignUp ? 'Create your account to join a team' : 'Sign in to manage your team'}
+            {isForgotPassword
+              ? 'Enter your email to receive a password reset link'
+              : isSignUp
+                ? 'Create your account to join a team'
+                : 'Sign in to manage your team'}
           </p>
         </div>
-         
-        <form className="mt-8 space-y-6 bg-[var(--color-card-bg)] p-6 rounded-lg border border-[var(--color-border)]" onSubmit={handleSubmit}>
+
+        <form className="mt-8 space-y-6 bg-[var(--color-card-bg)] p-6 rounded-lg border border-[var(--color-border)]" onSubmit={isForgotPassword ? handleForgotPassword : handleSubmit}>
            <div className="space-y-4">
              <Input
                label="Email address"
@@ -172,22 +230,24 @@ export default function Auth({ initialMode = 'signin', onBack }: AuthProps) {
                   required
             />
 
-            <Input
-              label="Password"
-                  type="password"
-              icon={<Lock />}
-                  value={password}
-              onChange={(e) => {
-                setPassword(e.target.value)
-                clearErrors('password')
-              }}
-              error={errors.password}
-              placeholder="Enter your password"
-                  required
-                />
+            {!isForgotPassword && (
+              <Input
+                label="Password"
+                    type="password"
+                icon={<Lock />}
+                    value={password}
+                onChange={(e) => {
+                  setPassword(e.target.value)
+                  clearErrors('password')
+                }}
+                error={errors.password}
+                placeholder="Enter your password"
+                    required
+                  />
+            )}
           </div>
 
-          {showEmailConfirmation && (
+          {showEmailConfirmation && !isForgotPassword && (
             <div className="rounded-md bg-[var(--color-bg-muted)] border border-[var(--color-border)] p-4">
               <div className="flex">
                 <Mail className="h-5 w-5 text-green-500 mt-0.5 mr-3" />
@@ -199,10 +259,22 @@ export default function Auth({ initialMode = 'signin', onBack }: AuthProps) {
             </div>
           )}
 
+          {showResetEmailSent && isForgotPassword && (
+            <div className="rounded-md bg-[var(--color-bg-muted)] border border-[var(--color-border)] p-4">
+              <div className="flex">
+                <Mail className="h-5 w-5 text-green-500 mt-0.5 mr-3" />
+                <div className="text-sm text-green-700">
+                  <p className="font-medium">Reset email sent!</p>
+                  <p className="mt-1">Check your email for a password reset link. Click the link to set a new password.</p>
+                </div>
+              </div>
+            </div>
+          )}
+
           <Button
               type="submit"
             loading={loading || rateLimitCooldown > 0}
-            icon={isSignUp ? <UserPlus /> : <LogIn />}
+            icon={isForgotPassword ? <Mail /> : isSignUp ? <UserPlus /> : <LogIn />}
             className="w-full"
             >
               {loading || rateLimitCooldown > 0 ? (
@@ -215,22 +287,59 @@ export default function Auth({ initialMode = 'signin', onBack }: AuthProps) {
                 'Processing...'
               )
             ) : (
-              isSignUp ? 'Create Account' : 'Sign In'
+              isForgotPassword ? 'Send Reset Link' : isSignUp ? 'Create Account' : 'Sign In'
               )}
           </Button>
 
-          <div className="text-center">
-            <button
-              type="button"
-              onClick={() => setIsSignUp(!isSignUp)}
-              className="text-sm text-orange-600 hover:text-orange-700 font-medium"
-            >
-              {isSignUp
-                ? 'Already have an account? Sign in'
-                : "Don't have an account? Sign up"
-              }
-            </button>
-          </div>
+          {isForgotPassword ? (
+            <div className="text-center">
+              <button
+                type="button"
+                onClick={() => {
+                  setIsForgotPassword(false)
+                  setShowResetEmailSent(false)
+                  setErrors({})
+                }}
+                className="text-sm text-sky-600 hover:text-sky-700 font-medium inline-flex items-center"
+              >
+                <ArrowLeft className="h-4 w-4 mr-1" />
+                Back to Sign In
+              </button>
+            </div>
+          ) : (
+            <div className="text-center space-y-2">
+              {!isSignUp && (
+                <div>
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setIsForgotPassword(true)
+                      setErrors({})
+                      setPassword('')
+                    }}
+                    className="text-sm text-sky-600 hover:text-sky-700 font-medium"
+                  >
+                    Forgot your password?
+                  </button>
+                </div>
+              )}
+              <div>
+                <button
+                  type="button"
+                  onClick={() => {
+                    setIsSignUp(!isSignUp)
+                    setErrors({})
+                  }}
+                  className="text-sm text-sky-600 hover:text-sky-700 font-medium"
+                >
+                  {isSignUp
+                    ? 'Already have an account? Sign in'
+                    : "Don't have an account? Sign up"
+                  }
+                </button>
+              </div>
+            </div>
+          )}
         </form>
       </div>
     </div>

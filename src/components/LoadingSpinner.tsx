@@ -69,7 +69,7 @@ export default function LoadingSpinner({
         return <Skeleton lines={3} />
       default:
         return (
-          <div className={`animate-spin rounded-full border-2 border-[var(--color-border)] border-t-orange-500 ${sizeClasses[size]}`}></div>
+          <div className={`animate-spin rounded-full border-2 border-[var(--color-border)] border-t-sky-500 ${sizeClasses[size]}`}></div>
         )
     }
   }

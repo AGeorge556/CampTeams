@@ -176,7 +176,7 @@ export default function Gallery() {
       <div className="bg-[var(--color-card-bg)] rounded-lg shadow-sm p-6">
         <div className="flex items-center justify-between">
           <div className="flex items-center space-x-3">
-            <Camera className="h-8 w-8 text-orange-500" />
+            <Camera className="h-8 w-8 text-sky-500" />
             <div>
               <h1 className="text-2xl font-bold text-[var(--color-text)]">{t('gallery')}</h1>
               <p className="text-[var(--color-text-muted)]">Share your camp memories with photos</p>
@@ -214,7 +214,7 @@ export default function Gallery() {
               multiple
               accept="image/*,video/*"
               onChange={handleFileSelect}
-              className="block w-full text-sm text-[var(--color-text-muted)] file:mr-4 file:py-2 file:px-4 file:rounded-md file:border-0 file:text-sm file:font-medium file:bg-orange-50 file:text-orange-700 hover:file:bg-orange-100"
+              className="block w-full text-sm text-[var(--color-text-muted)] file:mr-4 file:py-2 file:px-4 file:rounded-md file:border-0 file:text-sm file:font-medium file:bg-orange-50 file:text-sky-700 hover:file:bg-sky-100"
             />
           </div>
 

@@ -326,7 +326,7 @@ export default function AttendanceCheckIn() {
                         <button
                           onClick={() => handleCheckIn(session.id)}
                           disabled={checkingIn === session.id || !isActive}
-                          className="inline-flex items-center justify-center px-4 py-3 border border-transparent text-sm font-medium rounded-md text-white bg-orange-600 hover:bg-orange-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-orange-500 disabled:opacity-50 disabled:cursor-not-allowed min-h-[44px] touch-manipulation"
+                          className="inline-flex items-center justify-center px-4 py-3 border border-transparent text-sm font-medium rounded-md text-white bg-sky-600 hover:bg-sky-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-sky-500 disabled:opacity-50 disabled:cursor-not-allowed min-h-[44px] touch-manipulation"
                         >
                           {checkingIn === session.id ? (
                             <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white mr-2"></div>

@@ -78,7 +78,7 @@ export default function AdminCoinManagement({ onPageChange }: AdminCoinManagemen
             </div>
             <button
               onClick={() => onPageChange?.('oil-extraction')}
-              className="inline-flex items-center px-4 py-2 border border-[var(--color-border)] text-sm font-medium rounded-md text-[var(--color-text)] bg-[var(--color-bg)] hover:bg-[var(--color-bg-muted)] focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-orange-500"
+              className="inline-flex items-center px-4 py-2 border border-[var(--color-border)] text-sm font-medium rounded-md text-[var(--color-text)] bg-[var(--color-bg)] hover:bg-[var(--color-bg-muted)] focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-sky-500"
             >
               ← Back to Game
             </button>
@@ -99,7 +99,7 @@ export default function AdminCoinManagement({ onPageChange }: AdminCoinManagemen
                 <select
                   value={selectedTeam}
                   onChange={(e) => setSelectedTeam(e.target.value)}
-                  className="w-full border border-[var(--color-border)] rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-transparent bg-[var(--color-input-bg)] text-[var(--color-text)]"
+                  className="w-full border border-[var(--color-border)] rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-sky-500 focus:border-transparent bg-[var(--color-input-bg)] text-[var(--color-text)]"
                   required
                 >
                   <option value="">Select a team...</option>
@@ -147,7 +147,7 @@ export default function AdminCoinManagement({ onPageChange }: AdminCoinManagemen
                   value={description}
                   onChange={(e) => setDescription(e.target.value)}
                   placeholder="e.g., Daily bonus, Event reward, etc."
-                  className="w-full border border-[var(--color-border)] rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-transparent bg-[var(--color-input-bg)] text-[var(--color-text)]"
+                  className="w-full border border-[var(--color-border)] rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-sky-500 focus:border-transparent bg-[var(--color-input-bg)] text-[var(--color-text)]"
                 />
               </div>
 

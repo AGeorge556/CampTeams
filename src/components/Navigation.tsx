@@ -19,7 +19,7 @@ export default function Navigation({ currentPage, onPageChange }: NavigationProp
   const { profile } = useProfile()
   const { t } = useLanguage()
   const { scheduleVisible } = useScheduleVisibility()
-  const { oilExtractionVisible } = useOilExtractionVisibility()
+  // const { oilExtractionVisible } = useOilExtractionVisibility()
   const { galleryVisible } = useGalleryVisibility()
   const [isMenuOpen, setIsMenuOpen] = useState(false)
 
@@ -32,8 +32,9 @@ export default function Navigation({ currentPage, onPageChange }: NavigationProp
     ...(profile?.is_admin || scheduleVisible ? [{ id: 'schedule', name: t('schedule'), icon: Calendar }] : []),
     { id: 'sports', name: t('teams'), icon: Trophy },
     { id: 'attendance-checkin', name: 'Check In', icon: QrCode },
-    ...(profile?.is_admin || galleryVisible ? [{ id: 'gallery', name: t('gallery'), icon: Camera }] : []),
-    ...(profile?.is_admin || oilExtractionVisible ? [{ id: 'oil-extraction', name: 'Oil Extraction', icon: Zap }] : [])
+    ...(profile?.is_admin || galleryVisible ? [{ id: 'gallery', name: t('gallery'), icon: Camera }] : [])
+    // Oil Extraction - Commented out
+    // ...(profile?.is_admin || oilExtractionVisible ? [{ id: 'oil-extraction', name: 'Oil Extraction', icon: Zap }] : [])
   ]
 
   const handlePageChange = (page: string) => {
@@ -91,7 +92,7 @@ export default function Navigation({ currentPage, onPageChange }: NavigationProp
             {/* Desktop Sign Out */}
             <button
               onClick={handleSignOut}
-              className="hidden md:inline-flex items-center px-3 py-2 border border-transparent text-sm leading-4 font-medium rounded-md text-[var(--color-text-muted)] bg-[var(--color-bg)] hover:text-[var(--color-text)] focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-orange-500"
+              className="hidden md:inline-flex items-center px-3 py-2 border border-transparent text-sm leading-4 font-medium rounded-md text-[var(--color-text-muted)] bg-[var(--color-bg)] hover:text-[var(--color-text)] focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-sky-500"
             >
                <LogOut className="h-4 w-4 mr-2" />
                {t('logout')}
@@ -100,7 +101,7 @@ export default function Navigation({ currentPage, onPageChange }: NavigationProp
             {/* Mobile menu button */}
             <button
               onClick={() => setIsMenuOpen(!isMenuOpen)}
-              className="md:hidden inline-flex items-center justify-center p-2 rounded-md text-[var(--color-text-muted)] hover:text-[var(--color-text)] hover:bg-[var(--color-bg-muted)] focus:outline-none focus:ring-2 focus:ring-inset focus:ring-orange-500"
+              className="md:hidden inline-flex items-center justify-center p-2 rounded-md text-[var(--color-text-muted)] hover:text-[var(--color-text)] hover:bg-[var(--color-bg-muted)] focus:outline-none focus:ring-2 focus:ring-inset focus:ring-sky-500"
             >
                {isMenuOpen ? (
                  <X className="h-6 w-6" />
@@ -124,7 +125,7 @@ export default function Navigation({ currentPage, onPageChange }: NavigationProp
                    onClick={() => handlePageChange(item.id)}
                    className={`flex items-center space-x-3 w-full px-3 py-2 rounded-md text-base font-medium transition-colors ${
                     currentPage === item.id
-                      ? 'text-orange-600 bg-[var(--color-bg-muted)]'
+                      ? 'text-sky-600 bg-[var(--color-bg-muted)]'
                       : 'text-[var(--color-text-muted)] hover:text-[var(--color-text)] hover:bg-[var(--color-bg-muted)]'
                   }`}
                  >

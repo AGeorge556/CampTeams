@@ -372,7 +372,7 @@ export default function AdminPanel() {
         {/* Oil Extraction Visibility Toggle */}
         <div className="mt-4 flex items-center justify-between p-4 bg-[var(--color-bg-muted)] border border-[var(--color-border)] rounded-lg">
           <div className="flex items-center">
-            <Zap className="h-5 w-5 text-orange-600 mr-3" />
+            <Zap className="h-5 w-5 text-sky-600 mr-3" />
             <div>
               <h4 className="font-medium text-[var(--color-text)]">{t('oilExtractionVisibility')}</h4>
               <p className="text-sm text-[var(--color-text-muted)]">
@@ -383,7 +383,7 @@ export default function AdminPanel() {
           <button
             onClick={toggleOilExtractionVisibility}
             disabled={oilVisibilityLoading}
-            className="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md text-white bg-orange-600 hover:bg-orange-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-orange-500 disabled:opacity-50"
+            className="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md text-white bg-sky-600 hover:bg-sky-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-sky-500 disabled:opacity-50"
           >
             {oilVisibilityLoading ? (
               <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white mr-2"></div>

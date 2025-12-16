@@ -46,24 +46,24 @@ export default function CountdownTimer({ targetDate, compact = false }: Countdow
       <div className="bg-[var(--color-bg-muted)] rounded-lg p-4 border border-[var(--color-border)]">
         <div className="flex items-center justify-between">
           <div className="flex items-center space-x-2">
-            <Calendar className="h-4 w-4 text-orange-500" />
+            <Calendar className="h-4 w-4 text-sky-500" />
             <span className="text-sm font-medium text-[var(--color-text)]">{t('campStartsIn')}</span>
           </div>
           <div className="flex items-center space-x-3">
             <div className="text-center">
-              <div className="text-lg font-bold text-orange-600">{countdown.days}</div>
+              <div className="text-lg font-bold text-sky-600">{countdown.days}</div>
               <div className="text-xs text-[var(--color-text-muted)]">{t('daysRemaining')}</div>
             </div>
             <div className="text-center">
-              <div className="text-lg font-bold text-orange-600">{countdown.hours}</div>
+              <div className="text-lg font-bold text-sky-600">{countdown.hours}</div>
               <div className="text-xs text-[var(--color-text-muted)]">{t('hoursRemaining')}</div>
             </div>
             <div className="text-center">
-              <div className="text-lg font-bold text-orange-600">{countdown.minutes}</div>
+              <div className="text-lg font-bold text-sky-600">{countdown.minutes}</div>
               <div className="text-xs text-[var(--color-text-muted)]">{t('minutesRemaining')}</div>
             </div>
             <div className="text-center">
-              <div className="text-lg font-bold text-orange-600">{countdown.seconds}</div>
+              <div className="text-lg font-bold text-sky-600">{countdown.seconds}</div>
               <div className="text-xs text-[var(--color-text-muted)]">{t('secondsRemaining')}</div>
             </div>
           </div>
@@ -75,31 +75,31 @@ export default function CountdownTimer({ targetDate, compact = false }: Countdow
   return (
     <div className="bg-[var(--color-bg-muted)] rounded-lg p-6 border border-[var(--color-border)]">
       <div className="flex items-center justify-center mb-4">
-        <Calendar className="h-5 w-5 text-orange-500 mr-2" />
+        <Calendar className="h-5 w-5 text-sky-500 mr-2" />
         <h3 className="text-lg font-semibold text-[var(--color-text)]">{t('countdownToCamp')}</h3>
       </div>
       
       <div className="grid grid-cols-4 gap-3">
         <div className="bg-[var(--color-card-bg)] rounded-lg p-3 shadow-sm border border-[var(--color-border)]">
-          <div className="text-2xl font-bold text-orange-600">{countdown.days}</div>
+          <div className="text-2xl font-bold text-sky-600">{countdown.days}</div>
           <div className="text-xs text-[var(--color-text-muted)]">{t('daysRemaining')}</div>
         </div>
         <div className="bg-[var(--color-card-bg)] rounded-lg p-3 shadow-sm border border-[var(--color-border)]">
-          <div className="text-2xl font-bold text-orange-600">{countdown.hours}</div>
+          <div className="text-2xl font-bold text-sky-600">{countdown.hours}</div>
           <div className="text-xs text-[var(--color-text-muted)]">{t('hoursRemaining')}</div>
         </div>
         <div className="bg-[var(--color-card-bg)] rounded-lg p-3 shadow-sm border border-[var(--color-border)]">
-          <div className="text-2xl font-bold text-orange-600">{countdown.minutes}</div>
+          <div className="text-2xl font-bold text-sky-600">{countdown.minutes}</div>
           <div className="text-xs text-[var(--color-text-muted)]">{t('minutesRemaining')}</div>
         </div>
         <div className="bg-[var(--color-card-bg)] rounded-lg p-3 shadow-sm border border-[var(--color-border)]">
-          <div className="text-2xl font-bold text-orange-600">{countdown.seconds}</div>
+          <div className="text-2xl font-bold text-sky-600">{countdown.seconds}</div>
           <div className="text-xs text-[var(--color-text-muted)]">{t('secondsRemaining')}</div>
         </div>
       </div>
       
       <div className="mt-3 text-center text-sm text-[var(--color-text-muted)]">
-        August 28, 2025
+        January 22, 2026
       </div>
     </div>
   )

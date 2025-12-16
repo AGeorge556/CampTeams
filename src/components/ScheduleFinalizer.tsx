@@ -219,7 +219,7 @@ export default function ScheduleFinalizer() {
               <span className="font-medium">Finalized</span>
             </div>
           ) : (
-            <div className="flex items-center text-orange-600">
+            <div className="flex items-center text-sky-600">
               <AlertTriangle className="h-5 w-5 mr-2" />
               <span className="font-medium">Not Finalized</span>
             </div>
@@ -251,7 +251,7 @@ export default function ScheduleFinalizer() {
         {!scheduleStatus?.finalized && (
           <div className="mt-6 p-4 bg-[var(--color-bg-muted)] border border-[var(--color-border)] rounded-lg">
             <h5 className="font-medium text-orange-900 mb-2">Finalize Schedule</h5>
-            <p className="text-sm text-orange-700 mb-4">
+            <p className="text-sm text-sky-700 mb-4">
               Set the camp start date and create all sessions from the schedule.
             </p>
             <div className="flex items-center space-x-4">
@@ -259,12 +259,12 @@ export default function ScheduleFinalizer() {
                 type="date"
                 value={campStartDate}
                 onChange={(e) => setCampStartDate(e.target.value)}
-                className="px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-orange-500"
+                className="px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-sky-500"
               />
               <button
                 onClick={finalizeSchedule}
                 disabled={finalizing || !campStartDate}
-                className="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md text-white bg-orange-600 hover:bg-orange-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-orange-500 disabled:opacity-50"
+                className="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md text-white bg-sky-600 hover:bg-sky-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-sky-500 disabled:opacity-50"
               >
                 {finalizing ? (
                   <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white mr-2"></div>
@@ -339,7 +339,7 @@ export default function ScheduleFinalizer() {
                             setEditingSession(null)
                             setEditForm({ start_time: '', end_time: '', delay_reason: '' })
                           }}
-                          className="inline-flex items-center px-3 py-2 border border-gray-300 text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-orange-500"
+                          className="inline-flex items-center px-3 py-2 border border-gray-300 text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-sky-500"
                         >
                           <X className="h-4 w-4 mr-2" />
                           Cancel
@@ -355,7 +355,7 @@ export default function ScheduleFinalizer() {
                             delay_reason: ''
                           })
                         }}
-                        className="inline-flex items-center px-3 py-2 border border-gray-300 shadow-sm text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-orange-500"
+                        className="inline-flex items-center px-3 py-2 border border-gray-300 shadow-sm text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-sky-500"
                       >
                         <Edit className="h-4 w-4 mr-2" />
                         Edit Times
@@ -376,7 +376,7 @@ export default function ScheduleFinalizer() {
                           type="datetime-local"
                           value={editForm.start_time}
                           onChange={(e) => setEditForm({ ...editForm, start_time: e.target.value })}
-                          className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-orange-500"
+                          className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-sky-500"
                         />
                       </div>
                       <div>
@@ -387,7 +387,7 @@ export default function ScheduleFinalizer() {
                           type="datetime-local"
                           value={editForm.end_time}
                           onChange={(e) => setEditForm({ ...editForm, end_time: e.target.value })}
-                          className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-orange-500"
+                          className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-sky-500"
                         />
                       </div>
                       <div>
@@ -399,7 +399,7 @@ export default function ScheduleFinalizer() {
                           value={editForm.delay_reason}
                           onChange={(e) => setEditForm({ ...editForm, delay_reason: e.target.value })}
                           placeholder="e.g., Weather delay, equipment issue"
-                          className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-orange-500"
+                          className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-sky-500"
                         />
                       </div>
                     </div>

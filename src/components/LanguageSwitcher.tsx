@@ -51,7 +51,7 @@ const LanguageSwitcher: React.FC = () => {
               : 'bg-gradient-to-r from-blue-400 to-purple-500 text-white shadow-lg'
             }
             ${isAnimating ? 'animate-pulse' : ''}
-            focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-orange-500
+            focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-sky-500
             disabled:opacity-50 disabled:cursor-not-allowed
           `}
           title={getFunMessage()}
@@ -82,7 +82,7 @@ const LanguageSwitcher: React.FC = () => {
             }
             ${isAnimating ? 'animate-pulse' : ''}
             hover:from-opacity-90 hover:to-opacity-90
-            focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-orange-500
+            focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-sky-500
             disabled:opacity-50 disabled:cursor-not-allowed
           `}
           title={getFunMessage()}

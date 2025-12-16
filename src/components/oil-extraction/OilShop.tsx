@@ -237,7 +237,7 @@ export default function OilShop({ onPageChange }: OilShopProps) {
                   <div className="text-xs sm:text-sm text-gray-500">Top Selling Team</div>
                 </div>
                 <div className="text-center p-3 sm:p-4 border rounded-lg">
-                  <div className="text-xl sm:text-2xl font-bold text-orange-600">
+                  <div className="text-xl sm:text-2xl font-bold text-sky-600">
                     {statistics.top_selling_team_amount.toLocaleString()}
                   </div>
                   <div className="text-xs sm:text-sm text-gray-500">Top Team Revenue</div>

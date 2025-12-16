@@ -466,12 +466,12 @@ export default function Dashboard({ onPageChange }: DashboardProps) {
         <div className="mb-4 p-3 bg-[var(--color-bg-muted)] rounded-lg border border-[var(--color-border)]">
           <div className="flex items-center justify-between mb-2">
             <span className="text-sm font-semibold text-[var(--color-text-muted)]">
-              {t('teamSwitchesRemaining')}: <span className="text-orange-600 font-bold">{profile.switches_remaining ?? 0}</span>
+              {t('teamSwitchesRemaining')}: <span className="text-sky-600 font-bold">{profile.switches_remaining ?? 0}</span>
             </span>
           </div>
           <div className="w-full bg-[var(--color-bg-muted)] rounded-full h-3 overflow-hidden shadow-inner">
             <div 
-              className="bg-gradient-to-r from-orange-500 to-orange-600 h-3 rounded-full transition-all duration-500 ease-out shadow-sm"
+              className="bg-gradient-to-r from-sky-500 to-sky-600 h-3 rounded-full transition-all duration-500 ease-out shadow-sm"
               style={{ width: `${((profile.switches_remaining ?? 0) / 3) * 100}%` }}
             ></div>
           </div>
@@ -491,10 +491,10 @@ export default function Dashboard({ onPageChange }: DashboardProps) {
                <button
                  onClick={generateRandomVerse}
                  disabled={generatingVerse}
-                 className="inline-flex items-center justify-center px-4 py-3 border border-[var(--color-border)] shadow-lg text-sm font-semibold rounded-xl text-[var(--color-text)] bg-[var(--color-bg)] hover:bg-[var(--color-bg-muted)] focus:outline-none focus:ring-4 focus:ring-orange-500 focus:ring-opacity-50 disabled:opacity-50 transition-all duration-300 transform hover:scale-105 active:scale-95 touch-manipulation min-h-[48px]"
+                 className="inline-flex items-center justify-center px-4 py-3 border border-[var(--color-border)] shadow-lg text-sm font-semibold rounded-xl text-[var(--color-text)] bg-[var(--color-bg)] hover:bg-[var(--color-bg-muted)] focus:outline-none focus:ring-4 focus:ring-sky-500 focus:ring-opacity-50 disabled:opacity-50 transition-all duration-300 transform hover:scale-105 active:scale-95 touch-manipulation min-h-[48px]"
                >
                  {generatingVerse ? (
-                   <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-orange-500 mr-2"></div>
+                   <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-sky-500 mr-2"></div>
                  ) : (
                    <RefreshCw className="h-5 w-5 mr-2" />
                  )}
@@ -504,7 +504,7 @@ export default function Dashboard({ onPageChange }: DashboardProps) {
              <button
                onClick={downloadVerseImage}
                disabled={downloading || !currentVerse}
-               className="inline-flex items-center justify-center px-4 py-3 border border-transparent text-sm font-semibold rounded-xl text-white bg-gradient-to-r from-orange-600 to-red-600 hover:from-orange-700 hover:to-red-700 focus:outline-none focus:ring-4 focus:ring-orange-500 focus:ring-opacity-50 disabled:opacity-50 transition-all duration-300 transform hover:scale-105 active:scale-95 shadow-lg hover:shadow-xl touch-manipulation min-h-[48px]"
+               className="inline-flex items-center justify-center px-4 py-3 border border-transparent text-sm font-semibold rounded-xl text-white bg-gradient-to-r from-sky-600 to-red-600 hover:from-sky-700 hover:to-red-700 focus:outline-none focus:ring-4 focus:ring-sky-500 focus:ring-opacity-50 disabled:opacity-50 transition-all duration-300 transform hover:scale-105 active:scale-95 shadow-lg hover:shadow-xl touch-manipulation min-h-[48px]"
              >
                {downloading ? (
                  <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-white mr-2"></div>
@@ -552,9 +552,9 @@ export default function Dashboard({ onPageChange }: DashboardProps) {
       {/* Large, Fun Countdown Section with Summer Icons */}
       <div className="relative p-4 sm:p-6">
         {/* Summer Icons - background/floating */}
-        <Sun className="absolute left-2 sm:left-4 top-1 sm:top-2 text-orange-200 opacity-30 w-16 h-16 sm:w-24 sm:h-24 animate-spin-slow" />
+        <Sun className="absolute left-2 sm:left-4 top-1 sm:top-2 text-cyan-200 opacity-30 w-16 h-16 sm:w-24 sm:h-24 animate-spin-slow" />
         <Star className="absolute right-4 sm:right-8 top-4 sm:top-8 text-yellow-200 opacity-30 w-12 h-12 sm:w-16 sm:h-16 animate-bounce" />
-        <Flame className="absolute left-1/2 -translate-x-1/2 bottom-1 sm:bottom-2 text-orange-300 opacity-20 w-16 h-16 sm:w-20 sm:h-20" />
+        <Flame className="absolute left-1/2 -translate-x-1/2 bottom-1 sm:bottom-2 text-cyan-300 opacity-20 w-16 h-16 sm:w-20 sm:h-20" />
         <Trees className="absolute left-4 sm:left-8 bottom-4 sm:bottom-8 text-green-200 opacity-30 w-16 h-16 sm:w-20 sm:h-20" />
         <Mountain className="absolute right-2 sm:right-4 bottom-2 sm:bottom-4 text-blue-200 opacity-30 w-20 h-20 sm:w-24 sm:h-24" />
         <div className="relative z-10 w-full">

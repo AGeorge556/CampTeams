@@ -184,8 +184,8 @@ export default function EconomyDashboard({ onPageChange }: EconomyDashboardProps
 
           <div className="bg-[var(--color-card-bg)] rounded-lg p-6 border border-[var(--color-border)]">
             <div className="flex items-center">
-              <div className="p-2 bg-orange-100 rounded-lg">
-                <Activity className="h-6 w-6 text-orange-600" />
+              <div className="p-2 bg-sky-100 rounded-lg">
+                <Activity className="h-6 w-6 text-sky-600" />
               </div>
               <div className="ml-4">
                 <p className="text-sm font-medium text-[var(--color-text-muted)]">Total Transactions</p>

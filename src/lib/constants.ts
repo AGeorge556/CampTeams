@@ -3,7 +3,7 @@ export const APP_NAME = 'CampTeams'
 export const APP_VERSION = '1.0.0'
 
 // Camp Configuration
-export const CAMP_START_DATE = '2025-08-28T00:00:00'
+export const CAMP_START_DATE = '2026-01-22T00:00:00'
 export const MAX_TEAM_SIZE = 24
 export const MAX_SWITCHES_PER_USER = 3
 export const MAX_PLAYERS_PER_GRADE = 4
@@ -48,7 +48,7 @@ export const OIL_QUALITY_COLORS: Record<OilQuality, string> = {
   common: 'bg-gray-500 text-white',
   rare: 'bg-blue-500 text-white',
   epic: 'bg-purple-500 text-white',
-  legendary: 'bg-orange-500 text-white',
+  legendary: 'bg-sky-500 text-white',
   mythic: 'bg-red-500 text-white'
 }
 

@@ -219,7 +219,7 @@ export default function SessionManager({ onSessionCreated }: SessionManagerProps
         <h4 className="text-lg font-medium text-[var(--color-text)]">Manual Session Creation</h4>
         <button
           onClick={() => setShowForm(true)}
-      className="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md text-white bg-orange-600 hover:bg-orange-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-orange-500"
+      className="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md text-white bg-sky-600 hover:bg-sky-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-sky-500"
         >
           <Plus className="h-4 w-4 mr-2" />
           New Session
@@ -242,7 +242,7 @@ export default function SessionManager({ onSessionCreated }: SessionManagerProps
                     type="text"
                     value={formData.name}
                     onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-                    className="w-full px-3 py-2 border border-[var(--color-border)] rounded-md bg-[var(--color-input-bg)] text-[var(--color-text)] focus:outline-none focus:ring-2 focus:ring-orange-500"
+                    className="w-full px-3 py-2 border border-[var(--color-border)] rounded-md bg-[var(--color-input-bg)] text-[var(--color-text)] focus:outline-none focus:ring-2 focus:ring-sky-500"
                     required
                   />
                 </div>
@@ -253,7 +253,7 @@ export default function SessionManager({ onSessionCreated }: SessionManagerProps
                 <select
                   value={formData.session_type}
                   onChange={(e) => setFormData({ ...formData, session_type: e.target.value as SessionType })}
-                  className="w-full px-3 py-2 border border-[var(--color-border)] rounded-md bg-[var(--color-input-bg)] text-[var(--color-text)] focus:outline-none focus:ring-2 focus:ring-orange-500"
+                  className="w-full px-3 py-2 border border-[var(--color-border)] rounded-md bg-[var(--color-input-bg)] text-[var(--color-text)] focus:outline-none focus:ring-2 focus:ring-sky-500"
                 >
                   {Object.entries(SESSION_TYPE_LABELS).map(([value, label]) => (
                     <option key={value} value={value}>
@@ -271,7 +271,7 @@ export default function SessionManager({ onSessionCreated }: SessionManagerProps
                 value={formData.description}
                 onChange={(e) => setFormData({ ...formData, description: e.target.value })}
                 rows={3}
-                className="w-full px-3 py-2 border border-[var(--color-border)] rounded-md bg-[var(--color-input-bg)] text-[var(--color-text)] focus:outline-none focus:ring-2 focus:ring-orange-500"
+                className="w-full px-3 py-2 border border-[var(--color-border)] rounded-md bg-[var(--color-input-bg)] text-[var(--color-text)] focus:outline-none focus:ring-2 focus:ring-sky-500"
               />
             </div>
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
@@ -283,7 +283,7 @@ export default function SessionManager({ onSessionCreated }: SessionManagerProps
                   type="datetime-local"
                   value={formData.start_time}
                   onChange={(e) => setFormData({ ...formData, start_time: e.target.value })}
-                  className="w-full px-3 py-2 border border-[var(--color-border)] rounded-md bg-[var(--color-input-bg)] text-[var(--color-text)] focus:outline-none focus:ring-2 focus:ring-orange-500"
+                  className="w-full px-3 py-2 border border-[var(--color-border)] rounded-md bg-[var(--color-input-bg)] text-[var(--color-text)] focus:outline-none focus:ring-2 focus:ring-sky-500"
                   required
                 />
               </div>
@@ -295,7 +295,7 @@ export default function SessionManager({ onSessionCreated }: SessionManagerProps
                   type="datetime-local"
                   value={formData.end_time}
                   onChange={(e) => setFormData({ ...formData, end_time: e.target.value })}
-                    className="w-full px-3 py-2 border border-[var(--color-border)] rounded-md bg-[var(--color-input-bg)] text-[var(--color-text)] focus:outline-none focus:ring-2 focus:ring-orange-500"
+                    className="w-full px-3 py-2 border border-[var(--color-border)] rounded-md bg-[var(--color-input-bg)] text-[var(--color-text)] focus:outline-none focus:ring-2 focus:ring-sky-500"
                   required
                 />
               </div>
@@ -304,7 +304,7 @@ export default function SessionManager({ onSessionCreated }: SessionManagerProps
               <button
                 type="submit"
                 disabled={loading}
-                className="inline-flex items-center justify-center px-4 py-3 sm:px-4 sm:py-2 border border-transparent text-sm font-medium rounded-md text-white bg-orange-600 hover:bg-orange-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-orange-500 disabled:opacity-50 min-h-[44px] touch-manipulation"
+                className="inline-flex items-center justify-center px-4 py-3 sm:px-4 sm:py-2 border border-transparent text-sm font-medium rounded-md text-white bg-sky-600 hover:bg-sky-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-sky-500 disabled:opacity-50 min-h-[44px] touch-manipulation"
               >
                 {loading ? (
                   <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white mr-2"></div>
@@ -314,7 +314,7 @@ export default function SessionManager({ onSessionCreated }: SessionManagerProps
               <button
                 type="button"
                 onClick={resetForm}
-                className="inline-flex items-center justify-center px-4 py-3 sm:px-4 sm:py-2 border border-[var(--color-border)] text-sm font-medium rounded-md text-[var(--color-text)] bg-[var(--color-card-bg)] hover:bg-[var(--color-bg-muted)] focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-orange-500 min-h-[44px] touch-manipulation"
+                className="inline-flex items-center justify-center px-4 py-3 sm:px-4 sm:py-2 border border-[var(--color-border)] text-sm font-medium rounded-md text-[var(--color-text)] bg-[var(--color-card-bg)] hover:bg-[var(--color-bg-muted)] focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-sky-500 min-h-[44px] touch-manipulation"
               >
                 <span className="whitespace-nowrap">Cancel</span>
               </button>
@@ -364,14 +364,14 @@ export default function SessionManager({ onSessionCreated }: SessionManagerProps
                         setSelectedSession(session)
                         setShowQR(true)
                       }}
-                      className="inline-flex items-center justify-center px-4 py-3 sm:px-3 sm:py-2 border border-[var(--color-border)] shadow-sm text-sm font-medium rounded-md text-[var(--color-text)] bg-[var(--color-card-bg)] hover:bg-[var(--color-bg-muted)] focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-orange-500 min-h-[44px] touch-manipulation"
+                      className="inline-flex items-center justify-center px-4 py-3 sm:px-3 sm:py-2 border border-[var(--color-border)] shadow-sm text-sm font-medium rounded-md text-[var(--color-text)] bg-[var(--color-card-bg)] hover:bg-[var(--color-bg-muted)] focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-sky-500 min-h-[44px] touch-manipulation"
                     >
                       <QrCode className="h-4 w-4 mr-2 flex-shrink-0" />
                       <span className="whitespace-nowrap">QR Code</span>
                     </button>
                     <button
                       onClick={() => editSession(session)}
-                      className="inline-flex items-center justify-center px-4 py-3 sm:px-3 sm:py-2 border border-[var(--color-border)] shadow-sm text-sm font-medium rounded-md text-[var(--color-text)] bg-[var(--color-card-bg)] hover:bg-[var(--color-bg-muted)] focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-orange-500 min-h-[44px] touch-manipulation"
+                      className="inline-flex items-center justify-center px-4 py-3 sm:px-3 sm:py-2 border border-[var(--color-border)] shadow-sm text-sm font-medium rounded-md text-[var(--color-text)] bg-[var(--color-card-bg)] hover:bg-[var(--color-bg-muted)] focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-sky-500 min-h-[44px] touch-manipulation"
                     >
                       <Edit className="h-4 w-4 mr-2 flex-shrink-0" />
                       <span className="whitespace-nowrap">Edit</span>

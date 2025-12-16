@@ -50,7 +50,7 @@ export default function Scoreboard() {
               </div>
               <div className="mt-2 sm:mt-3 text-center">
                 <div className="text-xs sm:text-sm font-medium text-[var(--color-text)]">{teamData.name}</div>
-                <div className={`text-sm sm:text-base md:text-lg lg:text-xl font-extrabold ${isTop ? 'text-orange-600' : 'text-[var(--color-text)]'}`}>
+                <div className={`text-sm sm:text-base md:text-lg lg:text-xl font-extrabold ${isTop ? 'text-sky-600' : 'text-[var(--color-text)]'}`}>
                   {funLabel(points, isTop)}
                 </div>
               </div>

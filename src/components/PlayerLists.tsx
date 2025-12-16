@@ -196,7 +196,7 @@ export default function PlayerLists() {
                     if (p.role === 'camper' || (!p.is_admin && p.role !== 'shop_owner' && p.role !== 'team_leader')) roles.push({ label: 'Camper', color: 'bg-green-100 text-green-800 border border-green-300', icon: <User className="h-3 w-3 mr-1 text-green-500" /> })
                     return (
                       <span key={p.id} className="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-[var(--color-bg-muted)] text-[var(--color-text)] mr-2 border border-[var(--color-border)]">
-                        <User className="h-4 w-4 mr-1 text-orange-500" />
+                        <User className="h-4 w-4 mr-1 text-sky-500" />
                         {p.full_name} {!p.is_admin && <span className="ml-1 text-xs text-[var(--color-text-muted)]">({getGradeDisplayWithNumber(p.grade)}, {p.gender === 'male' ? t('male') : t('female')})</span>}
                         {roles.map((role, idx) => (
                           <span key={idx} className={`ml-2 inline-flex items-center px-2 py-0.5 rounded-full text-xs font-bold ${role.color}`}>{role.icon}{role.label}</span>

@@ -61,7 +61,7 @@ export default function RulesAgreement() {
       <div className="max-w-4xl w-full space-y-8">
         <div className="text-center">
           <div className="flex justify-center">
-            <Users className="h-16 w-16 text-orange-500" />
+            <Users className="h-16 w-16 text-sky-500" />
           </div>
           <h2 className="mt-6 text-3xl font-extrabold text-[var(--color-text)]">
             Camp Rules & Guidelines
@@ -141,7 +141,7 @@ export default function RulesAgreement() {
                 id="agree-checkbox"
                 checked={agreed}
                 onChange={(e) => setAgreed(e.target.checked)}
-                className="w-6 h-6 sm:w-5 sm:h-5 text-orange-600 bg-[var(--color-input-bg)] border-[var(--color-border)] rounded focus:ring-orange-500 focus:ring-2 cursor-pointer"
+                className="w-6 h-6 sm:w-5 sm:h-5 text-sky-600 bg-[var(--color-input-bg)] border-[var(--color-border)] rounded focus:ring-sky-500 focus:ring-2 cursor-pointer"
               />
             </div>
             <div className="flex-1">

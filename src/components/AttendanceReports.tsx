@@ -207,13 +207,13 @@ export default function AttendanceReports() {
                   <div className="flex items-center space-x-2">
                     <button
                       onClick={() => setSelectedSession(session)}
-                      className="inline-flex items-center px-3 py-2 border border-[var(--color-border)] shadow-sm text-sm font-medium rounded-md text-[var(--color-text)] bg-[var(--color-bg)] hover:bg-[var(--color-bg-muted)] focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-orange-500"
+                      className="inline-flex items-center px-3 py-2 border border-[var(--color-border)] shadow-sm text-sm font-medium rounded-md text-[var(--color-text)] bg-[var(--color-bg)] hover:bg-[var(--color-bg-muted)] focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-sky-500"
                     >
                       View Details
                     </button>
                     <button
                       onClick={() => exportAttendanceData(session)}
-                      className="inline-flex items-center px-3 py-2 border border-[var(--color-border)] shadow-sm text-sm font-medium rounded-md text-[var(--color-text)] bg-[var(--color-bg)] hover:bg-[var(--color-bg-muted)] focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-orange-500"
+                      className="inline-flex items-center px-3 py-2 border border-[var(--color-border)] shadow-sm text-sm font-medium rounded-md text-[var(--color-text)] bg-[var(--color-bg)] hover:bg-[var(--color-bg-muted)] focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-sky-500"
                     >
                       <Download className="h-4 w-4 mr-2" />
                       Export
@@ -255,7 +255,7 @@ export default function AttendanceReports() {
                   <select
                     value={filterStatus}
                     onChange={(e) => setFilterStatus(e.target.value)}
-                    className="px-3 py-2 border border-[var(--color-border)] rounded-md focus:outline-none focus:ring-2 focus:ring-orange-500 bg-[var(--color-bg)] text-[var(--color-text)]"
+                    className="px-3 py-2 border border-[var(--color-border)] rounded-md focus:outline-none focus:ring-2 focus:ring-sky-500 bg-[var(--color-bg)] text-[var(--color-text)]"
                   >
                     <option value="all">All Statuses</option>
                     <option value="present">Present</option>
@@ -269,7 +269,7 @@ export default function AttendanceReports() {
                   <select
                     value={filterTeam}
                     onChange={(e) => setFilterTeam(e.target.value)}
-                    className="px-3 py-2 border border-[var(--color-border)] rounded-md focus:outline-none focus:ring-2 focus:ring-orange-500 bg-[var(--color-bg)] text-[var(--color-text)]"
+                    className="px-3 py-2 border border-[var(--color-border)] rounded-md focus:outline-none focus:ring-2 focus:ring-sky-500 bg-[var(--color-bg)] text-[var(--color-text)]"
                   >
                     <option value="all">All Teams</option>
                     <option value="red">Red Team</option>

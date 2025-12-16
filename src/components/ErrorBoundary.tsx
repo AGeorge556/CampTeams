@@ -43,7 +43,7 @@ export default class ErrorBoundary extends Component<Props, State> {
         <div className="min-h-screen bg-[var(--color-bg)] flex items-center justify-center px-4">
           <div className="max-w-md w-full text-center bg-[var(--color-card-bg)] rounded-lg p-6 border border-[var(--color-border)]">
             <div className="mb-6">
-              <AlertTriangle className="h-16 w-16 text-orange-500 mx-auto" />
+              <AlertTriangle className="h-16 w-16 text-sky-500 mx-auto" />
             </div>
             <h1 className="text-2xl font-bold text-[var(--color-text)] mb-4">
               Oops! Something went wrong
@@ -54,14 +54,14 @@ export default class ErrorBoundary extends Component<Props, State> {
             <div className="space-y-3">
               <button
                 onClick={this.handleRetry}
-                className="w-full inline-flex items-center justify-center px-4 py-2 border border-transparent text-sm font-medium rounded-md text-white bg-orange-600 hover:bg-orange-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-orange-500"
+                className="w-full inline-flex items-center justify-center px-4 py-2 border border-transparent text-sm font-medium rounded-md text-white bg-sky-600 hover:bg-sky-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-sky-500"
               >
                 <RefreshCw className="h-4 w-4 mr-2" />
                 Try Again
               </button>
               <button
                 onClick={this.handleGoHome}
-                className="w-full inline-flex items-center justify-center px-4 py-2 border border-[var(--color-border)] text-sm font-medium rounded-md text-[var(--color-text)] bg-[var(--color-bg)] hover:bg-[var(--color-bg-muted)] focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-orange-500"
+                className="w-full inline-flex items-center justify-center px-4 py-2 border border-[var(--color-border)] text-sm font-medium rounded-md text-[var(--color-text)] bg-[var(--color-bg)] hover:bg-[var(--color-bg-muted)] focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-sky-500"
               >
                 <Home className="h-4 w-4 mr-2" />
                 Go Home

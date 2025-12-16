@@ -38,7 +38,7 @@ export default function OilExtractionGame({ onPageChange }: OilExtractionGamePro
           <div className="space-y-6 sm:space-y-8">
             {/* Admin Controls Card */}
             <div className="bg-[var(--color-card-bg)] rounded-xl shadow-sm border border-[var(--color-border)] overflow-hidden">
-              <div className="bg-gradient-to-r from-orange-500 to-orange-600 px-4 sm:px-6 py-3">
+              <div className="bg-gradient-to-r from-sky-500 to-sky-600 px-4 sm:px-6 py-3">
                 <h2 className="text-lg sm:text-xl font-semibold text-white flex items-center">
                   <svg className="w-5 h-5 mr-2" fill="currentColor" viewBox="0 0 20 20">
                     <path fillRule="evenodd" d="M11.49 3.17c-.38-1.56-2.6-1.56-2.98 0a1.532 1.532 0 01-2.286.948c-1.372-.836-2.942.734-2.106 2.106.54.886.061 2.042-.947 2.287-1.561.379-1.561 2.6 0 2.978a1.532 1.532 0 01.947 2.287c-.836 1.372.734 2.942 2.106 2.106a1.532 1.532 0 012.287.947c.379 1.561 2.6 1.561 2.978 0a1.533 1.533 0 012.287-.947c1.372.836 2.942-.734 2.106-2.106a1.533 1.533 0 01.947-2.287c1.561-.379 1.561-2.6 0-2.978a1.532 1.532 0 01-.947-2.287c.836-1.372-.734-2.942-2.106-2.106a1.532 1.532 0 01-2.287-.947zM10 13a3 3 0 100-6 3 3 0 000 6z" clipRule="evenodd" />
@@ -50,7 +50,7 @@ export default function OilExtractionGame({ onPageChange }: OilExtractionGamePro
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4">
                   <button
                     onClick={() => onPageChange?.('oil-extraction-admin')}
-                    className="group relative flex items-center justify-center px-4 py-3 sm:py-4 border border-transparent text-sm sm:text-base font-medium rounded-lg text-white bg-gradient-to-r from-orange-500 to-orange-600 hover:from-orange-600 hover:to-orange-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-orange-500 transition-all duration-200 shadow-sm hover:shadow-md"
+                    className="group relative flex items-center justify-center px-4 py-3 sm:py-4 border border-transparent text-sm sm:text-base font-medium rounded-lg text-white bg-gradient-to-r from-sky-500 to-sky-600 hover:from-sky-600 hover:to-sky-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-sky-500 transition-all duration-200 shadow-sm hover:shadow-md"
                   >
                     <svg className="w-4 h-4 sm:w-5 sm:h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1" />
@@ -105,7 +105,7 @@ export default function OilExtractionGame({ onPageChange }: OilExtractionGamePro
           <div className="space-y-6 sm:space-y-8">
             {/* Team Actions Card */}
             <div className="bg-[var(--color-card-bg)] rounded-xl shadow-sm border border-[var(--color-border)] overflow-hidden">
-              <div className="bg-gradient-to-r from-orange-500 to-orange-600 px-4 sm:px-6 py-3">
+              <div className="bg-gradient-to-r from-sky-500 to-sky-600 px-4 sm:px-6 py-3">
                 <h2 className="text-lg sm:text-xl font-semibold text-white flex items-center">
                   <svg className="w-5 h-5 mr-2" fill="currentColor" viewBox="0 0 20 20">
                     <path d="M13 6a3 3 0 11-6 0 3 3 0 016 0zM18 8a2 2 0 11-4 0 2 2 0 014 0zM14 15a4 4 0 00-8 0v3h8v-3z" />
@@ -116,7 +116,7 @@ export default function OilExtractionGame({ onPageChange }: OilExtractionGamePro
               <div className="p-4 sm:p-6">
                 <button
                   onClick={() => onPageChange?.('oil-extraction-team')}
-                  className="w-full group relative flex items-center justify-center px-4 py-3 sm:py-4 border border-transparent text-sm sm:text-base font-medium rounded-lg text-white bg-gradient-to-r from-orange-500 to-orange-600 hover:from-orange-600 hover:to-orange-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-orange-500 transition-all duration-200 shadow-sm hover:shadow-md"
+                  className="w-full group relative flex items-center justify-center px-4 py-3 sm:py-4 border border-transparent text-sm sm:text-base font-medium rounded-lg text-white bg-gradient-to-r from-sky-500 to-sky-600 hover:from-sky-600 hover:to-sky-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-sky-500 transition-all duration-200 shadow-sm hover:shadow-md"
                 >
                   <svg className="w-4 h-4 sm:w-5 sm:h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" />
@@ -171,7 +171,7 @@ export default function OilExtractionGame({ onPageChange }: OilExtractionGamePro
               {profile.role?.replace('_', ' ').toUpperCase()}
             </div>
             {profile.current_team && (
-              <div className="inline-flex items-center px-3 py-1.5 rounded-full text-xs sm:text-sm font-medium bg-gradient-to-r from-orange-500 to-orange-600 text-white shadow-sm">
+              <div className="inline-flex items-center px-3 py-1.5 rounded-full text-xs sm:text-sm font-medium bg-gradient-to-r from-sky-500 to-sky-600 text-white shadow-sm">
                 <svg className="w-3 h-3 sm:w-4 sm:h-4 mr-1.5" fill="currentColor" viewBox="0 0 20 20">
                   <path d="M13 6a3 3 0 11-6 0 3 3 0 016 0zM18 8a2 2 0 11-4 0 2 2 0 014 0zM14 15a4 4 0 00-8 0v3h8v-3z" />
                 </svg>

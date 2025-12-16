@@ -103,7 +103,7 @@ export default function OnboardingForm() {
       <div className="max-w-md w-full space-y-8">
         <div className="text-center">
           <div className="flex justify-center">
-            <Users className="h-16 w-16 text-orange-500" />
+            <Users className="h-16 w-16 text-sky-500" />
           </div>
           <h2 className="mt-6 text-3xl font-extrabold text-[var(--color-text)]">
             Welcome to Camp Teams!
@@ -138,7 +138,7 @@ export default function OnboardingForm() {
                   id="grade"
                   value={formData.grade}
                   onChange={(e) => setFormData({ ...formData, grade: Number(e.target.value) })}
-                  className="appearance-none block w-full pl-10 pr-3 py-2 border border-[var(--color-border)] rounded-md focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-orange-500 focus:border-orange-500 sm:text-sm bg-[var(--color-input-bg)] text-[var(--color-text)]"
+                  className="appearance-none block w-full pl-10 pr-3 py-2 border border-[var(--color-border)] rounded-md focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-sky-500 focus:border-sky-500 sm:text-sm bg-[var(--color-input-bg)] text-[var(--color-text)]"
                   required
                 >
                   <option value={7}>Grade 7</option>
@@ -167,7 +167,7 @@ export default function OnboardingForm() {
                       value={option.value}
                       checked={formData.gender === option.value}
                       onChange={(e) => setFormData({ ...formData, gender: e.target.value as 'male' | 'female' })}
-                      className="focus:ring-orange-500 h-4 w-4 text-orange-600 border-[var(--color-border)]"
+                      className="focus:ring-sky-500 h-4 w-4 text-sky-600 border-[var(--color-border)]"
                     />
                     <span className="ml-2 text-sm text-[var(--color-text)]">{option.label}</span>
                   </label>
@@ -188,7 +188,7 @@ export default function OnboardingForm() {
                       value={key}
                       checked={formData.preferred_team === key}
                       onChange={(e) => setFormData({ ...formData, preferred_team: e.target.value as TeamColor })}
-                      className="focus:ring-orange-500 h-4 w-4 text-orange-600 border-[var(--color-border)]"
+                      className="focus:ring-sky-500 h-4 w-4 text-sky-600 border-[var(--color-border)]"
                     />
                     <span className={`ml-2 inline-flex items-center px-3 py-1 rounded-full text-sm font-medium ${team.lightColor} ${team.textColor}`}>
                       {team.name} Team

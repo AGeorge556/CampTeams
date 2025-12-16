@@ -270,7 +270,7 @@ export default function ScheduleSessionManager() {
             <button
               onClick={() => createSessionsForDay(selectedDay)}
               disabled={creatingSessions}
-              className="inline-flex items-center px-4 py-3 md:px-4 md:py-2 border border-transparent text-sm font-medium rounded-md text-white bg-orange-600 hover:bg-orange-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-orange-500 disabled:opacity-50 transition-colors duration-200"
+              className="inline-flex items-center px-4 py-3 md:px-4 md:py-2 border border-transparent text-sm font-medium rounded-md text-white bg-sky-600 hover:bg-sky-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-sky-500 disabled:opacity-50 transition-colors duration-200"
             >
               {creatingSessions ? (
                 <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white mr-2"></div>
@@ -291,7 +291,7 @@ export default function ScheduleSessionManager() {
               onClick={() => setSelectedDay(day)}
               className={`px-4 py-3 md:py-2 rounded-md text-sm font-medium transition-colors duration-200 ${
                 selectedDay === day
-                  ? 'bg-orange-100 text-orange-700 border border-orange-300'
+                  ? 'bg-sky-100 text-sky-700 border border-cyan-300'
                   : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
               }`}
             >
@@ -329,7 +329,7 @@ export default function ScheduleSessionManager() {
                               : ids.filter(id => id !== item.id)
                           )
                         }}
-                        className="h-5 w-5 text-orange-600 border-gray-300 rounded focus:ring-orange-500"
+                        className="h-5 w-5 text-sky-600 border-gray-300 rounded focus:ring-sky-500"
                         aria-label={`Select ${item.activity}`}
                       />
                       <h5 className="text-lg font-medium text-gray-900 truncate">{item.activity}</h5>
@@ -366,7 +366,7 @@ export default function ScheduleSessionManager() {
                           existingSession.is_active
                             ? 'text-red-700 bg-white hover:bg-red-50 border-red-300'
                             : 'text-green-700 bg-white hover:bg-green-50 border-green-300'
-                        } focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-orange-500`}
+                        } focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-sky-500`}
                       >
                         {existingSession.is_active ? (
                           <>

@@ -170,7 +170,7 @@ export default function TeamExcavation({ onPageChange }: TeamExcavationProps) {
       >
         {isMarking ? (
           <div className="flex items-center justify-center">
-            <div className="animate-spin rounded-full h-4 w-4 sm:h-6 sm:w-6 border-b-2 border-orange-600"></div>
+            <div className="animate-spin rounded-full h-4 w-4 sm:h-6 sm:w-6 border-b-2 border-sky-600"></div>
           </div>
         ) : (
           <div className="flex items-center justify-center">
@@ -215,7 +215,7 @@ export default function TeamExcavation({ onPageChange }: TeamExcavationProps) {
             </div>
             <button
               onClick={() => onPageChange?.('oil-extraction')}
-              className="inline-flex items-center px-4 py-2 border border-[var(--color-border)] text-sm font-medium rounded-md text-[var(--color-text)] bg-[var(--color-card-bg)] hover:bg-[var(--color-bg-muted)] focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-orange-500 w-full sm:w-auto justify-center"
+              className="inline-flex items-center px-4 py-2 border border-[var(--color-border)] text-sm font-medium rounded-md text-[var(--color-text)] bg-[var(--color-card-bg)] hover:bg-[var(--color-bg-muted)] focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-sky-500 w-full sm:w-auto justify-center"
             >
               ← Back to Game
             </button>
@@ -235,8 +235,8 @@ export default function TeamExcavation({ onPageChange }: TeamExcavationProps) {
               </div>
               <div className="text-center sm:text-right">
                 <div className="flex items-center justify-center sm:justify-end">
-                  <Coins className="h-5 w-5 text-orange-600 mr-2" />
-                  <span className="text-2xl font-bold text-orange-600">
+                  <Coins className="h-5 w-5 text-sky-600 mr-2" />
+                  <span className="text-2xl font-bold text-sky-600">
                     {teamWallet?.coins.toLocaleString() || 0}
                   </span>
                 </div>
@@ -253,9 +253,9 @@ export default function TeamExcavation({ onPageChange }: TeamExcavationProps) {
             
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               <div className="text-center p-6 border rounded-lg bg-[var(--color-card-bg)]">
-                <Coins className="h-8 w-8 text-orange-600 mx-auto mb-2" />
+                <Coins className="h-8 w-8 text-sky-600 mx-auto mb-2" />
                 <h3 className="text-lg font-semibold text-[var(--color-text)]">Coins</h3>
-                <div className="text-3xl font-bold text-orange-600">
+                <div className="text-3xl font-bold text-sky-600">
                   {teamWallet?.coins || 0}
                 </div>
                 <p className="text-sm text-[var(--color-text-muted)] mt-2">Used for playing the game</p>
@@ -292,7 +292,7 @@ export default function TeamExcavation({ onPageChange }: TeamExcavationProps) {
               <h2 className="text-xl font-semibold text-[var(--color-text)]">Marking Grid</h2>
               <button
                 onClick={() => setShowAllMarks(!showAllMarks)}
-                className="inline-flex items-center px-3 py-2 border border-[var(--color-border)] text-sm font-medium rounded-md text-[var(--color-text)] bg-[var(--color-card-bg)] hover:bg-[var(--color-bg-muted)] focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-orange-500"
+                className="inline-flex items-center px-3 py-2 border border-[var(--color-border)] text-sm font-medium rounded-md text-[var(--color-text)] bg-[var(--color-card-bg)] hover:bg-[var(--color-bg-muted)] focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-sky-500"
               >
                 {showAllMarks ? (
                   <>
@@ -380,7 +380,7 @@ export default function TeamExcavation({ onPageChange }: TeamExcavationProps) {
             
             {hintsLoading ? (
               <div className="text-center py-8">
-                <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-orange-600 mx-auto"></div>
+                <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-sky-600 mx-auto"></div>
                 <p className="text-[var(--color-text-muted)] mt-2">Loading hints...</p>
               </div>
             ) : (
@@ -398,7 +398,7 @@ export default function TeamExcavation({ onPageChange }: TeamExcavationProps) {
                               <span className="font-medium text-[var(--color-text)]">Hint</span>
                             </div>
                             <div className="text-center sm:text-right">
-                              <div className="text-lg font-bold text-orange-600">{hint.cost}</div>
+                              <div className="text-lg font-bold text-sky-600">{hint.cost}</div>
                               <div className="text-sm text-[var(--color-text-muted)]">coins</div>
                             </div>
                           </div>
@@ -417,7 +417,7 @@ export default function TeamExcavation({ onPageChange }: TeamExcavationProps) {
                           <button
                             onClick={() => purchaseHint(hint.id)}
                             disabled={isPurchasing || (teamWallet?.coins || 0) < hint.cost}
-                            className="w-full inline-flex items-center justify-center px-4 py-2 border border-transparent text-sm font-medium rounded-md text-white bg-orange-600 hover:bg-orange-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-orange-500 disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-300"
+                            className="w-full inline-flex items-center justify-center px-4 py-2 border border-transparent text-sm font-medium rounded-md text-white bg-sky-600 hover:bg-sky-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-sky-500 disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-300"
                           >
                             {isPurchasing ? (
                               <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white mr-2"></div>

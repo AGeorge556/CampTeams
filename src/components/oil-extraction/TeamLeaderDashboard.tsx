@@ -81,7 +81,7 @@ export default function TeamLeaderDashboard() {
           {teamRank && (
             <div className="text-right">
               <p className="text-sm text-gray-500">Current Rank</p>
-              <p className="text-2xl font-bold text-orange-600">#{teamRank.rank}</p>
+              <p className="text-2xl font-bold text-sky-600">#{teamRank.rank}</p>
             </div>
           )}
         </div>
@@ -118,10 +118,10 @@ export default function TeamLeaderDashboard() {
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
             <div className="bg-gradient-to-r from-orange-50 to-yellow-50 p-6 rounded-lg border">
               <div className="flex items-center mb-2">
-                <DollarSign className="h-5 w-5 text-orange-600 mr-2" />
+                <DollarSign className="h-5 w-5 text-sky-600 mr-2" />
                 <h3 className="font-semibold text-gray-900">Coins</h3>
               </div>
-              <p className="text-3xl font-bold text-orange-600">
+              <p className="text-3xl font-bold text-sky-600">
                 {teamWallet.coins.toLocaleString()}
               </p>
               <p className="text-sm text-gray-600">Available for trading</p>

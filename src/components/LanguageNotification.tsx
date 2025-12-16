@@ -31,7 +31,7 @@ const LanguageNotification: React.FC = () => {
     <div className="fixed top-4 right-4 z-50 animate-in slide-in-from-right duration-500">
       <div className={`
         relative overflow-hidden
-        bg-gradient-to-r from-orange-400 to-pink-500
+        bg-gradient-to-r from-sky-400 to-pink-500
         text-white px-6 py-4 rounded-lg shadow-lg
         border border-white/20 backdrop-blur-sm
         transform transition-all duration-300

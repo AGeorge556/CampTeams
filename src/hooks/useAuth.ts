@@ -53,11 +53,32 @@ export function useAuth() {
     return { error }
   }
 
+  const resetPassword = async (email: string) => {
+    // Build a safe, absolute redirect URL for password reset links
+    const siteUrlEnv = import.meta.env.VITE_SITE_URL as string | undefined
+    const siteUrl = (siteUrlEnv && typeof siteUrlEnv === 'string' ? siteUrlEnv : window.location.origin).replace(/\/$/, '')
+    const redirectTo = `${siteUrl}/auth/reset-password`
+
+    const { data, error } = await supabase.auth.resetPasswordForEmail(email, {
+      redirectTo
+    })
+    return { data, error }
+  }
+
+  const updatePassword = async (newPassword: string) => {
+    const { data, error } = await supabase.auth.updateUser({
+      password: newPassword
+    })
+    return { data, error }
+  }
+
   return {
     user,
     loading,
     signUp,
     signIn,
-    signOut
+    signOut,
+    resetPassword,
+    updatePassword
   }
 }
