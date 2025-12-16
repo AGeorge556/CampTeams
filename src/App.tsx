@@ -5,10 +5,12 @@ import { useRulesAcceptance } from './hooks/useRulesAcceptance'
 import { useOilExtractionVisibility } from './hooks/useOilExtractionVisibility'
 import { useGalleryVisibility } from './hooks/useGalleryVisibility'
 import { ThemeProvider } from './contexts/ThemeContext'
+import { useCamp } from './contexts/CampContext'
 import Auth from './components/Auth'
 import ResetPassword from './components/ResetPassword'
 import OnboardingForm from './components/OnboardingForm'
 import TeamSelection from './components/TeamSelection'
+import CampRegistrationOnboarding from './components/CampRegistrationOnboarding'
 import RulesAgreement from './components/RulesAgreement'
 import Dashboard from './components/Dashboard'
 import Schedule from './components/Schedule'
@@ -28,10 +30,12 @@ import ErrorBoundary from './components/ErrorBoundary'
 import { ToastProvider } from './components/Toast'
 import LoadingSpinner from './components/LoadingSpinner'
 import { LanguageProvider } from './contexts/LanguageContext'
+import { CampProvider } from './contexts/CampContext'
 import LanguageNotification from './components/LanguageNotification'
 import Scoreboard from './components/Scoreboard'
 import ScoreboardAdmin from './components/ScoreboardAdmin'
 import AttendanceCheckIn from './components/AttendanceCheckIn'
+import CampSelection from './components/CampSelection'
 import { supabase } from './lib/supabase'
 import { CheckCircle, XCircle, Loader2 } from 'lucide-react'
 
@@ -204,14 +208,16 @@ function App() {
       <ThemeProvider>
         <LanguageProvider>
           <ToastProvider>
-            <AppContent 
-            user={user} 
-            authLoading={authLoading} 
-            profile={profile} 
-            profileLoading={profileLoading}
-            currentPage={currentPage}
-            setCurrentPage={setCurrentPage}
-          />
+            <CampProvider>
+              <AppContent
+                user={user}
+                authLoading={authLoading}
+                profile={profile}
+                profileLoading={profileLoading}
+                currentPage={currentPage}
+                setCurrentPage={setCurrentPage}
+              />
+            </CampProvider>
           </ToastProvider>
         </LanguageProvider>
       </ThemeProvider>
@@ -219,13 +225,13 @@ function App() {
   )
 }
 
-function AppContent({ 
-  user, 
-  authLoading, 
-  profile, 
-  profileLoading, 
-  currentPage, 
-  setCurrentPage 
+function AppContent({
+  user,
+  authLoading,
+  profile,
+  profileLoading,
+  currentPage,
+  setCurrentPage
 }: {
   user: any
   authLoading: boolean
@@ -237,6 +243,7 @@ function AppContent({
   const { hasAccepted, loading: rulesLoading } = useRulesAcceptance()
   // const { oilExtractionVisible } = useOilExtractionVisibility()
   const { galleryVisible } = useGalleryVisibility()
+  const { currentCamp, currentRegistration, isRegistered, loading: campLoading } = useCamp()
 
   // Debug logging to track profile state
   useEffect(() => {
@@ -265,7 +272,7 @@ function AppContent({
     }
   }, [currentPage, galleryVisible, profile?.is_admin, setCurrentPage])
 
-  if (authLoading || profileLoading || rulesLoading) {
+  if (authLoading || profileLoading || rulesLoading || campLoading) {
     return <LoadingSpinner fullScreen text="Loading..." />
   }
 
@@ -287,8 +294,19 @@ function AppContent({
     return <RulesAgreement />
   }
 
-  // If user has profile but no team assigned, show team selection
-  if (profile && !profile.current_team && !profile.is_admin) {
+  // Show camp selection if no camp is selected
+  // This allows users to choose which camp they want to access
+  if (!currentCamp) {
+    return <CampSelection />
+  }
+
+  // If camp is selected but user is not registered for it, show registration
+  if (currentCamp && !isRegistered && !campLoading) {
+    return <CampRegistrationOnboarding />
+  }
+
+  // If user is registered for camp but no team assigned, show team selection
+  if (currentRegistration && !currentRegistration.current_team && currentRegistration.participate_in_teams) {
     return <TeamSelection />
   }
 

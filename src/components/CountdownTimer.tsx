@@ -99,7 +99,7 @@ export default function CountdownTimer({ targetDate, compact = false }: Countdow
       </div>
       
       <div className="mt-3 text-center text-sm text-[var(--color-text-muted)]">
-        January 22, 2026
+        {new Date(targetDate).toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' })}
       </div>
     </div>
   )

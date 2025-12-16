@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react'
 import { Users, Save, AlertCircle } from 'lucide-react'
-import { useProfile } from '../hooks/useProfile'
+import { useCamp } from '../contexts/CampContext'
 import { useToast } from './Toast'
 import { TEAMS, TeamColor } from '../lib/supabase'
 import Button from './ui/Button'
@@ -8,7 +8,7 @@ import { supabase } from '../lib/supabase'
 import { useTeamBalancing } from '../hooks/useTeamBalancing'
 
 export default function TeamSelection() {
-  const { profile } = useProfile()
+  const { currentCamp, currentRegistration, refreshRegistration } = useCamp()
   const { addToast } = useToast()
   const { canTeamAcceptPlayer } = useTeamBalancing()
   const [selectedTeam, setSelectedTeam] = useState<TeamColor>('red')
@@ -18,12 +18,12 @@ export default function TeamSelection() {
   // Check team availability on mount and when selection changes
   useEffect(() => {
     const checkTeamAvailability = async () => {
-      if (!profile) return
+      if (!currentRegistration) return
 
       const status: Record<TeamColor, { canAccept: boolean; reason: string }> = {} as any
 
       for (const team of TEAMS) {
-        const result = await canTeamAcceptPlayer(team.value, profile.gender)
+        const result = await canTeamAcceptPlayer(team.value, currentRegistration.gender)
         status[team.value] = result
       }
 
@@ -31,12 +31,12 @@ export default function TeamSelection() {
     }
 
     checkTeamAvailability()
-  }, [profile])
+  }, [currentRegistration])
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
 
-    if (!profile) return
+    if (!currentRegistration) return
 
     // Validate team can accept player
     const canAccept = teamStatus[selectedTeam]?.canAccept
@@ -53,13 +53,12 @@ export default function TeamSelection() {
 
     try {
       const { error } = await supabase
-        .from('profiles')
+        .from('camp_registrations')
         .update({
           current_team: selectedTeam,
-          preferred_team: selectedTeam,
           switches_remaining: 3
         })
-        .eq('id', profile.id)
+        .eq('id', currentRegistration.id)
 
       if (error) throw error
 
@@ -69,8 +68,8 @@ export default function TeamSelection() {
         message: `You've joined the ${selectedTeam} team!`
       })
 
-      // Refresh the page to show the dashboard with team
-      window.location.reload()
+      // Refresh the registration data
+      await refreshRegistration()
     } catch (error: any) {
       console.error('Error selecting team:', error)
       addToast({
@@ -91,10 +90,10 @@ export default function TeamSelection() {
             <Users className="h-16 w-16 text-[var(--color-primary)]" />
           </div>
           <h2 className="mt-6 text-3xl font-extrabold text-[var(--color-text)]">
-            Welcome Back, {profile?.full_name}!
+            Welcome, {currentRegistration?.full_name}!
           </h2>
           <p className="mt-2 text-lg text-[var(--color-text-muted)]">
-            Select your team for Winter Camp 2026
+            Select your team for {currentCamp?.name}
           </p>
         </div>
 
