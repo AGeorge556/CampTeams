@@ -5,7 +5,10 @@
       "Bash(wc:*)",
       "Bash(powershell -Command \"Get-ChildItem -Path . -Include *.tsx,*.ts -Recurse | ForEach-Object { (Get-Content $_FullName) -replace ''orange-500'',''sky-500'' -replace ''orange-600'',''sky-600'' -replace ''orange-700'',''sky-700'' -replace ''orange-400'',''sky-400'' -replace ''orange-300'',''cyan-300'' -replace ''orange-200'',''cyan-200'' -replace ''orange-100'',''sky-100'' -replace ''text-orange'',''text-sky'' -replace ''bg-orange'',''bg-sky'' -replace ''border-orange'',''border-sky'' | Set-Content $_FullName }\")",
       "Bash(powershell -ExecutionPolicy Bypass -File replace-colors.ps1)",
-      "Bash(git add:*)"
+      "Bash(git add:*)",
+      "Bash(git commit:*)",
+      "Bash(git push:*)",
+      "Bash(git pull:*)"
     ],
     "deny": [],
     "ask": []
