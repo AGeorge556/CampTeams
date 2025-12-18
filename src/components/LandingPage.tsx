@@ -96,8 +96,8 @@ export default function LandingPage() {
                 <div className="w-16 h-1 bg-white/50 mx-auto mb-4"></div>
               </div>
               <h2 className="text-5xl md:text-7xl font-bold text-white mb-4 drop-shadow-2xl">
-                Camp Team
-                <span className="block text-sky-400">Selection</span>
+                Camp Registration
+                <span className="block text-sky-400">Website</span>
               </h2>
               <p className="text-xl md:text-2xl text-white/90 max-w-2xl mx-auto drop-shadow-lg">
                 Join an unforgettable faith-filled adventure
