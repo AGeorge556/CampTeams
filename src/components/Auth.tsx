@@ -1,9 +1,12 @@
 import { useState } from 'react'
-import { Users, Mail, Lock, UserPlus, LogIn, Clock, ArrowLeft } from 'lucide-react'
+import { Mail, Lock, UserPlus, LogIn, Clock, ArrowLeft } from 'lucide-react'
 import { useAuth } from '../hooks/useAuth'
 import { useToast } from './Toast'
 import Button from './ui/Button'
 import Input from './ui/Input'
+
+// Logo path - Replace with your church logo
+const LOGO_PATH = '/logo.png'
 
 interface AuthProps {
   initialMode?: 'signup' | 'signin'
@@ -187,34 +190,52 @@ export default function Auth({ initialMode = 'signin', onBack }: AuthProps) {
   }
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-[var(--color-bg)] px-4 sm:px-6 lg:px-8">
+    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-gray-900 via-purple-900/20 to-gray-900 px-4 sm:px-6 lg:px-8 relative overflow-hidden">
+      {/* Animated background elements */}
+      <div className="absolute inset-0 overflow-hidden pointer-events-none">
+        <div className="absolute top-1/4 left-1/4 w-64 h-64 bg-cyan-500/10 rounded-full blur-3xl animate-pulse"></div>
+        <div className="absolute bottom-1/4 right-1/4 w-64 h-64 bg-pink-500/10 rounded-full blur-3xl animate-pulse" style={{ animationDelay: '1s' }}></div>
+        <div className="absolute top-1/2 right-1/3 w-48 h-48 bg-purple-500/10 rounded-full blur-3xl animate-pulse" style={{ animationDelay: '2s' }}></div>
+      </div>
+
       {onBack && (
         <Button
           onClick={onBack}
           variant="ghost"
-          className="absolute top-6 left-6"
+          className="absolute top-6 left-6 text-white border-cyan-400/50 hover:border-cyan-400 hover:shadow-neon-cyan z-10"
         >
           ← Back to Home
         </Button>
       )}
-      <div className="max-w-md w-full space-y-8">
+      <div className="max-w-md w-full space-y-8 relative z-10">
         <div className="text-center">
-          <div className="flex justify-center">
-            <Users className="h-16 w-16 text-sky-500" />
+          <div className="flex justify-center mb-4">
+            <div className="p-3 bg-gradient-to-br from-cyan-500/20 to-purple-500/20 backdrop-blur-sm rounded-xl border-2 border-cyan-400/50 shadow-neon-cyan">
+              <img
+                src={LOGO_PATH}
+                alt="Church Logo"
+                className="h-16 w-16 object-contain"
+                onError={(e) => {
+                  // Fallback if logo doesn't exist yet
+                  e.currentTarget.style.display = 'none'
+                  e.currentTarget.parentElement!.innerHTML = '<div class="h-16 w-16 flex items-center justify-center text-4xl">⛪</div>'
+                }}
+              />
+            </div>
           </div>
-          <h2 className="mt-6 text-3xl font-extrabold text-[var(--color-text)]">
-            {isForgotPassword ? 'Reset Password' : 'Winter Camp Team Selection'}
+          <h2 className="mt-6 text-3xl font-extrabold text-white neon-text-cyan">
+            {isForgotPassword ? '🔑 Reset Password' : isSignUp ? '⛺ Join Camp Registration' : '✨ Welcome Back'}
           </h2>
-          <p className="mt-2 text-sm text-[var(--color-text-muted)]">
+          <p className="mt-2 text-sm text-gray-300">
             {isForgotPassword
-              ? 'Enter your email to receive a password reset link'
+              ? 'Enter your email to receive a password reset link 📧'
               : isSignUp
-                ? 'Create your account to join a team'
-                : 'Sign in to manage your team'}
+                ? 'Create your account to register for camp 🏕️'
+                : 'Sign in to your account 🙏'}
           </p>
         </div>
 
-        <form className="mt-8 space-y-6 bg-[var(--color-card-bg)] p-6 rounded-lg border border-[var(--color-border)]" onSubmit={isForgotPassword ? handleForgotPassword : handleSubmit}>
+        <form className="mt-8 space-y-6 bg-gray-900/50 backdrop-blur-md p-6 rounded-xl border-2 border-cyan-400/30 shadow-neon-multi" onSubmit={isForgotPassword ? handleForgotPassword : handleSubmit}>
            <div className="space-y-4">
              <Input
                label="Email address"
@@ -248,11 +269,11 @@ export default function Auth({ initialMode = 'signin', onBack }: AuthProps) {
           </div>
 
           {showEmailConfirmation && !isForgotPassword && (
-            <div className="rounded-md bg-[var(--color-bg-muted)] border border-[var(--color-border)] p-4">
+            <div className="rounded-md bg-green-500/10 border-2 border-green-400/50 p-4 shadow-lg">
               <div className="flex">
-                <Mail className="h-5 w-5 text-green-500 mt-0.5 mr-3" />
-                <div className="text-sm text-green-700">
-                  <p className="font-medium">Check your email!</p>
+                <Mail className="h-5 w-5 text-green-400 mt-0.5 mr-3" />
+                <div className="text-sm text-green-200">
+                  <p className="font-medium">Check your email! 📧✨</p>
                   <p className="mt-1">We've sent you a confirmation link. Please click it to activate your account, then return here to sign in.</p>
                 </div>
               </div>
@@ -260,11 +281,11 @@ export default function Auth({ initialMode = 'signin', onBack }: AuthProps) {
           )}
 
           {showResetEmailSent && isForgotPassword && (
-            <div className="rounded-md bg-[var(--color-bg-muted)] border border-[var(--color-border)] p-4">
+            <div className="rounded-md bg-green-500/10 border-2 border-green-400/50 p-4 shadow-lg">
               <div className="flex">
-                <Mail className="h-5 w-5 text-green-500 mt-0.5 mr-3" />
-                <div className="text-sm text-green-700">
-                  <p className="font-medium">Reset email sent!</p>
+                <Mail className="h-5 w-5 text-green-400 mt-0.5 mr-3" />
+                <div className="text-sm text-green-200">
+                  <p className="font-medium">Reset email sent! 📧🔑</p>
                   <p className="mt-1">Check your email for a password reset link. Click the link to set a new password.</p>
                 </div>
               </div>
@@ -275,19 +296,19 @@ export default function Auth({ initialMode = 'signin', onBack }: AuthProps) {
               type="submit"
             loading={loading || rateLimitCooldown > 0}
             icon={isForgotPassword ? <Mail /> : isSignUp ? <UserPlus /> : <LogIn />}
-            className="w-full"
+            className="w-full bg-gradient-to-r from-cyan-500 to-purple-500 hover:from-cyan-400 hover:to-purple-400 border-2 border-cyan-400/50 shadow-neon-cyan font-bold"
             >
               {loading || rateLimitCooldown > 0 ? (
               rateLimitCooldown > 0 ? (
                     <>
                       <Clock className="h-5 w-5 mr-2" />
-                      Wait {rateLimitCooldown}s
+                      Wait {rateLimitCooldown}s ⏱️
                 </>
               ) : (
-                'Processing...'
+                'Processing... ⚡'
               )
             ) : (
-              isForgotPassword ? 'Send Reset Link' : isSignUp ? 'Create Account' : 'Sign In'
+              isForgotPassword ? 'Send Reset Link 📧' : isSignUp ? 'Create Account ⛺' : 'Sign In ✨'
               )}
           </Button>
 
@@ -300,7 +321,7 @@ export default function Auth({ initialMode = 'signin', onBack }: AuthProps) {
                   setShowResetEmailSent(false)
                   setErrors({})
                 }}
-                className="text-sm text-sky-600 hover:text-sky-700 font-medium inline-flex items-center"
+                className="text-sm text-cyan-400 hover:text-cyan-300 font-medium inline-flex items-center neon-text-cyan"
               >
                 <ArrowLeft className="h-4 w-4 mr-1" />
                 Back to Sign In
@@ -317,9 +338,9 @@ export default function Auth({ initialMode = 'signin', onBack }: AuthProps) {
                       setErrors({})
                       setPassword('')
                     }}
-                    className="text-sm text-sky-600 hover:text-sky-700 font-medium"
+                    className="text-sm text-cyan-400 hover:text-cyan-300 font-medium neon-text-cyan"
                   >
-                    Forgot your password?
+                    Forgot your password? 🔑
                   </button>
                 </div>
               )}
@@ -330,11 +351,11 @@ export default function Auth({ initialMode = 'signin', onBack }: AuthProps) {
                     setIsSignUp(!isSignUp)
                     setErrors({})
                   }}
-                  className="text-sm text-sky-600 hover:text-sky-700 font-medium"
+                  className="text-sm text-pink-400 hover:text-pink-300 font-medium neon-text-pink"
                 >
                   {isSignUp
-                    ? 'Already have an account? Sign in'
-                    : "Don't have an account? Sign up"
+                    ? 'Already have an account? Sign in ✨'
+                    : "Don't have an account? Sign up ⛺"
                   }
                 </button>
               </div>
@@ -342,6 +363,41 @@ export default function Auth({ initialMode = 'signin', onBack }: AuthProps) {
           )}
         </form>
       </div>
+
+      {/* CSS for neon effects */}
+      <style>{`
+        /* Neon text effects */
+        .neon-text-cyan {
+          text-shadow:
+            0 0 5px rgba(6, 182, 212, 0.8),
+            0 0 10px rgba(6, 182, 212, 0.6),
+            0 0 20px rgba(6, 182, 212, 0.4),
+            0 0 40px rgba(6, 182, 212, 0.2);
+        }
+
+        .neon-text-pink {
+          text-shadow:
+            0 0 5px rgba(236, 72, 153, 0.8),
+            0 0 10px rgba(236, 72, 153, 0.6),
+            0 0 20px rgba(236, 72, 153, 0.4),
+            0 0 40px rgba(236, 72, 153, 0.2);
+        }
+
+        /* Neon box shadows */
+        .shadow-neon-cyan {
+          box-shadow:
+            0 0 10px rgba(6, 182, 212, 0.6),
+            0 0 20px rgba(6, 182, 212, 0.4),
+            0 0 30px rgba(6, 182, 212, 0.2);
+        }
+
+        .shadow-neon-multi {
+          box-shadow:
+            0 0 10px rgba(6, 182, 212, 0.6),
+            0 0 20px rgba(236, 72, 153, 0.4),
+            0 0 30px rgba(168, 85, 247, 0.2);
+        }
+      `}</style>
     </div>
   )
 }
