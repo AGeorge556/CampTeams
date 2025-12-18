@@ -6,6 +6,7 @@ import { useCamp } from '../contexts/CampContext'
 import { useToast } from './Toast'
 import Button from './ui/Button'
 import LoadingSpinner from './LoadingSpinner'
+import WinterCamp2026Content from './WinterCamp2026Content'
 
 interface Camp {
   id: string
@@ -36,6 +37,8 @@ export default function CampSelection() {
   const [registrations, setRegistrations] = useState<CampRegistration[]>([])
   const [loading, setLoading] = useState(true)
   const [registering, setRegistering] = useState<string | null>(null)
+  const [showWinterCampDetails, setShowWinterCampDetails] = useState(false)
+  const [winterCampId, setWinterCampId] = useState<string | null>(null)
 
   useEffect(() => {
     loadCampsAndRegistrations()
@@ -78,6 +81,32 @@ export default function CampSelection() {
     selectCamp(campId)
   }
 
+  const isWinterCamp2026 = (camp: Camp) => {
+    return camp.season === 'winter' && camp.year === 2026
+  }
+
+  const handleCampCardClick = (camp: Camp) => {
+    // Show expanded view for Winter Camp 2026
+    if (isWinterCamp2026(camp)) {
+      setWinterCampId(camp.id)
+      setShowWinterCampDetails(true)
+    } else {
+      handleSelectCamp(camp.id)
+    }
+  }
+
+  const handleWinterCampRegister = () => {
+    if (winterCampId) {
+      handleSelectCamp(winterCampId)
+      setShowWinterCampDetails(false)
+    }
+  }
+
+  const handleBackToSelection = () => {
+    setShowWinterCampDetails(false)
+    setWinterCampId(null)
+  }
+
   const isRegistered = (campId: string) => {
     return registrations.some(reg => reg.camp_id === campId)
   }
@@ -105,6 +134,16 @@ export default function CampSelection() {
 
   if (loading) {
     return <LoadingSpinner fullScreen text="Loading camps..." />
+  }
+
+  // Show expanded Winter Camp 2026 content
+  if (showWinterCampDetails) {
+    return (
+      <WinterCamp2026Content
+        onRegister={handleWinterCampRegister}
+        onBack={handleBackToSelection}
+      />
+    )
   }
 
   return (
@@ -223,7 +262,7 @@ export default function CampSelection() {
 
                   {/* Action Button */}
                   <Button
-                    onClick={() => handleSelectCamp(camp.id)}
+                    onClick={() => handleCampCardClick(camp)}
                     disabled={!canRegister && !registered}
                     className={`w-full ${
                       registered
@@ -240,6 +279,8 @@ export default function CampSelection() {
                       ? 'Camp Full'
                       : !camp.registration_open
                       ? 'Registration Closed'
+                      : isWinterCamp2026(camp)
+                      ? 'Learn More & Register'
                       : 'Join Camp'}
                   </Button>
 
