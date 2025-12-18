@@ -42,8 +42,8 @@ export default function Gallery() {
       const urlMap: Record<string, string> = {}
       await Promise.all(
         allPhotos.map(async (photo) => {
-          if (photo.storage_path) {
-            const url = await getSignedUrl(photo.storage_path)
+          if (photo.photo_url) {
+            const url = await getSignedUrl(photo.photo_url)
             if (url) urlMap[photo.id] = url
           }
         })

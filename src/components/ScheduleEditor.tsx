@@ -2,11 +2,13 @@ import React, { useState, useEffect } from 'react'
 import { Calendar, Clock, MapPin, Edit, Plus, Trash2, Save, X } from 'lucide-react'
 import { supabase } from '../lib/supabase'
 import { useProfile } from '../hooks/useProfile'
+import { useCamp } from '../contexts/CampContext'
 import { useToast } from './Toast'
 import { ScheduleItem } from '../lib/types'
 
 export default function ScheduleEditor() {
   const { profile } = useProfile()
+  const { currentCamp } = useCamp()
   const { addToast } = useToast()
   const [scheduleItems, setScheduleItems] = useState<ScheduleItem[]>([])
   const [loading, setLoading] = useState(false)
@@ -22,22 +24,29 @@ export default function ScheduleEditor() {
   })
 
   useEffect(() => {
-    loadScheduleItems()
-  }, [])
+    if (currentCamp) {
+      loadScheduleItems()
+    }
+  }, [currentCamp])
 
   const loadScheduleItems = async () => {
+    if (!currentCamp) return
+
     setLoading(true)
     try {
       const { data, error } = await supabase
-        .from('camp_schedule')
+        .from('camp_schedules')
         .select('*')
+        .eq('camp_id', currentCamp.id)
         .order('day', { ascending: true })
-        .order('time', { ascending: true })
+        .order('time_slot', { ascending: true })
 
       if (error) throw error
       setScheduleItems(
         (data || []).map(item => ({
           ...item,
+          time: item.time_slot, // Map time_slot to time for compatibility
+          activity: item.title, // Map title to activity for compatibility
           description: item.description ?? undefined,
         }))
       )
@@ -55,7 +64,7 @@ export default function ScheduleEditor() {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
-    if (!editForm.activity || !editForm.time || !editForm.location) {
+    if (!editForm.activity || !editForm.time || !editForm.location || !currentCamp) {
       addToast({
         type: 'error',
         title: 'Error',
@@ -69,11 +78,11 @@ export default function ScheduleEditor() {
       if (editingItem) {
         // Update existing item
         const { error } = await supabase
-          .from('camp_schedule')
+          .from('camp_schedules')
           .update({
             day: editForm.day,
-            time: editForm.time,
-            activity: editForm.activity,
+            time_slot: editForm.time,
+            title: editForm.activity,
             location: editForm.location,
             description: editForm.description || null,
             updated_at: new Date().toISOString()
@@ -89,14 +98,13 @@ export default function ScheduleEditor() {
         })
       } else {
         // Create new item
-        const newId = `${editForm.day}-${Date.now()}`
         const { error } = await supabase
-          .from('camp_schedule')
+          .from('camp_schedules')
           .insert({
-            id: newId,
+            camp_id: currentCamp.id,
             day: editForm.day,
-            time: editForm.time,
-            activity: editForm.activity,
+            time_slot: editForm.time,
+            title: editForm.activity,
             location: editForm.location,
             description: editForm.description || null
           })
@@ -130,7 +138,7 @@ export default function ScheduleEditor() {
     setLoading(true)
     try {
       const { error } = await supabase
-        .from('camp_schedule')
+        .from('camp_schedules')
         .delete()
         .eq('id', itemId)
 

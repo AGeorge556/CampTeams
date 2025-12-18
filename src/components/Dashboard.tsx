@@ -1,9 +1,9 @@
 import React, { useState, useEffect, useRef } from 'react'
 import { Users, BarChart3, Sun, Star, Flame, Trees, Mountain, UserPlus, Download, RefreshCw, Calendar, Trophy, Activity, Camera } from 'lucide-react'
 import { useProfile } from '../hooks/useProfile'
+import { useCamp } from '../contexts/CampContext'
 import { useTeamBalance } from '../hooks/useTeamBalance'
 import { TEAMS, TeamColor } from '../lib/supabase'
-import { CAMP_START_DATE } from '../lib/constants'
 import AdminPanel from './AdminPanel'
 import PlayerLists from './PlayerLists'
 import CountdownTimer from './CountdownTimer'
@@ -36,6 +36,7 @@ interface DashboardProps {
 
 export default function Dashboard({ onPageChange }: DashboardProps) {
   const { profile, updateProfile } = useProfile()
+  const { currentCamp, currentRegistration } = useCamp()
   const { teamBalance } = useTeamBalance()
   const { addToast } = useToast()
   const { t } = useLanguage()
@@ -312,13 +313,15 @@ export default function Dashboard({ onPageChange }: DashboardProps) {
   // Team switching is handled within PlayerLists to avoid duplicate logic here
 
   const handleOptInToTeams = async () => {
-    if (!profile) return
+    if (!currentRegistration) return
 
     setOptInLoading(true)
     try {
-      const { error } = await updateProfile({
-        participate_in_teams: true
-      })
+      const { supabase } = await import('../lib/supabase')
+      const { error } = await supabase
+        .from('camp_registrations')
+        .update({ participate_in_teams: true })
+        .eq('id', currentRegistration.id)
 
       if (error) throw error
 
@@ -342,7 +345,7 @@ export default function Dashboard({ onPageChange }: DashboardProps) {
     }
   }
 
-  if (!profile) {
+  if (!profile || !currentCamp || !currentRegistration) {
     return (
       <div className="space-y-8">
         <SkeletonCard />
@@ -352,8 +355,8 @@ export default function Dashboard({ onPageChange }: DashboardProps) {
     )
   }
 
-  const currentTeam = profile.current_team && profile.current_team in TEAMS ? TEAMS[profile.current_team as TeamColor] : null
-  const isAdminNotParticipating = profile.is_admin && !profile.participate_in_teams
+  const currentTeam = currentRegistration.current_team && currentRegistration.current_team in TEAMS ? TEAMS[currentRegistration.current_team as TeamColor] : null
+  const isAdminNotParticipating = profile.is_admin && !currentRegistration.participate_in_teams
 
   return (
     <div className="space-y-6 sm:space-y-8 mobile-safe-area mobile-scroll-smooth">
@@ -362,10 +365,10 @@ export default function Dashboard({ onPageChange }: DashboardProps) {
         <div className="flex items-center justify-between mb-4">
           <div className="flex-1">
             <h2 className="text-xl sm:text-2xl font-bold text-[var(--color-text)] leading-tight">
-              {t('welcomeMessageWithName').replace('{name}', profile.full_name.split(' ')[0])}
+              {t('welcomeMessageWithName').replace('{name}', currentRegistration.full_name.split(' ')[0])}
             </h2>
             <p className="text-[var(--color-text-muted)] text-sm sm:text-base mt-1">
-              {getGradeDisplayWithNumber(profile.grade)} • {profile.gender === 'male' ? t('male') : t('female')}
+              {getGradeDisplayWithNumber(currentRegistration.grade)} • {currentRegistration.gender === 'male' ? t('male') : t('female')} • {currentCamp.name}
             </p>
           </div>
         </div>
@@ -467,13 +470,13 @@ export default function Dashboard({ onPageChange }: DashboardProps) {
         <div className="mb-4 p-3 bg-[var(--color-bg-muted)] rounded-lg border border-[var(--color-border)]">
           <div className="flex items-center justify-between mb-2">
             <span className="text-sm font-semibold text-[var(--color-text-muted)]">
-              {t('teamSwitchesRemaining')}: <span className="text-sky-600 font-bold">{profile.switches_remaining ?? 0}</span>
+              {t('teamSwitchesRemaining')}: <span className="text-sky-600 font-bold">{currentRegistration.switches_remaining ?? 0}</span>
             </span>
           </div>
           <div className="w-full bg-[var(--color-bg-muted)] rounded-full h-3 overflow-hidden shadow-inner">
-            <div 
+            <div
               className="bg-gradient-to-r from-sky-500 to-sky-600 h-3 rounded-full transition-all duration-500 ease-out shadow-sm"
-              style={{ width: `${((profile.switches_remaining ?? 0) / 3) * 100}%` }}
+              style={{ width: `${((currentRegistration.switches_remaining ?? 0) / 3) * 100}%` }}
             ></div>
           </div>
         </div>
@@ -559,7 +562,7 @@ export default function Dashboard({ onPageChange }: DashboardProps) {
         <Trees className="absolute left-4 sm:left-8 bottom-4 sm:bottom-8 text-green-200 opacity-30 w-16 h-16 sm:w-20 sm:h-20" />
         <Mountain className="absolute right-2 sm:right-4 bottom-2 sm:bottom-4 text-blue-200 opacity-30 w-20 h-20 sm:w-24 sm:h-24" />
         <div className="relative z-10 w-full">
-          <CountdownTimer targetDate={CAMP_START_DATE} compact={false} />
+          <CountdownTimer targetDate={currentCamp.start_date} compact={false} />
         </div>
       </div>
 

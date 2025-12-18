@@ -3,10 +3,12 @@ import { supabase } from '../lib/supabase'
 import { GalleryPhoto, GalleryPhotoWithInfo, GalleryStats, PhotoUpload, GalleryFilters } from '../lib/types'
 import { useProfile } from './useProfile'
 import { useAuth } from './useAuth'
+import { useCamp } from '../contexts/CampContext'
 
 export function useGallery() {
   const { user } = useAuth()
   const { profile } = useProfile()
+  const { currentCamp, currentRegistration } = useCamp()
   const [photos, setPhotos] = useState<GalleryPhoto[]>([])
   const [approvedPhotos, setApprovedPhotos] = useState<GalleryPhoto[]>([])
   const [myPhotos, setMyPhotos] = useState<GalleryPhoto[]>([])
@@ -16,46 +18,49 @@ export function useGallery() {
   const [error, setError] = useState<string | null>(null)
 
   useEffect(() => {
-    if (user) {
+    if (user && currentCamp) {
       loadPhotos()
       loadStats()
       subscribeToPhotos()
     }
-  }, [user])
+  }, [user, currentCamp])
 
   const loadPhotos = async () => {
-    if (!user) return
+    if (!user || !currentCamp) return
 
     try {
       setLoading(true)
       setError(null)
 
-      // Load approved photos for public gallery
+      // Load approved photos for public gallery (camp-specific)
       const { data: approvedData, error: approvedError } = await supabase
-        .from('gallery_photos')
+        .from('camp_gallery')
         .select('*')
+        .eq('camp_id', currentCamp.id)
         .eq('status', 'approved')
-        .order('submitted_at', { ascending: false })
+        .order('created_at', { ascending: false })
 
       if (approvedError) throw approvedError
       setApprovedPhotos(approvedData || [])
 
-      // Load user's own photos
+      // Load user's own photos (camp-specific)
       const { data: myData, error: myError } = await supabase
-        .from('gallery_photos')
+        .from('camp_gallery')
         .select('*')
+        .eq('camp_id', currentCamp.id)
         .eq('user_id', user.id)
-        .order('submitted_at', { ascending: false })
+        .order('created_at', { ascending: false })
 
       if (myError) throw myError
       setMyPhotos(myData || [])
 
-      // Load all photos for admin
+      // Load all photos for admin (camp-specific)
       if (profile?.is_admin) {
         const { data: allData, error: allError } = await supabase
-          .from('gallery_photos')
+          .from('camp_gallery')
           .select('*')
-          .order('submitted_at', { ascending: false })
+          .eq('camp_id', currentCamp.id)
+          .order('created_at', { ascending: false })
 
         if (allError) throw allError
         setPhotos(allData || [])
@@ -82,16 +87,17 @@ export function useGallery() {
   }
 
   const subscribeToPhotos = () => {
-    if (!user) return
+    if (!user || !currentCamp) return
 
     const subscription = supabase
-      .channel('gallery_photos')
+      .channel(`camp_gallery_${currentCamp.id}`)
       .on(
         'postgres_changes',
         {
           event: '*',
           schema: 'public',
-          table: 'gallery_photos'
+          table: 'camp_gallery',
+          filter: `camp_id=eq.${currentCamp.id}`
         },
         () => {
           loadPhotos()
@@ -115,8 +121,8 @@ export function useGallery() {
   }
 
   const uploadPhoto = async (photoUpload: PhotoUpload): Promise<{ success: boolean; error?: string }> => {
-    if (!user || !profile) {
-      return { success: false, error: 'User not authenticated' }
+    if (!user || !currentCamp || !currentRegistration) {
+      return { success: false, error: 'User not authenticated or camp not selected' }
     }
 
     try {
@@ -134,7 +140,7 @@ export function useGallery() {
 
       // Upload to Supabase Storage (private bucket)
       const fileExt = photoUpload.file.name.split('.').pop()
-      const storage_path = `${user.id}/${Date.now()}.${fileExt}`
+      const storage_path = `${currentCamp.id}/${user.id}/${Date.now()}.${fileExt}`
       const { error: uploadError } = await supabase.storage
         .from('gallery-photos')
         .upload(storage_path, photoUpload.file, {
@@ -146,12 +152,14 @@ export function useGallery() {
 
       // Save to database (do not store publicUrl)
       const { error: dbError } = await supabase
-        .from('gallery_photos')
+        .from('camp_gallery')
         .insert({
+          camp_id: currentCamp.id,
           user_id: user.id,
-          team_id: profile.current_team,
-          storage_path,
-          caption: photoUpload.caption || null
+          photo_url: storage_path, // Using storage_path as photo_url
+          team: currentRegistration.current_team,
+          caption: photoUpload.caption || null,
+          status: 'pending'
         })
 
       if (dbError) throw dbError
@@ -176,7 +184,7 @@ export function useGallery() {
 
       // Get photo to check ownership and status
       const { data: photo, error: fetchError } = await supabase
-        .from('gallery_photos')
+        .from('camp_gallery')
         .select('*')
         .eq('id', photoId)
         .single()
@@ -194,17 +202,17 @@ export function useGallery() {
 
       // Delete from database
       const { error: dbError } = await supabase
-        .from('gallery_photos')
+        .from('camp_gallery')
         .delete()
         .eq('id', photoId)
 
       if (dbError) throw dbError
 
-      // Delete from storage using storage_path
-      if (photo.storage_path) {
+      // Delete from storage using photo_url (which contains the storage path)
+      if (photo.photo_url) {
         await supabase.storage
           .from('gallery-photos')
-          .remove([photo.storage_path])
+          .remove([photo.photo_url])
       }
 
       return { success: true }
@@ -223,7 +231,7 @@ export function useGallery() {
     }
 
     if (filters.team) {
-      filteredPhotos = filteredPhotos.filter(photo => photo.team_id === filters.team)
+      filteredPhotos = filteredPhotos.filter(photo => photo.team === filters.team)
     }
 
     if (filters.user) {
