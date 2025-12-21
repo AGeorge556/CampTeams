@@ -12,7 +12,9 @@
       "Bash(node -e:*)",
       "Bash(timeout 15 git push)",
       "Bash(dir:*)",
-      "Bash(findstr:*)"
+      "Bash(findstr:*)",
+      "Bash(vercel --version)",
+      "Bash(npm install:*)"
     ],
     "deny": [],
     "ask": []

@@ -1,16 +1,12 @@
 import React, { useState } from 'react'
-import { User, GraduationCap, Users, Save } from 'lucide-react'
+import { User, Save } from 'lucide-react'
 import { useProfile } from '../hooks/useProfile'
 import { useToast } from './Toast'
-import { TEAMS, TeamColor } from '../lib/supabase'
 import Button from './ui/Button'
 import Input from './ui/Input'
 
 interface FormData {
   full_name: string
-  grade: number
-  gender: 'male' | 'female'
-  preferred_team: TeamColor
 }
 
 interface FormErrors {
@@ -21,10 +17,7 @@ export default function OnboardingForm() {
   const { createProfile } = useProfile()
   const { addToast } = useToast()
   const [formData, setFormData] = useState<FormData>({
-    full_name: '',
-    grade: 7,
-    gender: 'male',
-    preferred_team: 'red'
+    full_name: ''
   })
   const [errors, setErrors] = useState<FormErrors>({})
   const [loading, setLoading] = useState(false)
@@ -64,25 +57,18 @@ export default function OnboardingForm() {
     try {
       const { error } = await createProfile({
         full_name: formData.full_name.trim(),
-        grade: formData.grade,
-        gender: formData.gender,
-        preferred_team: formData.preferred_team,
-        current_team: formData.preferred_team, // This will be overridden for admins
-        switches_remaining: 3,
-        is_admin: false,
-        participate_in_teams: true,
-        role: 'camper'
+        is_admin: false
       })
 
       if (error) throw error
-      
+
       addToast({
         type: 'success',
-        title: 'Welcome to Camp!',
-        message: 'Your profile has been created successfully'
+        title: 'Welcome!',
+        message: 'Your profile has been created. Now select a camp to register for!'
       })
-      
-      // Refresh the page to trigger the app to show the Dashboard
+
+      // Refresh the page to trigger the app to show camp selection
       window.location.reload()
     } catch (error: any) {
       console.error('Error creating profile:', error)
@@ -103,13 +89,13 @@ export default function OnboardingForm() {
       <div className="max-w-md w-full space-y-8">
         <div className="text-center">
           <div className="flex justify-center">
-            <Users className="h-16 w-16 text-sky-500" />
+            <User className="h-16 w-16 text-sky-500" />
           </div>
           <h2 className="mt-6 text-3xl font-extrabold text-[var(--color-text)]">
-            Welcome to Camp Teams!
+            Welcome to Camp Registration!
           </h2>
           <p className="mt-2 text-sm text-[var(--color-text-muted)]">
-            Please provide some information to complete your profile
+            Let's start by creating your profile
           </p>
         </div>
         
@@ -126,76 +112,10 @@ export default function OnboardingForm() {
               required
             />
 
-            <div>
-              <label htmlFor="grade" className="block text-sm font-medium text-[var(--color-text)] mb-1">
-                Grade Level
-              </label>
-              <div className="relative">
-                <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                  <GraduationCap className="h-5 w-5 text-[var(--color-text-muted)]" />
-                </div>
-                <select
-                  id="grade"
-                  value={formData.grade}
-                  onChange={(e) => setFormData({ ...formData, grade: Number(e.target.value) })}
-                  className="appearance-none block w-full pl-10 pr-3 py-2 border border-[var(--color-border)] rounded-md focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-sky-500 focus:border-sky-500 sm:text-sm bg-[var(--color-input-bg)] text-[var(--color-text)]"
-                  required
-                >
-                  <option value={7}>Grade 7</option>
-                  <option value={8}>Grade 8</option>
-                  <option value={9}>Grade 9</option>
-                  <option value={10}>Grade 10</option>
-                  <option value={11}>Grade 11</option>
-                  <option value={12}>Grade 12</option>
-                </select>
-              </div>
-            </div>
-
-            <div>
-              <label className="block text-sm font-medium text-[var(--color-text)] mb-2">
-                Gender
-              </label>
-              <div className="space-y-2">
-                {[
-                  { value: 'male', label: 'Male' },
-                  { value: 'female', label: 'Female' }
-                ].map((option) => (
-                  <label key={option.value} className="flex items-center">
-                    <input
-                      type="radio"
-                      name="gender"
-                      value={option.value}
-                      checked={formData.gender === option.value}
-                      onChange={(e) => setFormData({ ...formData, gender: e.target.value as 'male' | 'female' })}
-                      className="focus:ring-sky-500 h-4 w-4 text-sky-600 border-[var(--color-border)]"
-                    />
-                    <span className="ml-2 text-sm text-[var(--color-text)]">{option.label}</span>
-                  </label>
-                ))}
-              </div>
-            </div>
-
-            <div>
-              <label className="block text-sm font-medium text-[var(--color-text)] mb-2">
-                Preferred Team
-              </label>
-              <div className="space-y-2">
-                {Object.entries(TEAMS).map(([key, team]) => (
-                  <label key={key} className="flex items-center">
-                    <input
-                      type="radio"
-                      name="preferred_team"
-                      value={key}
-                      checked={formData.preferred_team === key}
-                      onChange={(e) => setFormData({ ...formData, preferred_team: e.target.value as TeamColor })}
-                      className="focus:ring-sky-500 h-4 w-4 text-sky-600 border-[var(--color-border)]"
-                    />
-                    <span className={`ml-2 inline-flex items-center px-3 py-1 rounded-full text-sm font-medium ${team.lightColor} ${team.textColor}`}>
-                      {team.name} Team
-                    </span>
-                  </label>
-                ))}
-              </div>
+            <div className="bg-sky-50 dark:bg-sky-950 border border-sky-200 dark:border-sky-800 rounded-lg p-4">
+              <p className="text-sm text-sky-800 dark:text-sky-200">
+                <strong>Note:</strong> You'll provide additional details (grade, gender, team preference) when you register for a specific camp.
+              </p>
             </div>
           </div>
 
@@ -205,7 +125,7 @@ export default function OnboardingForm() {
             icon={<Save />}
             className="w-full"
           >
-            {loading ? 'Creating Profile...' : 'Complete Profile'}
+            {loading ? 'Creating Profile...' : 'Continue to Camp Selection'}
           </Button>
         </form>
       </div>
