@@ -50,9 +50,14 @@ export default function CampSelection() {
       const { data: campsData, error: campsError } = await supabase
         .rpc('get_camps_with_stats')
 
-      if (campsError) throw campsError
+      if (campsError) {
+        console.error('Error loading camps:', campsError)
+        throw campsError
+      }
 
-      setCamps(campsData || [])
+      // Ensure campsData is always an array
+      const camps = Array.isArray(campsData) ? campsData : []
+      setCamps(camps)
 
       // Load user's registrations
       if (user) {
@@ -62,15 +67,29 @@ export default function CampSelection() {
           .eq('user_id', user.id)
 
         if (regsError) throw regsError
-        setRegistrations(regsData || [])
+        setRegistrations(Array.isArray(regsData) ? regsData : [])
       }
-    } catch (error) {
+    } catch (error: any) {
       console.error('Error loading camps:', error)
-      addToast({
-        type: 'error',
-        title: 'Error',
-        message: 'Failed to load camps. Please try again.'
-      })
+
+      // Check if it's a missing function error
+      if (error?.code === 'PGRST202' || error?.message?.includes('get_camps_with_stats')) {
+        addToast({
+          type: 'error',
+          title: 'Database Setup Required',
+          message: 'The multi-camp system needs to be set up. Please run the database migrations.'
+        })
+      } else {
+        addToast({
+          type: 'error',
+          title: 'Error',
+          message: 'Failed to load camps. Please try again.'
+        })
+      }
+
+      // Set empty arrays to prevent map errors
+      setCamps([])
+      setRegistrations([])
     } finally {
       setLoading(false)
     }
