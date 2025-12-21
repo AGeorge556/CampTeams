@@ -17,10 +17,15 @@ interface Camp {
   end_date: string
   is_active: boolean
   registration_open: boolean
-  max_participants: number
+  max_participants: number | null
   description: string
   registered_count: number
-  spots_available: number
+  spots_available: number | null
+  bible_verse: string | null
+  verse_reference: string | null
+  theme_primary_color: string | null
+  theme_secondary_color: string | null
+  custom_content: Record<string, any> | null
 }
 
 interface CampRegistration {
@@ -183,7 +188,7 @@ export default function CampSelection() {
           {camps.map((camp) => {
             const Icon = getCampIcon(camp.season)
             const registered = isRegistered(camp.id)
-            const isFull = camp.spots_available <= 0
+            const isFull = camp.max_participants !== null && camp.spots_available !== null && camp.spots_available <= 0
             const canRegister = camp.registration_open && !isFull
 
             return (
@@ -248,7 +253,10 @@ export default function CampSelection() {
                     <div className="flex items-center space-x-2 text-sm">
                       <Users className="w-4 h-4 text-sky-600" />
                       <span className="text-[var(--color-text)]">
-                        {camp.registered_count} / {camp.max_participants} registered
+                        {camp.max_participants !== null
+                          ? `${camp.registered_count} / ${camp.max_participants} registered`
+                          : `${camp.registered_count} registered`
+                        }
                       </span>
                       {isFull && (
                         <span className="ml-2 px-2 py-0.5 bg-red-100 text-red-700 text-xs rounded-full font-semibold">
@@ -267,17 +275,19 @@ export default function CampSelection() {
                   </div>
 
                   {/* Progress Bar */}
-                  <div className="mb-4">
-                    <div className="w-full bg-gray-200 dark:bg-gray-700 rounded-full h-2">
-                      <div
-                        className={`h-2 rounded-full bg-gradient-to-r ${getCampColor(camp.season)} transition-all duration-500`}
-                        style={{ width: `${(camp.registered_count / camp.max_participants) * 100}%` }}
-                      />
+                  {camp.max_participants !== null && (
+                    <div className="mb-4">
+                      <div className="w-full bg-gray-200 dark:bg-gray-700 rounded-full h-2">
+                        <div
+                          className={`h-2 rounded-full bg-gradient-to-r ${getCampColor(camp.season)} transition-all duration-500`}
+                          style={{ width: `${(camp.registered_count / camp.max_participants) * 100}%` }}
+                        />
+                      </div>
+                      <p className="text-xs text-[var(--color-text-muted)] mt-1">
+                        {camp.spots_available} spots available
+                      </p>
                     </div>
-                    <p className="text-xs text-[var(--color-text-muted)] mt-1">
-                      {camp.spots_available} spots available
-                    </p>
-                  </div>
+                  )}
 
                   {/* Action Button */}
                   <Button

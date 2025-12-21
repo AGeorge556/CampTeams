@@ -8,6 +8,7 @@ import AdminPanel from './AdminPanel'
 import PlayerLists from './PlayerLists'
 import CountdownTimer from './CountdownTimer'
 import Scoreboard from './Scoreboard'
+import CampHero from './CampHero'
 import { useLanguage } from '../contexts/LanguageContext'
 import { SkeletonCard } from './LoadingSpinner'
 
@@ -360,6 +361,9 @@ export default function Dashboard({ onPageChange }: DashboardProps) {
 
   return (
     <div className="space-y-6 sm:space-y-8 mobile-safe-area mobile-scroll-smooth">
+      {/* Camp Hero with Theme and Bible Verse */}
+      <CampHero />
+
       {/* Enhanced User Info Card */}
       <div className="bg-[var(--color-card-bg)] rounded-xl shadow-sm p-4 sm:p-6 border border-[var(--color-border)]">
         <div className="flex items-center justify-between mb-4">

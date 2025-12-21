@@ -11,8 +11,13 @@ interface Camp {
   end_date: string
   is_active: boolean
   registration_open: boolean
-  max_participants: number
+  max_participants: number | null
   description: string
+  bible_verse: string | null
+  verse_reference: string | null
+  theme_primary_color: string | null
+  theme_secondary_color: string | null
+  custom_content: Record<string, any> | null
 }
 
 interface CampRegistration {
