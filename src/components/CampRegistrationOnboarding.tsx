@@ -4,7 +4,7 @@ import { useCamp } from '../contexts/CampContext'
 import { useToast } from './Toast'
 import { supabase } from '../lib/supabase'
 import Button from './ui/Button'
-import { UserCircle, Calendar, Snowflake, Sun, Users } from 'lucide-react'
+import { UserCircle, Calendar, Snowflake, Sun, Users, Phone, User } from 'lucide-react'
 
 export default function CampRegistrationOnboarding() {
   const { user } = useAuth()
@@ -13,6 +13,10 @@ export default function CampRegistrationOnboarding() {
   const [loading, setLoading] = useState(false)
   const [formData, setFormData] = useState({
     full_name: '',
+    age: '',
+    mobile_number: '',
+    parent_name: '',
+    parent_number: '',
     grade: '',
     gender: '',
     preferred_team: '',
@@ -30,6 +34,42 @@ export default function CampRegistrationOnboarding() {
         type: 'error',
         title: 'Validation Error',
         message: 'Please enter your full name'
+      })
+      return
+    }
+
+    if (!formData.age || parseInt(formData.age) < 10 || parseInt(formData.age) > 25) {
+      addToast({
+        type: 'error',
+        title: 'Validation Error',
+        message: 'Please enter a valid age (10-25)'
+      })
+      return
+    }
+
+    if (!formData.mobile_number.trim()) {
+      addToast({
+        type: 'error',
+        title: 'Validation Error',
+        message: 'Please enter your mobile number'
+      })
+      return
+    }
+
+    if (!formData.parent_name.trim()) {
+      addToast({
+        type: 'error',
+        title: 'Validation Error',
+        message: 'Please enter your parent\'s name'
+      })
+      return
+    }
+
+    if (!formData.parent_number.trim()) {
+      addToast({
+        type: 'error',
+        title: 'Validation Error',
+        message: 'Please enter your parent\'s phone number'
       })
       return
     }
@@ -70,6 +110,10 @@ export default function CampRegistrationOnboarding() {
           user_id: user.id,
           camp_id: currentCamp.id,
           full_name: formData.full_name.trim(),
+          age: parseInt(formData.age),
+          mobile_number: formData.mobile_number.trim(),
+          parent_name: formData.parent_name.trim(),
+          parent_number: formData.parent_number.trim(),
           grade: parseInt(formData.grade),
           gender: formData.gender,
           preferred_team: formData.participate_in_teams ? formData.preferred_team : null,
@@ -145,6 +189,79 @@ export default function CampRegistrationOnboarding() {
                 className="w-full px-4 py-3 rounded-lg border border-[var(--color-border)] bg-[var(--color-bg-muted)] text-[var(--color-text)] focus:outline-none focus:ring-2 focus:ring-sky-500"
                 placeholder="Enter your full name"
               />
+            </div>
+
+            {/* Age */}
+            <div>
+              <label className="block text-sm font-medium text-[var(--color-text)] mb-2">
+                Age *
+              </label>
+              <input
+                type="number"
+                min="10"
+                max="25"
+                value={formData.age}
+                onChange={(e) => setFormData({ ...formData, age: e.target.value })}
+                className="w-full px-4 py-3 rounded-lg border border-[var(--color-border)] bg-[var(--color-bg-muted)] text-[var(--color-text)] focus:outline-none focus:ring-2 focus:ring-sky-500"
+                placeholder="Enter your age"
+              />
+            </div>
+
+            {/* Mobile Number */}
+            <div>
+              <label className="block text-sm font-medium text-[var(--color-text)] mb-2">
+                Mobile Number *
+              </label>
+              <div className="relative">
+                <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                  <Phone className="h-5 w-5 text-[var(--color-text-muted)]" />
+                </div>
+                <input
+                  type="tel"
+                  value={formData.mobile_number}
+                  onChange={(e) => setFormData({ ...formData, mobile_number: e.target.value })}
+                  className="w-full pl-10 pr-4 py-3 rounded-lg border border-[var(--color-border)] bg-[var(--color-bg-muted)] text-[var(--color-text)] focus:outline-none focus:ring-2 focus:ring-sky-500"
+                  placeholder="Enter your mobile number"
+                />
+              </div>
+            </div>
+
+            {/* Parent Name */}
+            <div>
+              <label className="block text-sm font-medium text-[var(--color-text)] mb-2">
+                Parent/Guardian Name *
+              </label>
+              <div className="relative">
+                <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                  <User className="h-5 w-5 text-[var(--color-text-muted)]" />
+                </div>
+                <input
+                  type="text"
+                  value={formData.parent_name}
+                  onChange={(e) => setFormData({ ...formData, parent_name: e.target.value })}
+                  className="w-full pl-10 pr-4 py-3 rounded-lg border border-[var(--color-border)] bg-[var(--color-bg-muted)] text-[var(--color-text)] focus:outline-none focus:ring-2 focus:ring-sky-500"
+                  placeholder="Enter parent/guardian name"
+                />
+              </div>
+            </div>
+
+            {/* Parent Number */}
+            <div>
+              <label className="block text-sm font-medium text-[var(--color-text)] mb-2">
+                Parent/Guardian Phone Number *
+              </label>
+              <div className="relative">
+                <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                  <Phone className="h-5 w-5 text-[var(--color-text-muted)]" />
+                </div>
+                <input
+                  type="tel"
+                  value={formData.parent_number}
+                  onChange={(e) => setFormData({ ...formData, parent_number: e.target.value })}
+                  className="w-full pl-10 pr-4 py-3 rounded-lg border border-[var(--color-border)] bg-[var(--color-bg-muted)] text-[var(--color-text)] focus:outline-none focus:ring-2 focus:ring-sky-500"
+                  placeholder="Enter parent/guardian phone number"
+                />
+              </div>
             </div>
 
             {/* Grade */}
