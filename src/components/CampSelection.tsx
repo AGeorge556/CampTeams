@@ -51,6 +51,7 @@ export default function CampSelection() {
 
   const loadCampsAndRegistrations = async () => {
     try {
+      console.log('Loading camps with stats...')
       // Load camps with stats
       const { data: campsData, error: campsError } = await supabase
         .rpc('get_camps_with_stats')
