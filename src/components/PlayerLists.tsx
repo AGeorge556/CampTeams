@@ -3,6 +3,7 @@ import { Users, User, ArrowRight, AlertTriangle, Shield, Info } from 'lucide-rea
 import { TEAMS, TeamColor, supabase } from '../lib/supabase'
 import { usePlayers } from '../hooks/usePlayers'
 import { useProfile } from '../hooks/useProfile'
+import { useCamp } from '../contexts/CampContext'
 import { useTeamBalancing } from '../hooks/useTeamBalancing'
 import { useToast } from './Toast'
 import { getGradeDisplayWithNumber } from '../lib/utils'
@@ -13,7 +14,8 @@ import { useLanguage } from '../contexts/LanguageContext'
 export default function PlayerLists() {
   const { t } = useLanguage()
   const { players, loading } = usePlayers()
-  const { profile, updateProfile } = useProfile()
+  const { profile } = useProfile()
+  const { currentCamp, currentRegistration } = useCamp()
   const { teamBalances, canUserSwitchToTeam, isTeamAtCapacity, getTeamSize } = useTeamBalancing()
   const { addToast } = useToast()
   const [switching, setSwitching] = React.useState<string | null>(null)
@@ -21,27 +23,27 @@ export default function PlayerLists() {
 
   // Pre-validate team switches for current user
   React.useEffect(() => {
-    if (!profile) return
+    if (!currentRegistration) return
 
     const validateTeams = async () => {
       const validation: Record<string, { canSwitch: boolean; reason: string }> = {}
-      
+
       for (const teamKey of Object.keys(TEAMS)) {
-        if (teamKey !== profile.current_team) {
+        if (teamKey !== currentRegistration.current_team) {
           const result = await canUserSwitchToTeam(teamKey as TeamColor)
           validation[teamKey] = result
         }
       }
-      
+
       setTeamValidation(validation)
     }
 
     validateTeams()
-  }, [profile, canUserSwitchToTeam])
+  }, [currentRegistration, canUserSwitchToTeam])
 
   const handleSwitchTeam = async (newTeam: TeamColor) => {
-    if (!profile || switching) return
-    
+    if (!currentRegistration || !currentCamp || switching) return
+
     setSwitching(newTeam)
     try {
       // Check if switch is allowed using the database validation
@@ -56,12 +58,12 @@ export default function PlayerLists() {
         return
       }
 
-      // Record the switch
+      // Record the switch in team_switches table
       const { error: switchError } = await supabase
         .from('team_switches')
         .insert({
-          user_id: profile.id,
-          from_team: profile.current_team,
+          user_id: currentRegistration.user_id,
+          from_team: currentRegistration.current_team,
           to_team: newTeam
         })
 
@@ -69,11 +71,14 @@ export default function PlayerLists() {
         throw switchError
       }
 
-      // Update profile
-      const { error: updateError } = await updateProfile({
-        current_team: newTeam,
-        switches_remaining: (profile.switches_remaining || 0) - 1
-      })
+      // Update camp_registration (not profile!)
+      const { error: updateError } = await supabase
+        .from('camp_registrations')
+        .update({
+          current_team: newTeam,
+          switches_remaining: (currentRegistration.switches_remaining || 0) - 1
+        })
+        .eq('id', currentRegistration.id)
 
       if (updateError) {
         throw updateError

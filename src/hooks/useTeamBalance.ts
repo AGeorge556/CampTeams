@@ -1,5 +1,6 @@
-import { useEffect, useState } from 'react'
+import { useEffect, useState, useCallback } from 'react'
 import { supabase } from '../lib/supabase'
+import { useCamp } from '../contexts/CampContext'
 
 export interface TeamBalance {
   team: string
@@ -15,34 +16,74 @@ export interface TeamBalance {
 }
 
 export function useTeamBalance() {
+  const { currentCamp } = useCamp()
   const [teamBalance, setTeamBalance] = useState<TeamBalance[]>([])
   const [loading, setLoading] = useState(true)
 
-  useEffect(() => {
-    const fetchTeamBalance = async () => {
-      try {
-        const { data, error } = await supabase
-          .rpc('get_team_balance')
-
-        if (error) {
-          console.error('Error fetching team balance:', error)
-        } else {
-          setTeamBalance(data || [])
-        }
-      } catch (error) {
-        console.error('Error fetching team balance:', error)
-      } finally {
-        setLoading(false)
-      }
+  const fetchTeamBalance = useCallback(async () => {
+    if (!currentCamp) {
+      setLoading(false)
+      return
     }
+
+    try {
+      setLoading(true)
+
+      // Fetch all registrations for this camp who participate in teams
+      const { data, error } = await supabase
+        .from('camp_registrations')
+        .select('current_team, gender, grade')
+        .eq('camp_id', currentCamp.id)
+        .eq('participate_in_teams', true)
+        .not('current_team', 'is', null)
+
+      if (error) {
+        console.error('Error fetching team balance:', error)
+        return
+      }
+
+      // Calculate balance for each team
+      const teams = ['red', 'blue', 'green', 'yellow']
+      const balance: TeamBalance[] = teams.map(team => {
+        const teamRegistrations = data?.filter(r => r.current_team === team) || []
+
+        return {
+          team,
+          total_count: teamRegistrations.length,
+          male_count: teamRegistrations.filter(r => r.gender === 'male').length,
+          female_count: teamRegistrations.filter(r => r.gender === 'female').length,
+          grade_7_count: teamRegistrations.filter(r => r.grade === 7).length,
+          grade_8_count: teamRegistrations.filter(r => r.grade === 8).length,
+          grade_9_count: teamRegistrations.filter(r => r.grade === 9).length,
+          grade_10_count: teamRegistrations.filter(r => r.grade === 10).length,
+          grade_11_count: teamRegistrations.filter(r => r.grade === 11).length,
+          grade_12_count: teamRegistrations.filter(r => r.grade === 12).length,
+        }
+      })
+
+      setTeamBalance(balance)
+    } catch (error) {
+      console.error('Error fetching team balance:', error)
+    } finally {
+      setLoading(false)
+    }
+  }, [currentCamp])
+
+  useEffect(() => {
+    if (!currentCamp) return
 
     fetchTeamBalance()
 
-    // Subscribe to profile changes to update balance in real-time
+    // Subscribe to camp_registrations changes for this camp
     const channel = supabase
-      .channel('team-balance')
-      .on('postgres_changes', 
-        { event: '*', schema: 'public', table: 'profiles' }, 
+      .channel(`team-balance-${currentCamp.id}`)
+      .on('postgres_changes',
+        {
+          event: '*',
+          schema: 'public',
+          table: 'camp_registrations',
+          filter: `camp_id=eq.${currentCamp.id}`
+        },
         () => {
           fetchTeamBalance()
         }
@@ -52,7 +93,7 @@ export function useTeamBalance() {
     return () => {
       supabase.removeChannel(channel)
     }
-  }, [])
+  }, [fetchTeamBalance, currentCamp])
 
   return { teamBalance, loading }
 }
