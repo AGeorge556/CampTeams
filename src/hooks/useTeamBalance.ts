@@ -17,7 +17,12 @@ export interface TeamBalance {
 
 export function useTeamBalance() {
   const { currentCamp } = useCamp()
-  const [teamBalance, setTeamBalance] = useState<TeamBalance[]>([])
+  const [teamBalance, setTeamBalance] = useState<TeamBalance[]>([
+    { team: 'red', total_count: 0, male_count: 0, female_count: 0, grade_7_count: 0, grade_8_count: 0, grade_9_count: 0, grade_10_count: 0, grade_11_count: 0, grade_12_count: 0 },
+    { team: 'blue', total_count: 0, male_count: 0, female_count: 0, grade_7_count: 0, grade_8_count: 0, grade_9_count: 0, grade_10_count: 0, grade_11_count: 0, grade_12_count: 0 },
+    { team: 'green', total_count: 0, male_count: 0, female_count: 0, grade_7_count: 0, grade_8_count: 0, grade_9_count: 0, grade_10_count: 0, grade_11_count: 0, grade_12_count: 0 },
+    { team: 'yellow', total_count: 0, male_count: 0, female_count: 0, grade_7_count: 0, grade_8_count: 0, grade_9_count: 0, grade_10_count: 0, grade_11_count: 0, grade_12_count: 0 }
+  ])
   const [loading, setLoading] = useState(true)
 
   const fetchTeamBalance = useCallback(async () => {
