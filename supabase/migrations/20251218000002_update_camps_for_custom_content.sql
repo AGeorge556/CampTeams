@@ -15,6 +15,9 @@ ALTER TABLE camps
   ADD COLUMN IF NOT EXISTS theme_secondary_color TEXT DEFAULT 'blue',
   ADD COLUMN IF NOT EXISTS custom_content JSONB DEFAULT '{}'::jsonb;
 
+-- Drop the old function first
+DROP FUNCTION IF EXISTS get_camps_with_stats();
+
 -- Update the get_camps_with_stats function to handle nullable max_participants
 CREATE OR REPLACE FUNCTION get_camps_with_stats()
 RETURNS TABLE (
