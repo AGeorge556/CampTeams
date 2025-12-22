@@ -1,4 +1,5 @@
 import { useState, useEffect, useCallback } from 'react'
+import { z } from 'zod'
 import { supabase } from '../lib/supabase'
 import { TeamColor } from '../lib/types'
 import { usePlayers } from './usePlayers'
@@ -21,6 +22,28 @@ interface TeamSwitchResult {
   reason: string
 }
 
+// Zod schemas for runtime validation
+const TeamBalanceSchema = z.object({
+  team: z.string(),
+  total_count: z.number(),
+  male_count: z.number(),
+  female_count: z.number()
+})
+
+const TeamBalancesSchema = z.array(TeamBalanceSchema)
+
+function isValidTeamBalanceArray(value: unknown): value is TeamBalance[] {
+  return Array.isArray(value) &&
+         value.every(item =>
+           item &&
+           typeof item === 'object' &&
+           typeof item.team === 'string' &&
+           typeof item.total_count === 'number' &&
+           typeof item.male_count === 'number' &&
+           typeof item.female_count === 'number'
+         )
+}
+
 export function useTeamBalancing() {
   const { players } = usePlayers()
   const { currentCamp, currentRegistration } = useCamp()
@@ -35,21 +58,38 @@ export function useTeamBalancing() {
     try {
       setLoading(true)
 
+      // Validate players data structure
+      if (!players || typeof players !== 'object') {
+        console.warn('Invalid players data structure, resetting balances')
+        setTeamBalances([])
+        return
+      }
+
       // Calculate balances from players data (already camp-scoped via usePlayers)
-      const teams = ['red', 'blue', 'green', 'yellow']
+      const teams = ['red', 'blue', 'green', 'yellow'] as const
       const balances: TeamBalance[] = teams.map(team => {
-        const teamPlayers = players[team] || []
+        const teamPlayers = Array.isArray(players[team]) ? players[team] : []
+
         return {
           team,
           total_count: teamPlayers.length,
-          male_count: teamPlayers.filter(p => p.gender === 'male').length,
-          female_count: teamPlayers.filter(p => p.gender === 'female').length
+          male_count: teamPlayers.filter(p => p?.gender === 'male').length,
+          female_count: teamPlayers.filter(p => p?.gender === 'female').length
         }
       })
 
-      setTeamBalances(balances)
+      // Validate calculated balances with Zod before setting
+      const validationResult = TeamBalancesSchema.safeParse(balances)
+      if (validationResult.success) {
+        setTeamBalances(validationResult.data)
+      } else {
+        console.error('Invalid balance calculation result:', validationResult.error)
+        setTeamBalances([])
+      }
     } catch (error) {
       console.error('Failed to load team balances:', error)
+      // CRITICAL: Reset to safe state on error
+      setTeamBalances([])
     } finally {
       setLoading(false)
     }

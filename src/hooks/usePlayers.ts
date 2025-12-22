@@ -90,7 +90,12 @@ export function usePlayers() {
         }
       })
 
-      setPlayers(teamPlayers)
+      // Only update state if data actually changed (deep comparison by JSON)
+      setPlayers(prev => {
+        const prevJSON = JSON.stringify(prev)
+        const newJSON = JSON.stringify(teamPlayers)
+        return prevJSON === newJSON ? prev : teamPlayers
+      })
     } catch (err: any) {
       console.error('Error fetching players:', err)
       setError(err.message || 'Failed to load players')
