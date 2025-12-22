@@ -36,6 +36,7 @@ import Scoreboard from './components/Scoreboard'
 import ScoreboardAdmin from './components/ScoreboardAdmin'
 import AttendanceCheckIn from './components/AttendanceCheckIn'
 import CampSelection from './components/CampSelection'
+import CampLandingPage from './components/CampLandingPage'
 import { supabase } from './lib/supabase'
 import { CheckCircle, XCircle, Loader2 } from 'lucide-react'
 
@@ -244,6 +245,19 @@ function AppContent({
   // const { oilExtractionVisible } = useOilExtractionVisibility()
   const { galleryVisible } = useGalleryVisibility()
   const { currentCamp, currentRegistration, isRegistered, loading: campLoading } = useCamp()
+  const [showCampLanding, setShowCampLanding] = useState(false)
+
+  // Check if user should see the camp landing page
+  useEffect(() => {
+    if (currentCamp && isRegistered && !campLoading) {
+      const hasViewedLanding = sessionStorage.getItem(`camp_landing_viewed_${currentCamp.id}`)
+      if (!hasViewedLanding) {
+        setShowCampLanding(true)
+      } else {
+        setShowCampLanding(false)
+      }
+    }
+  }, [currentCamp, isRegistered, campLoading])
 
   // Debug logging to track profile state
   useEffect(() => {
@@ -303,6 +317,17 @@ function AppContent({
   // If camp is selected but user is not registered for it, show registration
   if (currentCamp && !isRegistered && !campLoading) {
     return <CampRegistrationOnboarding />
+  }
+
+  // Show camp landing page after registration (only once per session)
+  if (showCampLanding && currentCamp && isRegistered) {
+    return (
+      <CampLandingPage
+        onEnter={() => {
+          setShowCampLanding(false)
+        }}
+      />
+    )
   }
 
   // If user is registered for camp but no team assigned, show team selection
