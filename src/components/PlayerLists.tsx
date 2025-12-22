@@ -123,14 +123,14 @@ export default function PlayerLists() {
       </h3>
       
       {/* Team Balance Summary */}
-      {teamBalances.length > 0 && (
+      {(teamBalances || []).length > 0 && (
         <div className="mb-6 p-4 bg-[var(--color-bg-muted)] rounded-lg border border-[var(--color-border)]">
           <div className="flex items-center mb-3">
             <Info className="h-5 w-5 mr-2 text-blue-600" />
             <h4 className="font-medium text-[var(--color-text)]">{t('teamBalanceSummary')}</h4>
           </div>
           <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-            {teamBalances.map((balance) => (
+            {(teamBalances || []).map((balance) => (
               <div key={balance.team} className="text-center">
                 <div className="font-semibold text-[var(--color-text)]">{TEAMS[balance.team as TeamColor].name}</div>
                 <div className="text-sm text-[var(--color-text-muted)]">
