@@ -193,8 +193,15 @@ export function useTeamBalancing() {
     return availableTeams[0].team
   }
 
+  // EMERGENCY: Force teamBalances to always be an array
+  const safeTeamBalances = Array.isArray(teamBalances) ? teamBalances : []
+
+  if (!Array.isArray(safeTeamBalances)) {
+    console.error('[useTeamBalancing] CRITICAL: teamBalances is not an array after validation!', typeof teamBalances, teamBalances)
+  }
+
   return {
-    teamBalances,
+    teamBalances: safeTeamBalances,
     loading,
     canTeamAcceptPlayer,
     canUserSwitchToTeam,
