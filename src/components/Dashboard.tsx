@@ -585,9 +585,12 @@ export default function Dashboard({ onPageChange }: DashboardProps) {
          <div className="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4">
            {(() => {
              // Cache and validate teamBalance once per render
-             const safeTeamBalance = Array.isArray(teamBalance) ? teamBalance : []
+             if (!Array.isArray(teamBalance)) {
+               console.error('[Dashboard] teamBalance is not an array:', typeof teamBalance, teamBalance)
+               return null
+             }
 
-             return safeTeamBalance.map((team) => {
+             return teamBalance.map((team) => {
                const teamKey = team.team as TeamColor
                const teamData = TEAMS[teamKey]
                return (

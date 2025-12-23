@@ -44,13 +44,19 @@ export function useTeamBalance() {
 
       if (error) {
         console.error('Error fetching team balance:', error)
+        setTeamBalance([
+          { team: 'red', total_count: 0, male_count: 0, female_count: 0, grade_7_count: 0, grade_8_count: 0, grade_9_count: 0, grade_10_count: 0, grade_11_count: 0, grade_12_count: 0 },
+          { team: 'blue', total_count: 0, male_count: 0, female_count: 0, grade_7_count: 0, grade_8_count: 0, grade_9_count: 0, grade_10_count: 0, grade_11_count: 0, grade_12_count: 0 },
+          { team: 'green', total_count: 0, male_count: 0, female_count: 0, grade_7_count: 0, grade_8_count: 0, grade_9_count: 0, grade_10_count: 0, grade_11_count: 0, grade_12_count: 0 },
+          { team: 'yellow', total_count: 0, male_count: 0, female_count: 0, grade_7_count: 0, grade_8_count: 0, grade_9_count: 0, grade_10_count: 0, grade_11_count: 0, grade_12_count: 0 }
+        ])
         return
       }
 
       // Calculate balance for each team
       const teams = ['red', 'blue', 'green', 'yellow']
       const balance: TeamBalance[] = teams.map(team => {
-        const teamRegistrations = data?.filter(r => r.current_team === team) || []
+        const teamRegistrations = Array.isArray(data) ? data.filter(r => r.current_team === team) : []
 
         return {
           team,
@@ -66,7 +72,17 @@ export function useTeamBalance() {
         }
       })
 
-      setTeamBalance(balance)
+      if (!Array.isArray(balance)) {
+        console.error('[useTeamBalance] balance calculation failed, resetting to default')
+        setTeamBalance([
+          { team: 'red', total_count: 0, male_count: 0, female_count: 0, grade_7_count: 0, grade_8_count: 0, grade_9_count: 0, grade_10_count: 0, grade_11_count: 0, grade_12_count: 0 },
+          { team: 'blue', total_count: 0, male_count: 0, female_count: 0, grade_7_count: 0, grade_8_count: 0, grade_9_count: 0, grade_10_count: 0, grade_11_count: 0, grade_12_count: 0 },
+          { team: 'green', total_count: 0, male_count: 0, female_count: 0, grade_7_count: 0, grade_8_count: 0, grade_9_count: 0, grade_10_count: 0, grade_11_count: 0, grade_12_count: 0 },
+          { team: 'yellow', total_count: 0, male_count: 0, female_count: 0, grade_7_count: 0, grade_8_count: 0, grade_9_count: 0, grade_10_count: 0, grade_11_count: 0, grade_12_count: 0 }
+        ])
+      } else {
+        setTeamBalance(balance)
+      }
     } catch (error) {
       console.error('Error fetching team balance:', error)
     } finally {

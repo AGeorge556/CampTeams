@@ -125,9 +125,12 @@ export default function PlayerLists() {
       {/* Team Balance Summary */}
       {(() => {
         // Cache and validate teamBalances once per render
-        const safeTeamBalances = Array.isArray(teamBalances) ? teamBalances : []
+        if (!Array.isArray(teamBalances)) {
+          console.error('[PlayerLists] teamBalances is not an array:', typeof teamBalances, teamBalances)
+          return null
+        }
 
-        if (safeTeamBalances.length === 0) return null
+        if (teamBalances.length === 0) return null
 
         return (
           <div className="mb-6 p-4 bg-[var(--color-bg-muted)] rounded-lg border border-[var(--color-border)]">
@@ -136,7 +139,7 @@ export default function PlayerLists() {
               <h4 className="font-medium text-[var(--color-text)]">{t('teamBalanceSummary')}</h4>
             </div>
             <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-              {safeTeamBalances.map((balance) => (
+              {teamBalances.map((balance) => (
                 <div key={balance.team} className="text-center">
                   <div className="font-semibold text-[var(--color-text)]">
                     {TEAMS[balance.team as TeamColor].name}
@@ -156,9 +159,13 @@ export default function PlayerLists() {
       
       <div className="grid grid-cols-1 lg:grid-cols-4 gap-6">
         {TEAMS && Object.entries(TEAMS).map(([teamKey, teamConfig]) => {
-          const teamPlayers = Array.isArray(players[teamKey]) ? players[teamKey] : []
-          const nonAdminPlayers = teamPlayers.filter(p => p.participate_in_teams && !p.is_admin)
-          const adminPlayers = teamPlayers.filter(p => p.is_admin)
+          const teamPlayersRaw = players[teamKey]
+          if (!Array.isArray(teamPlayersRaw)) {
+            console.error(`[PlayerLists] players[${teamKey}] is not an array:`, typeof teamPlayersRaw, teamPlayersRaw)
+          }
+          const teamPlayers = Array.isArray(teamPlayersRaw) ? teamPlayersRaw : []
+          const nonAdminPlayers = teamPlayers.filter(p => p && p.participate_in_teams && !p.is_admin)
+          const adminPlayers = teamPlayers.filter(p => p && p.is_admin)
           const teamValidationResult = teamValidation[teamKey]
           const canSwitch = teamValidationResult?.canSwitch ?? false
           const switchReason = teamValidationResult?.reason ?? 'Validating...'
