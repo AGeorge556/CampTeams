@@ -17,7 +17,8 @@
       "Bash(npm install:*)",
       "Bash(cat:*)",
       "Bash(npm run build:*)",
-      "Bash(vercel ls:*)"
+      "Bash(vercel ls:*)",
+      "Bash(npx vite:*)"
     ],
     "deny": [],
     "ask": []
