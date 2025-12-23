@@ -122,14 +122,14 @@ export default function TeamSelection() {
                       : 'border-[var(--color-border)] bg-[var(--color-bg)] hover:border-[var(--color-border-hover)]'
                   } ${!isAvailable ? 'opacity-50 cursor-not-allowed' : ''}`}
                   style={{
-                    borderColor: selectedTeam === teamKey ? teamConfig.color : undefined,
-                    backgroundColor: selectedTeam === teamKey ? `${teamConfig.color}20` : undefined
+                    borderColor: selectedTeam === teamKey ? teamConfig.colorValue : undefined,
+                    backgroundColor: selectedTeam === teamKey ? `${teamConfig.colorValue}20` : undefined
                   }}
                 >
                   {selectedTeam === teamKey && isAvailable && (
                     <div
                       className="absolute top-2 right-2 w-6 h-6 rounded-full flex items-center justify-center text-white text-sm"
-                      style={{ backgroundColor: teamConfig.color }}
+                      style={{ backgroundColor: teamConfig.colorValue }}
                     >
                       ✓
                     </div>
@@ -142,16 +142,16 @@ export default function TeamSelection() {
                   <div className="flex flex-col items-center space-y-3">
                     <div
                       className="w-16 h-16 rounded-full flex items-center justify-center"
-                      style={{ backgroundColor: `${teamConfig.color}30` }}
+                      style={{ backgroundColor: `${teamConfig.colorValue}30` }}
                     >
                       <div
                         className="w-12 h-12 rounded-full"
-                        style={{ backgroundColor: teamConfig.color }}
+                        style={{ backgroundColor: teamConfig.colorValue }}
                       />
                     </div>
                     <span
                       className="text-lg font-semibold"
-                      style={{ color: selectedTeam === teamKey ? teamConfig.color : 'var(--color-text)' }}
+                      style={{ color: selectedTeam === teamKey ? teamConfig.colorValue : 'var(--color-text)' }}
                     >
                       {teamConfig.name}
                     </span>

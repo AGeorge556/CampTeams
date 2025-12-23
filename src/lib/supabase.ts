@@ -22,10 +22,34 @@ export type RulesAcceptance = Database['public']['Tables']['rules_acceptance']['
 export type SportsMatch = Database['public']['Tables']['sports_matches']['Row']
 
 export const TEAMS = {
-  red: { name: 'Red', color: 'bg-red-500', lightColor: 'bg-red-100', textColor: 'text-red-600' },
-  blue: { name: 'Blue', color: 'bg-blue-500', lightColor: 'bg-blue-100', textColor: 'text-blue-600' },
-  green: { name: 'Green', color: 'bg-green-500', lightColor: 'bg-green-100', textColor: 'text-green-600' },
-  yellow: { name: 'Yellow', color: 'bg-yellow-500', lightColor: 'bg-yellow-100', textColor: 'text-yellow-600' }
+  red: {
+    name: 'Red',
+    color: 'bg-red-500',
+    colorValue: '#ef4444',
+    lightColor: 'bg-red-100',
+    textColor: 'text-red-600'
+  },
+  blue: {
+    name: 'Blue',
+    color: 'bg-blue-500',
+    colorValue: '#3b82f6',
+    lightColor: 'bg-blue-100',
+    textColor: 'text-blue-600'
+  },
+  green: {
+    name: 'Green',
+    color: 'bg-green-500',
+    colorValue: '#22c55e',
+    lightColor: 'bg-green-100',
+    textColor: 'text-green-600'
+  },
+  yellow: {
+    name: 'Yellow',
+    color: 'bg-yellow-500',
+    colorValue: '#eab308',
+    lightColor: 'bg-yellow-100',
+    textColor: 'text-yellow-600'
+  }
 } as const
 
 export type TeamColor = keyof typeof TEAMS
