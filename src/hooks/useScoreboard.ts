@@ -27,13 +27,20 @@ export function useScoreboard() {
       if (sErr) throw sErr
 
       // Map camp_scoreboard to TeamScore format
-      const mappedScores = (scoreRows || []).map(row => ({
+      const safeScoreRows = Array.isArray(scoreRows) ? scoreRows : []
+      const mappedScores = safeScoreRows.map(row => ({
         team_id: row.team,
         points: row.score,
         updated_at: row.updated_at
       }))
 
-      setScores(mappedScores as TeamScore[])
+      // Ensure we always set an array
+      if (!Array.isArray(mappedScores)) {
+        console.error('[useScoreboard] mappedScores is not an array, resetting to empty')
+        setScores([])
+      } else {
+        setScores(mappedScores as TeamScore[])
+      }
       // Note: score_events would need a camp-specific table too if needed
       // For now, we'll leave events empty for camp-specific scoreboards
       setEvents([])
