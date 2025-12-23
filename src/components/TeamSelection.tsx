@@ -22,9 +22,11 @@ export default function TeamSelection() {
 
       const status: Record<TeamColor, { canAccept: boolean; reason: string }> = {} as any
 
-      for (const team of TEAMS) {
-        const result = await canTeamAcceptPlayer(team.value, currentRegistration.gender)
-        status[team.value] = result
+      // Convert TEAMS object to array
+      const teamKeys = Object.keys(TEAMS) as TeamColor[]
+      for (const teamKey of teamKeys) {
+        const result = await canTeamAcceptPlayer(teamKey, currentRegistration.gender)
+        status[teamKey] = result
       }
 
       setTeamStatus(status)
@@ -106,28 +108,28 @@ export default function TeamSelection() {
               Choose Your Team
             </label>
             <div className="grid grid-cols-2 gap-4">
-              {TEAMS.map((team) => {
-                const isAvailable = teamStatus[team.value]?.canAccept !== false
+              {Object.entries(TEAMS).map(([teamKey, teamConfig]) => {
+                const isAvailable = teamStatus[teamKey as TeamColor]?.canAccept !== false
                 return (
                 <button
-                  key={team.value}
+                  key={teamKey}
                   type="button"
-                  onClick={() => isAvailable && setSelectedTeam(team.value)}
+                  onClick={() => isAvailable && setSelectedTeam(teamKey as TeamColor)}
                   disabled={!isAvailable}
                   className={`relative p-6 rounded-lg border-2 transition-all ${
-                    selectedTeam === team.value
-                      ? `border-${team.value}-500 bg-${team.value}-50 ring-2 ring-${team.value}-500 ring-opacity-50`
+                    selectedTeam === teamKey
+                      ? `border-${teamKey}-500 bg-${teamKey}-50 ring-2 ring-${teamKey}-500 ring-opacity-50`
                       : 'border-[var(--color-border)] bg-[var(--color-bg)] hover:border-[var(--color-border-hover)]'
                   } ${!isAvailable ? 'opacity-50 cursor-not-allowed' : ''}`}
                   style={{
-                    borderColor: selectedTeam === team.value ? team.color : undefined,
-                    backgroundColor: selectedTeam === team.value ? `${team.color}20` : undefined
+                    borderColor: selectedTeam === teamKey ? teamConfig.color : undefined,
+                    backgroundColor: selectedTeam === teamKey ? `${teamConfig.color}20` : undefined
                   }}
                 >
-                  {selectedTeam === team.value && isAvailable && (
+                  {selectedTeam === teamKey && isAvailable && (
                     <div
                       className="absolute top-2 right-2 w-6 h-6 rounded-full flex items-center justify-center text-white text-sm"
-                      style={{ backgroundColor: team.color }}
+                      style={{ backgroundColor: teamConfig.color }}
                     >
                       ✓
                     </div>
@@ -140,18 +142,18 @@ export default function TeamSelection() {
                   <div className="flex flex-col items-center space-y-3">
                     <div
                       className="w-16 h-16 rounded-full flex items-center justify-center"
-                      style={{ backgroundColor: `${team.color}30` }}
+                      style={{ backgroundColor: `${teamConfig.color}30` }}
                     >
                       <div
                         className="w-12 h-12 rounded-full"
-                        style={{ backgroundColor: team.color }}
+                        style={{ backgroundColor: teamConfig.color }}
                       />
                     </div>
                     <span
                       className="text-lg font-semibold"
-                      style={{ color: selectedTeam === team.value ? team.color : 'var(--color-text)' }}
+                      style={{ color: selectedTeam === teamKey ? teamConfig.color : 'var(--color-text)' }}
                     >
-                      {team.label}
+                      {teamConfig.name}
                     </span>
                     {!isAvailable && (
                       <span className="text-xs text-red-500 text-center">
