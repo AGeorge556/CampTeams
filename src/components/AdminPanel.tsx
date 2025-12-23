@@ -437,7 +437,7 @@ export default function AdminPanel() {
                 className="rounded-md border-[var(--color-border)] shadow-sm bg-[var(--color-input-bg)] focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50"
               >
                 <option value="all">All Teams</option>
-                {Object.entries(TEAMS).map(([key, team]) => (
+                {TEAMS && Object.entries(TEAMS).map(([key, team]) => (
                   <option key={key} value={key}>{team.name}</option>
                 ))}
               </select>
@@ -455,7 +455,7 @@ export default function AdminPanel() {
           
           {/* Team Lock Controls */}
           <div className="mt-4 grid grid-cols-2 md:grid-cols-4 gap-4">
-            {Object.entries(TEAMS).map(([key, team]) => (
+            {TEAMS && Object.entries(TEAMS).map(([key, team]) => (
               <div key={key} className="relative">
                 <div className={`p-4 rounded-lg ${team.lightColor} border ${lockedTeams.includes(key) ? 'border-red-500' : 'border-transparent'}`}>
                   <div className="flex items-center justify-between">
@@ -539,7 +539,7 @@ export default function AdminPanel() {
                         className="rounded-md border-[var(--color-border)] shadow-sm bg-[var(--color-input-bg)] focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50 text-sm"
                       >
                         <option value="">Unassigned</option>
-                        {Object.entries(TEAMS).map(([key, team]) => (
+                        {TEAMS && Object.entries(TEAMS).map(([key, team]) => (
                           <option key={key} value={key}>{team.name}</option>
                         ))}
                       </select>

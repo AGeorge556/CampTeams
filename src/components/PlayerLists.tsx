@@ -155,8 +155,8 @@ export default function PlayerLists() {
       })()}
       
       <div className="grid grid-cols-1 lg:grid-cols-4 gap-6">
-        {Object.entries(TEAMS).map(([teamKey, teamConfig]) => {
-          const teamPlayers = (players[teamKey] || [])
+        {TEAMS && Object.entries(TEAMS).map(([teamKey, teamConfig]) => {
+          const teamPlayers = Array.isArray(players[teamKey]) ? players[teamKey] : []
           const nonAdminPlayers = teamPlayers.filter(p => p.participate_in_teams && !p.is_admin)
           const adminPlayers = teamPlayers.filter(p => p.is_admin)
           const teamValidationResult = teamValidation[teamKey]
