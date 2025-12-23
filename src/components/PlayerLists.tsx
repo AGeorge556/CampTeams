@@ -21,6 +21,16 @@ export default function PlayerLists() {
   const [switching, setSwitching] = React.useState<string | null>(null)
   const [teamValidation, setTeamValidation] = React.useState<Record<string, { canSwitch: boolean; reason: string }>>({})
 
+  // Validate players is a proper object
+  if (!players || typeof players !== 'object') {
+    console.error('[PlayerLists] players is invalid:', typeof players, players)
+    return (
+      <div className="bg-[var(--color-card-bg)] rounded-lg shadow-sm p-6 border border-[var(--color-border)]">
+        <p>Loading team rosters...</p>
+      </div>
+    )
+  }
+
   // Pre-validate team switches for current user
   React.useEffect(() => {
     if (!currentRegistration) return
