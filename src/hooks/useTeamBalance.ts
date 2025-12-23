@@ -116,5 +116,17 @@ export function useTeamBalance() {
     }
   }, [fetchTeamBalance, currentCamp])
 
-  return { teamBalance, loading }
+  // EMERGENCY: Force teamBalance to always be an array
+  const safeTeamBalance = Array.isArray(teamBalance) ? teamBalance : [
+    { team: 'red', total_count: 0, male_count: 0, female_count: 0, grade_7_count: 0, grade_8_count: 0, grade_9_count: 0, grade_10_count: 0, grade_11_count: 0, grade_12_count: 0 },
+    { team: 'blue', total_count: 0, male_count: 0, female_count: 0, grade_7_count: 0, grade_8_count: 0, grade_9_count: 0, grade_10_count: 0, grade_11_count: 0, grade_12_count: 0 },
+    { team: 'green', total_count: 0, male_count: 0, female_count: 0, grade_7_count: 0, grade_8_count: 0, grade_9_count: 0, grade_10_count: 0, grade_11_count: 0, grade_12_count: 0 },
+    { team: 'yellow', total_count: 0, male_count: 0, female_count: 0, grade_7_count: 0, grade_8_count: 0, grade_9_count: 0, grade_10_count: 0, grade_11_count: 0, grade_12_count: 0 }
+  ]
+
+  if (!Array.isArray(safeTeamBalance)) {
+    console.error('[useTeamBalance] CRITICAL: teamBalance is not an array after validation!', typeof teamBalance, teamBalance)
+  }
+
+  return { teamBalance: safeTeamBalance, loading }
 }
