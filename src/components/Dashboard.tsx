@@ -583,28 +583,33 @@ export default function Dashboard({ onPageChange }: DashboardProps) {
            {t('teamBalanceOverview')}
          </h3>
          <div className="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4">
-           {(teamBalance || []).map((team) => {
-             const teamKey = team.team as TeamColor
-             const teamData = TEAMS[teamKey]
-             return (
-               <div key={team.team} className="text-center group">
-                 <div className={`inline-flex items-center justify-center w-14 h-14 sm:w-16 sm:h-16 lg:w-20 lg:h-20 rounded-full mb-3 transition-all duration-300 transform group-hover:scale-110 shadow-lg ${teamData.color}`}>
-                   <span className="text-white font-bold text-lg sm:text-xl lg:text-2xl drop-shadow-sm">{team.total_count}</span>
+           {(() => {
+             // Cache and validate teamBalance once per render
+             const safeTeamBalance = Array.isArray(teamBalance) ? teamBalance : []
+
+             return safeTeamBalance.map((team) => {
+               const teamKey = team.team as TeamColor
+               const teamData = TEAMS[teamKey]
+               return (
+                 <div key={team.team} className="text-center group">
+                   <div className={`inline-flex items-center justify-center w-14 h-14 sm:w-16 sm:h-16 lg:w-20 lg:h-20 rounded-full mb-3 transition-all duration-300 transform group-hover:scale-110 shadow-lg ${teamData.color}`}>
+                     <span className="text-white font-bold text-lg sm:text-xl lg:text-2xl drop-shadow-sm">{team.total_count}</span>
+                   </div>
+                   <h4 className="font-semibold text-[var(--color-text)] text-sm sm:text-base lg:text-lg mb-1">{teamData.name}</h4>
+                   <div className="flex justify-center items-center space-x-2 text-xs sm:text-sm text-[var(--color-text-muted)]">
+                     <span className="flex items-center">
+                       <div className="w-2 h-2 bg-blue-500 rounded-full mr-1"></div>
+                       {team.male_count}M
+                     </span>
+                     <span className="flex items-center">
+                       <div className="w-2 h-2 bg-pink-500 rounded-full mr-1"></div>
+                       {team.female_count}F
+                     </span>
+                   </div>
                  </div>
-                 <h4 className="font-semibold text-[var(--color-text)] text-sm sm:text-base lg:text-lg mb-1">{teamData.name}</h4>
-                 <div className="flex justify-center items-center space-x-2 text-xs sm:text-sm text-[var(--color-text-muted)]">
-                   <span className="flex items-center">
-                     <div className="w-2 h-2 bg-blue-500 rounded-full mr-1"></div>
-                     {team.male_count}M
-                   </span>
-                   <span className="flex items-center">
-                     <div className="w-2 h-2 bg-pink-500 rounded-full mr-1"></div>
-                     {team.female_count}F
-                   </span>
-                 </div>
-               </div>
-             )
-           })}
+               )
+             })
+           })()}
          </div>
        </div>
 

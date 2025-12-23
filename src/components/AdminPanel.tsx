@@ -244,7 +244,7 @@ export default function AdminPanel() {
       'Sport,Name,Grade,Gender,Team,Admin\n' +
       sportSelections
         .flatMap((sport) =>
-          sport.participants.map(
+          (sport.participants || []).map(
             (p) =>
               `"${sport.sport_name}","${p.full_name}",${p.grade},${p.gender},${p.current_team || 'Unassigned'},${
                 p.is_admin ? 'Yes' : 'No'
@@ -564,16 +564,20 @@ export default function AdminPanel() {
           </div>
           
           <div className="space-y-6">
-            {sportSelections.map((sport) => (
-              <div key={sport.sport_id} className="bg-[var(--color-card-bg)] rounded-lg shadow-sm border border-[var(--color-border)]">
-                <div className="px-6 py-4 border-b border-[var(--color-border)]">
-                  <h4 className="text-lg font-semibold text-[var(--color-text)]">{sport.sport_name}</h4>
-                  <p className="text-sm text-[var(--color-text-muted)]">{sport.participants.length} participants</p>
-                </div>
-                <div className="px-6 py-4">
-                  {sport.participants.length > 0 ? (
-                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-                      {sport.participants.map((participant) => (
+            {sportSelections.map((sport) => {
+              // Cache and validate participants once per render
+              const safeParticipants = Array.isArray(sport.participants) ? sport.participants : []
+
+              return (
+                <div key={sport.sport_id} className="bg-[var(--color-card-bg)] rounded-lg shadow-sm border border-[var(--color-border)]">
+                  <div className="px-6 py-4 border-b border-[var(--color-border)]">
+                    <h4 className="text-lg font-semibold text-[var(--color-text)]">{sport.sport_name}</h4>
+                    <p className="text-sm text-[var(--color-text-muted)]">{safeParticipants.length} participants</p>
+                  </div>
+                  <div className="px-6 py-4">
+                    {safeParticipants.length > 0 ? (
+                      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                        {safeParticipants.map((participant) => (
                         <div key={participant.id} className="flex items-center space-x-3 p-3 bg-[var(--color-bg-muted)] rounded-lg">
                           <div className="flex-1">
                             <p className="text-sm font-medium text-[var(--color-text)]">{participant.full_name}</p>
@@ -601,7 +605,8 @@ export default function AdminPanel() {
                   )}
                 </div>
               </div>
-            ))}
+            )
+            })}
           </div>
         </div>
       ) : activeTab === 'roles' ? (
