@@ -58,7 +58,8 @@ export default function ScheduleFinalizer() {
       const { data: settingsData, error: settingsError } = await supabase
         .from('camp_settings')
         .select('*')
-        .single()
+        .limit(1)
+        .maybeSingle()
 
       if (settingsError) throw settingsError
       

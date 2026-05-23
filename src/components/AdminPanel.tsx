@@ -68,7 +68,8 @@ export default function AdminPanel() {
       const { data, error } = await supabase
         .from('camp_settings')
         .select('*')
-        .single();
+        .limit(1)
+        .maybeSingle();
 
       if (error) throw error;
       // Cast the data to include locked_teams with proper typing and default values

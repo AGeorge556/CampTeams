@@ -19,7 +19,8 @@ export function useScheduleVisibility() {
       const { data, error } = await supabase
         .from('camp_settings')
         .select('schedule_visible')
-        .single()
+        .limit(1)
+        .maybeSingle()
       if (error && (error as any).code !== 'PGRST116') {
         console.error('Error fetching schedule visibility:', error)
       } else {

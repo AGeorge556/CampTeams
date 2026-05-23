@@ -33,7 +33,8 @@ export function useOilExtractionVisibility() {
       const { data, error } = await supabase
         .from('camp_settings')
         .select('oil_extraction_visible')
-        .single()
+        .limit(1)
+        .maybeSingle()
 
       if (error && error.code !== 'PGRST116') {
         console.error('Error fetching oil extraction visibility:', error)
