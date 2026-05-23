@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react'
 import { Trophy, CheckCircle } from 'lucide-react'
 import { supabase, TEAMS, type SportsMatch } from '../lib/supabase'
 import { useProfile } from '../hooks/useProfile'
+import { useCamp } from '../contexts/CampContext'
 import { useLanguage } from '../contexts/LanguageContext'
 
 interface Sport {
@@ -15,6 +16,7 @@ interface Sport {
 
 export default function SportsSelection() {
   const { profile } = useProfile()
+  const { currentRegistration } = useCamp()
   const { t } = useLanguage()
   const [sports, setSports] = useState<Sport[]>([])
   const [userSelections, setUserSelections] = useState<string[]>([])
@@ -92,8 +94,9 @@ export default function SportsSelection() {
   // Eligibility
   const getEligibility = (sportId: string): { eligible: boolean; reason?: string } => {
     if (!profile) return { eligible: false, reason: 'Not logged in' }
-    if (sportId === 'chairball' && profile.gender !== 'female') return { eligible: false, reason: 'Chairball is for girls only.' }
-    if (sportId === 'soccer' && profile.gender !== 'male') return { eligible: false, reason: 'Soccer is for boys only.' }
+    const gender = currentRegistration?.gender
+    if (sportId === 'chairball' && gender !== 'female') return { eligible: false, reason: 'Chairball is for girls only.' }
+    if (sportId === 'soccer' && gender !== 'male') return { eligible: false, reason: 'Soccer is for boys only.' }
     return { eligible: true }
   }
 
