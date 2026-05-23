@@ -11,6 +11,9 @@ INSERT INTO camp_settings (max_team_size, teams_locked)
 VALUES (24, false)
 ON CONFLICT DO NOTHING;
 
+-- Drop first to allow return type change (was boolean, now TABLE)
+DROP FUNCTION IF EXISTS can_switch_team(uuid, text);
+
 -- Create a unified team switching function with proper max team size enforcement
 CREATE OR REPLACE FUNCTION can_switch_team(user_id uuid, new_team text)
 RETURNS TABLE (

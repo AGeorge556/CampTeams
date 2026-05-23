@@ -94,41 +94,6 @@ BEGIN
 END;
 $$ LANGUAGE plpgsql SECURITY DEFINER;
 
--- Function to get sessions with schedule information
-CREATE OR REPLACE FUNCTION get_sessions_with_schedule()
-RETURNS TABLE (
-  session_id uuid,
-  session_name text,
-  session_type text,
-  session_start timestamptz,
-  session_end timestamptz,
-  schedule_id text,
-  schedule_day integer,
-  schedule_time text,
-  schedule_activity text,
-  schedule_location text,
-  is_active boolean
-) AS $$
-BEGIN
-  RETURN QUERY
-  SELECT 
-    cs.id as session_id,
-    cs.name as session_name,
-    cs.session_type,
-    cs.start_time as session_start,
-    cs.end_time as session_end,
-    cs.schedule_id,
-    sch.day as schedule_day,
-    sch.time as schedule_time,
-    sch.activity as schedule_activity,
-    sch.location as schedule_location,
-    cs.is_active
-  FROM camp_sessions cs
-  LEFT JOIN camp_schedule sch ON cs.schedule_id = sch.id
-  ORDER BY cs.start_time;
-END;
-$$ LANGUAGE plpgsql SECURITY DEFINER;
-
 -- Ensure the schedule_id column exists in camp_sessions
 DO $$ 
 BEGIN

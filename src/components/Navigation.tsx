@@ -1,13 +1,14 @@
 import { useState } from 'react'
-import { Menu, X, Users, Calendar, Trophy, LogOut, Zap, Camera, QrCode } from 'lucide-react'
+import { Menu, X, Users, Calendar, Trophy, LogOut, Camera, QrCode, Home, Sun } from 'lucide-react'
 import { useAuth } from '../hooks/useAuth'
 import { useProfile } from '../hooks/useProfile'
 import { useLanguage } from '../contexts/LanguageContext'
 import { useScheduleVisibility } from '../hooks/useScheduleVisibility'
-import { useOilExtractionVisibility } from '../hooks/useOilExtractionVisibility'
 import { useGalleryVisibility } from '../hooks/useGalleryVisibility'
 import LanguageSwitcher from './LanguageSwitcher'
 import { ThemeToggle } from './ThemeToggle'
+import { useCamp } from '../contexts/CampContext'
+import { TEAMS, TeamColor } from '../lib/supabase'
 
 interface NavigationProps {
   currentPage: string
@@ -19,22 +20,30 @@ export default function Navigation({ currentPage, onPageChange }: NavigationProp
   const { profile } = useProfile()
   const { t } = useLanguage()
   const { scheduleVisible } = useScheduleVisibility()
-  // const { oilExtractionVisible } = useOilExtractionVisibility()
   const { galleryVisible } = useGalleryVisibility()
+  const { currentRegistration } = useCamp()
   const [isMenuOpen, setIsMenuOpen] = useState(false)
 
   const handleSignOut = async () => {
     await signOut()
   }
 
+  const userTeam = currentRegistration?.current_team
+    ? TEAMS[currentRegistration.current_team as TeamColor]
+    : null
+
+  const userInitials = profile?.full_name
+    ? profile.full_name.split(' ').map((n: string) => n[0]).join('').slice(0, 2).toUpperCase()
+    : '?'
+
   const navigationItems = [
-    { id: 'dashboard', name: t('dashboard'), icon: Users },
+    { id: 'dashboard', name: 'Home', icon: Home },
     ...(profile?.is_admin || scheduleVisible ? [{ id: 'schedule', name: t('schedule'), icon: Calendar }] : []),
     { id: 'sports', name: t('teams'), icon: Trophy },
     { id: 'attendance-checkin', name: 'Check In', icon: QrCode },
-    ...(profile?.is_admin || galleryVisible ? [{ id: 'gallery', name: t('gallery'), icon: Camera }] : [])
-    // Oil Extraction - Commented out
-    // ...(profile?.is_admin || oilExtractionVisible ? [{ id: 'oil-extraction', name: 'Oil Extraction', icon: Zap }] : [])
+    ...(profile?.is_admin || galleryVisible ? [{ id: 'gallery', name: t('gallery'), icon: Camera }] : []),
+    // BIG GAME NAV — Uncomment when new big game is ready
+    // { id: 'big-game', name: 'Big Game', icon: Trophy },
   ]
 
   const handlePageChange = (page: string) => {
@@ -43,109 +52,152 @@ export default function Navigation({ currentPage, onPageChange }: NavigationProp
   }
 
   return (
-    <header className="bg-[var(--color-bg)] border-b border-[var(--color-border)] transition-all duration-300">
+    <header className="bg-[var(--color-bg)] border-b-2 border-[var(--color-border)] shadow-[var(--shadow-sm)] sticky top-0 z-50 transition-all duration-300">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex justify-between items-center h-16">
-          {/* Logo and Title */}
-          <div className="flex items-center space-x-2">
-            <Users className="h-8 w-8 text-[var(--color-primary)]" />
-            <h1 className="text-xl font-bold text-[var(--color-text)] dark:text-[var(--color-text)] dark:text-shadow-[var(--neon-text-glow)]">
-              Camp Teams
-            </h1>
-          </div>
 
-          {/* Desktop Navigation */}
-          <nav className="hidden md:flex space-x-8">
+          {/* Logo */}
+          <button
+            onClick={() => handlePageChange('dashboard')}
+            className="flex items-center space-x-2.5 group"
+          >
+            <div className="flex items-center justify-center w-9 h-9 rounded-xl bg-gradient-to-br from-orange-400 to-amber-500 text-white shadow-md group-hover:shadow-lg transition-shadow duration-200">
+              <Sun className="h-5 w-5" />
+            </div>
+            <div className="flex flex-col leading-none">
+              <span className="text-[10px] font-bold text-[var(--color-primary)] uppercase tracking-widest">
+                BCH Youth
+              </span>
+              <span className="text-sm font-bold text-[var(--color-text)]">
+                Summer Camp 2026
+              </span>
+            </div>
+          </button>
+
+          {/* Desktop nav */}
+          <nav className="hidden md:flex items-center space-x-1">
             {navigationItems.map((item) => {
               const Icon = item.icon
+              const isActive = currentPage === item.id
               return (
                 <button
                   key={item.id}
                   onClick={() => handlePageChange(item.id)}
-                  className={`flex items-center space-x-2 px-3 py-2 rounded-md text-sm font-medium transition-all duration-300 ${
-                    currentPage === item.id
-                      ? 'text-[var(--color-primary)] bg-[var(--color-accent-glow)] dark:shadow-[var(--neon-glow)]'
+                  className={`flex items-center space-x-2 px-4 py-2 rounded-full text-sm font-medium transition-all duration-200 ${
+                    isActive
+                      ? 'bg-[var(--color-primary)] text-white shadow-md'
                       : 'text-[var(--color-text-muted)] hover:text-[var(--color-text)] hover:bg-[var(--color-bg-muted)]'
                   }`}
                 >
-                  <Icon className="h-4 w-4" />
+                  <Icon className="h-4 w-4 flex-shrink-0" />
                   <span>{item.name}</span>
                 </button>
               )
             })}
           </nav>
 
-          {/* User Info and Actions */}
-          <div className="flex items-center space-x-4">
-            {/* Theme Toggle */}
+          {/* Right side controls */}
+          <div className="flex items-center space-x-2">
             <ThemeToggle />
-
-            {/* Language Switcher */}
             <LanguageSwitcher />
-            
-            {profile?.is_admin && (
-              <span className="hidden md:inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-purple-100 text-purple-800">
-                {t('admin')}
-              </span>
-            )}
-             
-            {/* Desktop Sign Out */}
-            <button
-              onClick={handleSignOut}
-              className="hidden md:inline-flex items-center px-3 py-2 border border-transparent text-sm leading-4 font-medium rounded-md text-[var(--color-text-muted)] bg-[var(--color-bg)] hover:text-[var(--color-text)] focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-sky-500"
-            >
-               <LogOut className="h-4 w-4 mr-2" />
-               {t('logout')}
-             </button>
 
-            {/* Mobile menu button */}
+            {/* Desktop user info + logout */}
+            <div className="hidden md:flex items-center space-x-2">
+              {profile?.is_admin && (
+                <span className="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-semibold bg-purple-100 text-purple-800 dark:bg-purple-900 dark:text-purple-200">
+                  {t('admin')}
+                </span>
+              )}
+              <div className="flex items-center space-x-2 pl-2 pr-3 py-1.5 rounded-full bg-[var(--color-bg-muted)] border border-[var(--color-border)]">
+                <div
+                  className={`w-7 h-7 rounded-full flex items-center justify-center text-xs font-bold text-white shadow-sm flex-shrink-0 ${userTeam?.color ?? 'bg-gray-400'}`}
+                >
+                  {userInitials}
+                </div>
+                {userTeam && (
+                  <span className="text-xs font-medium text-[var(--color-text-muted)]">
+                    {userTeam.name}
+                  </span>
+                )}
+                <button
+                  onClick={handleSignOut}
+                  className="text-[var(--color-text-muted)] hover:text-[var(--color-danger)] transition-colors ml-1"
+                  title={t('logout')}
+                >
+                  <LogOut className="h-4 w-4" />
+                </button>
+              </div>
+            </div>
+
+            {/* Mobile hamburger */}
             <button
               onClick={() => setIsMenuOpen(!isMenuOpen)}
-              className="md:hidden inline-flex items-center justify-center p-2 rounded-md text-[var(--color-text-muted)] hover:text-[var(--color-text)] hover:bg-[var(--color-bg-muted)] focus:outline-none focus:ring-2 focus:ring-inset focus:ring-sky-500"
+              className="md:hidden inline-flex items-center justify-center p-2 rounded-lg text-[var(--color-text-muted)] hover:text-[var(--color-text)] hover:bg-[var(--color-bg-muted)] transition-colors"
+              aria-label="Toggle menu"
             >
-               {isMenuOpen ? (
-                 <X className="h-6 w-6" />
-               ) : (
-                 <Menu className="h-6 w-6" />
-               )}
-             </button>
-           </div>
-         </div>
-       </div>
- 
-       {/* Mobile Navigation */}
-       {isMenuOpen && (
-         <div className="md:hidden">
-          <div className="px-2 pt-2 pb-3 space-y-1 sm:px-3 bg-[var(--color-bg)] border-t border-[var(--color-border)]">
-             {navigationItems.map((item) => {
-               const Icon = item.icon
-               return (
-                 <button
-                   key={item.id}
-                   onClick={() => handlePageChange(item.id)}
-                   className={`flex items-center space-x-3 w-full px-3 py-2 rounded-md text-base font-medium transition-colors ${
-                    currentPage === item.id
-                      ? 'text-sky-600 bg-[var(--color-bg-muted)]'
+              {isMenuOpen ? <X className="h-6 w-6" /> : <Menu className="h-6 w-6" />}
+            </button>
+          </div>
+        </div>
+      </div>
+
+      {/* Mobile menu drawer */}
+      {isMenuOpen && (
+        <div className="md:hidden border-t-2 border-[var(--color-border)] bg-[var(--color-bg)] shadow-lg animate-slide-down">
+
+          {/* User info header */}
+          <div className="px-4 py-3 bg-[var(--color-bg-muted)] border-b border-[var(--color-border)] flex items-center space-x-3">
+            <div
+              className={`w-10 h-10 rounded-full flex items-center justify-center text-sm font-bold text-white shadow ${userTeam?.color ?? 'bg-gray-400'}`}
+            >
+              {userInitials}
+            </div>
+            <div className="flex-1 min-w-0">
+              <p className="text-sm font-semibold text-[var(--color-text)] truncate">
+                {profile?.full_name?.split(' ')[0] ?? 'Camper'}
+              </p>
+              <p className="text-xs text-[var(--color-text-muted)]">
+                {userTeam ? `${userTeam.name} Team` : 'No team assigned'}
+                {profile?.is_admin && ' • Admin'}
+              </p>
+            </div>
+            <div className="inline-flex items-center justify-center w-8 h-8 rounded-lg bg-gradient-to-br from-orange-400 to-amber-500 text-white shadow-sm">
+              <Sun className="h-4 w-4" />
+            </div>
+          </div>
+
+          {/* Nav links */}
+          <div className="px-3 py-3 space-y-1">
+            {navigationItems.map((item) => {
+              const Icon = item.icon
+              const isActive = currentPage === item.id
+              return (
+                <button
+                  key={item.id}
+                  onClick={() => handlePageChange(item.id)}
+                  className={`flex items-center space-x-3 w-full px-4 py-3 rounded-xl text-base font-medium transition-all ${
+                    isActive
+                      ? 'bg-[var(--color-primary)] text-white shadow-sm'
                       : 'text-[var(--color-text-muted)] hover:text-[var(--color-text)] hover:bg-[var(--color-bg-muted)]'
                   }`}
-                 >
-                   <Icon className="h-5 w-5" />
-                   <span>{item.name}</span>
-                 </button>
-               )
-             })}
-             
-             {/* Mobile Sign Out */}
-             <button
-               onClick={handleSignOut}
-               className="flex items-center space-x-3 w-full px-3 py-2 rounded-md text-base font-medium text-[var(--color-text-muted)] hover:text-[var(--color-text)] hover:bg-[var(--color-bg-muted)] transition-colors"
-             >
-               <LogOut className="h-5 w-5" />
-               <span>{t('logout')}</span>
-             </button>
-           </div>
-         </div>
-       )}
-     </header>
-   )
- }
+                >
+                  <Icon className="h-5 w-5 flex-shrink-0" />
+                  <span>{item.name}</span>
+                </button>
+              )
+            })}
+
+            {/* Logout */}
+            <button
+              onClick={handleSignOut}
+              className="flex items-center space-x-3 w-full px-4 py-3 rounded-xl text-base font-medium text-red-600 hover:bg-red-50 dark:text-red-400 dark:hover:bg-red-950/40 transition-colors"
+            >
+              <LogOut className="h-5 w-5 flex-shrink-0" />
+              <span>{t('logout')}</span>
+            </button>
+          </div>
+        </div>
+      )}
+    </header>
+  )
+}

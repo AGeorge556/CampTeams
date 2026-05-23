@@ -4,7 +4,7 @@ RETURNS void AS $$
 BEGIN
   IF NOT EXISTS (
     SELECT 1 FROM profiles
-    WHERE id = auth.uid() AND (is_admin = true OR role = 'admin')
+    WHERE id = auth.uid() AND is_admin = true
   ) THEN
     RAISE EXCEPTION 'Not authorized';
   END IF;
@@ -21,7 +21,7 @@ RETURNS void AS $$
 BEGIN
   IF NOT EXISTS (
     SELECT 1 FROM profiles
-    WHERE id = auth.uid() AND (is_admin = true OR role = 'admin')
+    WHERE id = auth.uid() AND is_admin = true
   ) THEN
     RAISE EXCEPTION 'Not authorized';
   END IF;
@@ -38,7 +38,7 @@ RETURNS void AS $$
 BEGIN
   IF NOT EXISTS (
     SELECT 1 FROM profiles
-    WHERE id = auth.uid() AND (is_admin = true OR role = 'admin')
+    WHERE id = auth.uid() AND is_admin = true
   ) THEN
     RAISE EXCEPTION 'Not authorized';
   END IF;

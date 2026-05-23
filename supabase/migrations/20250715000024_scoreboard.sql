@@ -38,20 +38,20 @@ DROP POLICY IF EXISTS "Admins manage team scores" ON team_scores;
 CREATE POLICY "Admins manage team scores"
 ON team_scores FOR ALL TO authenticated
 USING (
-  EXISTS (SELECT 1 FROM profiles WHERE id = auth.uid() AND (is_admin = true OR role = 'admin'))
+  EXISTS (SELECT 1 FROM profiles WHERE id = auth.uid() AND is_admin = true)
 )
 WITH CHECK (
-  EXISTS (SELECT 1 FROM profiles WHERE id = auth.uid() AND (is_admin = true OR role = 'admin'))
+  EXISTS (SELECT 1 FROM profiles WHERE id = auth.uid() AND is_admin = true)
 );
 
 DROP POLICY IF EXISTS "Admins manage score events" ON score_events;
 CREATE POLICY "Admins manage score events"
 ON score_events FOR ALL TO authenticated
 USING (
-  EXISTS (SELECT 1 FROM profiles WHERE id = auth.uid() AND (is_admin = true OR role = 'admin'))
+  EXISTS (SELECT 1 FROM profiles WHERE id = auth.uid() AND is_admin = true)
 )
 WITH CHECK (
-  EXISTS (SELECT 1 FROM profiles WHERE id = auth.uid() AND (is_admin = true OR role = 'admin'))
+  EXISTS (SELECT 1 FROM profiles WHERE id = auth.uid() AND is_admin = true)
 );
 
 -- Function: adjust team score with admin check
@@ -62,7 +62,7 @@ DECLARE
 BEGIN
   -- Admin guard
   IF NOT EXISTS (
-    SELECT 1 FROM profiles WHERE id = auth.uid() AND (is_admin = true OR role = 'admin')
+    SELECT 1 FROM profiles WHERE id = auth.uid() AND is_admin = true
   ) THEN
     RAISE EXCEPTION 'Not authorized';
   END IF;

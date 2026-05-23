@@ -2,7 +2,6 @@ import React, { useState, useEffect } from 'react'
 import { useAuth } from './hooks/useAuth'
 import { useProfile } from './hooks/useProfile'
 import { useRulesAcceptance } from './hooks/useRulesAcceptance'
-import { useOilExtractionVisibility } from './hooks/useOilExtractionVisibility'
 import { useGalleryVisibility } from './hooks/useGalleryVisibility'
 import { ThemeProvider } from './contexts/ThemeContext'
 import { useCamp } from './contexts/CampContext'
@@ -15,7 +14,10 @@ import RulesAgreement from './components/RulesAgreement'
 import Dashboard from './components/Dashboard'
 import Schedule from './components/Schedule'
 import SportsSelection from './components/SportsSelection'
-// Oil Extraction - Commented out
+// BIG GAME IMPORT — Uncomment the new game import when ready
+// import BigGame from './components/BigGame'
+//
+// Oil Extraction (old big game — kept for reference, safe to delete)
 // import OilExtractionGame from './components/OilExtractionGame'
 // import AdminCoinManagement from './components/oil-extraction/AdminCoinManagement'
 // import TeamExcavation from './components/oil-extraction/TeamExcavation'
@@ -234,15 +236,14 @@ function AppContent({
   currentPage,
   setCurrentPage
 }: {
-  user: any
+  user: ReturnType<typeof useAuth>['user']
   authLoading: boolean
-  profile: any
+  profile: ReturnType<typeof useProfile>['profile']
   profileLoading: boolean
   currentPage: string
   setCurrentPage: (page: string) => void
 }) {
   const { hasAccepted, loading: rulesLoading } = useRulesAcceptance()
-  // const { oilExtractionVisible } = useOilExtractionVisibility()
   const { galleryVisible } = useGalleryVisibility()
   const { currentCamp, currentRegistration, isRegistered, loading: campLoading } = useCamp()
   const [showCampLanding, setShowCampLanding] = useState(false)
@@ -259,25 +260,12 @@ function AppContent({
     }
   }, [currentCamp, isRegistered, campLoading])
 
-  // Debug logging to track profile state
-  useEffect(() => {
-    console.log('AppContent Debug:', {
-      user: !!user,
-      authLoading,
-      profile: !!profile,
-      profileLoading,
-      currentPage,
-      hasAccepted
-    })
-  }, [user, authLoading, profile, profileLoading, currentPage, hasAccepted])
-
-  // Redirect to dashboard if user is on oil extraction page but it's hidden and they're not admin
-  // Oil Extraction - Commented out
+  // BIG GAME ROUTE GUARD — Uncomment and update when new game is added
   // useEffect(() => {
-  //   if (currentPage.startsWith('oil-extraction') && !oilExtractionVisible && !profile?.is_admin) {
+  //   if (currentPage === 'big-game' && !bigGameVisible && !profile?.is_admin) {
   //     setCurrentPage('dashboard')
   //   }
-  // }, [currentPage, oilExtractionVisible, profile?.is_admin, setCurrentPage])
+  // }, [currentPage, bigGameVisible, profile?.is_admin, setCurrentPage])
 
   // Redirect to dashboard if user is on gallery page but it's hidden and they're not admin
   useEffect(() => {
@@ -355,7 +343,11 @@ function AppContent({
               return <ScoreboardAdmin />
             case 'attendance-checkin':
               return <AttendanceCheckIn />
-            // Oil Extraction - Commented out
+            // BIG GAME ROUTE — Uncomment and replace when new game is ready
+            // case 'big-game':
+            //   return <BigGame onPageChange={setCurrentPage} />
+            //
+            // Oil Extraction routes (old big game — safe to delete)
             // case 'oil-extraction':
             //   return <OilExtractionGame onPageChange={setCurrentPage} />
             // case 'oil-extraction-admin':

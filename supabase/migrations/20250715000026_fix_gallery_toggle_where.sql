@@ -6,7 +6,7 @@ DECLARE
 BEGIN
   -- Admin guard
   IF NOT EXISTS (
-    SELECT 1 FROM profiles WHERE id = auth.uid() AND (is_admin = true OR role = 'admin')
+    SELECT 1 FROM profiles WHERE id = auth.uid() AND is_admin = true
   ) THEN
     RAISE EXCEPTION 'Not authorized';
   END IF;

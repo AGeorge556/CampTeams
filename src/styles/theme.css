@@ -1,40 +1,39 @@
-/* Base theme variables - Winter Theme */
+/* Summer Camp 2026 Theme */
 :root {
   color-scheme: light;
-  --color-bg: #ffffff;
-  --color-bg-muted: #f0f9ff;
-  --color-text: #0c4a6e;
-  --color-text-muted: #0369a1;
-  --color-border: #e0f2fe;
-  --color-primary: #0ea5e9;
+  --color-bg: #fffdf7;
+  --color-bg-muted: #fff8e7;
+  --color-text: #1c1917;
+  --color-text-muted: #78716c;
+  --color-border: #fde68a;
+  --color-primary: #f97316;
   --color-primary-contrast: #ffffff;
-  --color-accent: #7c3aed;
-  --color-accent-glow: rgba(14, 165, 233, 0.15);
-  --color-danger: #ff3d71;
-  --color-warning: #f59e0b;
-  --color-success: #10b981;
+  --color-accent: #16a34a;
+  --color-accent-glow: rgba(249, 115, 22, 0.15);
+  --color-danger: #ef4444;
+  --color-warning: #d97706;
+  --color-success: #16a34a;
 
-  /* Additional semantic variables */
+  /* Semantic variables */
   --color-input-bg: var(--color-bg);
-  --color-card-bg: var(--color-bg-muted);
+  --color-card-bg: #ffffff;
   --color-tooltip-bg: var(--color-text);
   --color-tooltip-text: var(--color-bg);
-  
-  /* Shadow effects */
-  --shadow-sm: 0 2px 4px rgba(14, 165, 233, 0.05);
-  --shadow-md: 0 4px 6px rgba(14, 165, 233, 0.1);
-  --shadow-lg: 0 8px 16px rgba(14, 165, 233, 0.1);
 
-  /* Transitions */
+  /* Shadows */
+  --shadow-sm: 0 2px 4px rgba(249, 115, 22, 0.06);
+  --shadow-md: 0 4px 6px rgba(249, 115, 22, 0.10);
+  --shadow-lg: 0 8px 16px rgba(249, 115, 22, 0.12);
   --transition-glow: box-shadow 0.3s ease;
 
-  /* Background gradients - Winter Theme */
-  --gradient-primary: linear-gradient(135deg, #0ea5e9 0%, #7c3aed 100%);
-  --gradient-cool: linear-gradient(135deg, #06b6d4 0%, #3b82f6 100%);
-  --gradient-frost: linear-gradient(135deg, #f0f9ff 0%, #e0f2fe 100%);
-  --gradient-app-bg: linear-gradient(135deg, #f0f9ff 0%, #dbeafe 100%);
-  
-  /* Toast colors */
+  /* Gradients — Summer Camp 2026 */
+  --gradient-primary: linear-gradient(135deg, #f97316 0%, #fbbf24 100%);
+  --gradient-summer: linear-gradient(135deg, #fbbf24 0%, #f97316 50%, #ea580c 100%);
+  --gradient-nature: linear-gradient(135deg, #4ade80 0%, #16a34a 100%);
+  --gradient-sky: linear-gradient(135deg, #7dd3fc 0%, #38bdf8 100%);
+  --gradient-app-bg: linear-gradient(160deg, #fffdf7 0%, #fff8e7 60%, #fef3c7 100%);
+
+  /* Toast */
   --toast-success-bg: #f0fdf4;
   --toast-success-border: #bbf7d0;
   --toast-success-text: #166534;
@@ -44,61 +43,62 @@
   --toast-warning-bg: #fffbeb;
   --toast-warning-border: #fed7aa;
   --toast-warning-text: #d97706;
-  --toast-info-bg: #eff6ff;
-  --toast-info-border: #bfdbfe;
-  --toast-info-text: #2563eb;
+  --toast-info-bg: #fff7ed;
+  --toast-info-border: #fdba74;
+  --toast-info-text: #c2410c;
 }
 
-/* Dark theme overrides */
+/* Dark theme — Summer Night / Campfire */
 .dark {
   color-scheme: dark;
-  --color-bg: #0a0627;
-  --color-bg-muted: #131045;
-  --color-text: #e4e4ff;
-  --color-text-muted: #a5a6f6;
-  --color-border: #2e2b80;
-  --color-primary: #818cf8;
+  --color-bg: #110c05;
+  --color-bg-muted: #1e1409;
+  --color-text: #fef3c7;
+  --color-text-muted: #fdba74;
+  --color-border: #7c2d12;
+  --color-primary: #fb923c;
   --color-primary-contrast: #ffffff;
-  --color-accent: #a78bfa;
-  --color-accent-glow: rgba(14, 165, 233, 0.15);
-  --color-danger: #ff5c9e;
+  --color-accent: #4ade80;
+  --color-accent-glow: rgba(251, 146, 60, 0.2);
+  --color-danger: #f87171;
   --color-warning: #fbbf24;
-  --color-success: #34d399;
-  
-  /* Additional semantic variables - dark mode */
+  --color-success: #4ade80;
+
+  /* Semantic variables — dark */
   --color-input-bg: var(--color-bg-muted);
-  --color-card-bg: var(--color-bg);
+  --color-card-bg: #1a0e06;
   --color-tooltip-bg: var(--color-bg-muted);
   --color-tooltip-text: var(--color-text);
-  
-  /* Shadow effects - dark mode */
-  --shadow-sm: 0 2px 4px rgba(129, 140, 248, 0.1);
-  --shadow-md: 0 4px 6px rgba(129, 140, 248, 0.15);
-  --shadow-lg: 0 8px 16px rgba(129, 140, 248, 0.15);
-  
-  /* Additional dark mode effects */
-  --neon-glow: 0 0 10px rgba(129, 140, 248, 0.3),
-               0 0 20px rgba(129, 140, 248, 0.2),
-               0 0 30px rgba(129, 140, 248, 0.1);
-  --neon-text-glow: 0 0 5px rgba(216, 180, 254, 0.3);
 
-  /* Background gradients - dark mode winter */
-  --gradient-primary: linear-gradient(135deg, #0ea5e9 0%, #7c3aed 100%);
-  --gradient-cool: linear-gradient(135deg, #0891b2 0%, #2563eb 100%);
-  --gradient-frost: linear-gradient(135deg, #082f49 0%, #1e3a8a 100%);
-  --gradient-app-bg: linear-gradient(135deg, #0a0627 0%, #0c1e3a 100%);
+  /* Shadows — campfire glow */
+  --shadow-sm: 0 2px 4px rgba(251, 146, 60, 0.12);
+  --shadow-md: 0 4px 6px rgba(251, 146, 60, 0.18);
+  --shadow-lg: 0 8px 16px rgba(251, 146, 60, 0.18);
 
-  /* Toast colors - dark mode */
+  /* Campfire glow effects */
+  --neon-glow: 0 0 10px rgba(251, 146, 60, 0.35),
+               0 0 20px rgba(251, 146, 60, 0.2),
+               0 0 40px rgba(251, 146, 60, 0.1);
+  --neon-text-glow: 0 0 8px rgba(253, 186, 116, 0.5);
+
+  /* Gradients — Campfire Night */
+  --gradient-primary: linear-gradient(135deg, #ea580c 0%, #b45309 100%);
+  --gradient-summer: linear-gradient(135deg, #f97316 0%, #fb923c 100%);
+  --gradient-nature: linear-gradient(135deg, #166534 0%, #14532d 100%);
+  --gradient-sky: linear-gradient(135deg, #0c4a6e 0%, #0369a1 100%);
+  --gradient-app-bg: linear-gradient(160deg, #110c05 0%, #1a1008 60%, #200f05 100%);
+
+  /* Toast — dark campfire */
   --toast-success-bg: #064e3b;
   --toast-success-border: #065f46;
-  --toast-success-text: #34d399;
+  --toast-success-text: #4ade80;
   --toast-error-bg: #7f1d1d;
   --toast-error-border: #991b1b;
   --toast-error-text: #f87171;
   --toast-warning-bg: #78350f;
   --toast-warning-border: #92400e;
   --toast-warning-text: #fbbf24;
-  --toast-info-bg: #1e3a8a;
-  --toast-info-border: #1e40af;
-  --toast-info-text: #60a5fa;
+  --toast-info-bg: #431407;
+  --toast-info-border: #7c2d12;
+  --toast-info-text: #fdba74;
 }

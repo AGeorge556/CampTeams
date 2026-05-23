@@ -11,6 +11,9 @@ END $$;
 -- Create index if it doesn't exist
 CREATE INDEX IF NOT EXISTS idx_camp_sessions_schedule_id ON camp_sessions(schedule_id);
 
+-- Drop first to allow return type change
+DROP FUNCTION IF EXISTS get_sessions_with_schedule();
+
 -- Function to get sessions with schedule information
 CREATE OR REPLACE FUNCTION get_sessions_with_schedule()
 RETURNS TABLE (

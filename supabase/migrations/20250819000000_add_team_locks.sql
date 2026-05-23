@@ -2,6 +2,9 @@
 ALTER TABLE camp_settings
 ADD COLUMN IF NOT EXISTS locked_teams text[] DEFAULT '{}';
 
+-- Drop first to allow return type change (was 3 cols with details jsonb, now 2)
+DROP FUNCTION IF EXISTS can_switch_team_with_reason(uuid, text);
+
 -- Update can_switch_team_with_reason function to check for locked teams
 CREATE OR REPLACE FUNCTION can_switch_team_with_reason(user_id uuid, new_team text)
 RETURNS table(allowed boolean, reason text)

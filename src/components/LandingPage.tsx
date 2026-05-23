@@ -1,13 +1,9 @@
 import { useState, useEffect } from 'react'
-import { ArrowRight } from 'lucide-react'
+import { ArrowRight, Sun, Tent, Heart, Users } from 'lucide-react'
 import Auth from './Auth'
 
-// Logo path - Replace with your church logo
 const LOGO_PATH = '/logo.png'
 
-// Import images from the slideshow folder
-// You'll need to add images to src/assets/slideshow/
-// For now, we'll use a placeholder array that you can update
 const SLIDESHOW_IMAGES = [
   '/src/assets/slideshow/image1.jpg',
   '/src/assets/slideshow/image2.jpg',
@@ -22,19 +18,14 @@ export default function LandingPage() {
   const [currentImageIndex, setCurrentImageIndex] = useState(0)
   const [fadeState, setFadeState] = useState<'fade-in' | 'fade-out'>('fade-in')
 
-  // Slideshow logic - change image every 10 seconds with fade effect
   useEffect(() => {
     const interval = setInterval(() => {
-      // Start fade out
       setFadeState('fade-out')
-
-      // After fade out completes (1 second), change image and fade in
       setTimeout(() => {
         setCurrentImageIndex((prev) => (prev + 1) % SLIDESHOW_IMAGES.length)
         setFadeState('fade-in')
       }, 1000)
-    }, 10000) // Change every 10 seconds
-
+    }, 10000)
     return () => clearInterval(interval)
   }, [])
 
@@ -54,196 +45,163 @@ export default function LandingPage() {
 
   return (
     <div className="min-h-screen relative overflow-hidden">
-      {/* Background Slideshow */}
+      {/* Background slideshow */}
       <div className="absolute inset-0">
-        {/* Background Image with fade animation */}
         <div
           className={`absolute inset-0 bg-cover bg-center transition-opacity duration-1000 ${
             fadeState === 'fade-in' ? 'opacity-100' : 'opacity-0'
           }`}
-          style={{
-            backgroundImage: `url(${SLIDESHOW_IMAGES[currentImageIndex]})`,
-          }}
+          style={{ backgroundImage: `url(${SLIDESHOW_IMAGES[currentImageIndex]})` }}
         />
-        {/* Dark overlay for better text readability */}
-        <div className="absolute inset-0 bg-black/60" />
+        <div className="absolute inset-0 bg-gradient-to-b from-black/65 via-black/50 to-black/70" />
       </div>
 
       {/* Content */}
       <div className="relative z-10 min-h-screen flex flex-col">
+
         {/* Header */}
-        <header className="flex justify-between items-center p-6">
+        <header className="flex justify-between items-center p-5 sm:p-6">
           <div className="flex items-center space-x-3">
-            <div className="p-2 bg-white/10 backdrop-blur-sm rounded-lg border-2 border-cyan-400/50 shadow-neon-cyan">
-              <img src={LOGO_PATH} alt="Church Logo" className="h-10 w-10 object-contain" onError={(e) => {
-                // Fallback if logo doesn't exist yet
-                e.currentTarget.style.display = 'none'
-                e.currentTarget.parentElement!.innerHTML = '<div class="h-10 w-10 flex items-center justify-center text-2xl">⛪</div>'
-              }} />
+            <div className="p-2 bg-white/15 backdrop-blur-sm rounded-xl border border-orange-400/40 shadow-summer">
+              <img
+                src={LOGO_PATH}
+                alt="Church Logo"
+                className="h-10 w-10 object-contain"
+                onError={(e) => {
+                  e.currentTarget.style.display = 'none'
+                  e.currentTarget.parentElement!.innerHTML =
+                    '<div class="h-10 w-10 flex items-center justify-center text-2xl">⛺</div>'
+                }}
+              />
             </div>
-            <h1 className="text-2xl font-bold text-white neon-text-white">CampTeams ⛺</h1>
+            <div>
+              <p className="text-xs font-bold text-orange-300 uppercase tracking-widest leading-none">
+                BCH Youth Program
+              </p>
+              <h1 className="text-xl font-bold text-white summer-text-glow leading-tight">
+                Camp Teams
+              </h1>
+            </div>
           </div>
+
           <button
             onClick={handleSignIn}
-            className="inline-flex items-center px-4 py-2 text-sm font-medium rounded-md text-white bg-gradient-to-r from-cyan-500/20 to-purple-500/20 backdrop-blur-sm border-2 border-cyan-400/50 hover:border-pink-400/50 hover:shadow-neon-pink focus:outline-none focus:ring-2 focus:ring-cyan-400 transition-all"
+            className="inline-flex items-center px-4 py-2 text-sm font-semibold rounded-xl text-white bg-white/10 backdrop-blur-sm border border-white/25 hover:bg-white/20 hover:border-orange-400/60 focus:outline-none focus:ring-2 focus:ring-orange-400 transition-all duration-200"
           >
-            Sign In ✨
+            Sign In
           </button>
         </header>
 
-        {/* Hero Section */}
-        <main className="flex-1 flex items-center justify-center px-6">
+        {/* Hero */}
+        <main className="flex-1 flex items-center justify-center px-5 sm:px-6 py-8">
           <div className="max-w-4xl mx-auto text-center">
-            {/* Main Heading */}
-            <div className="mb-8 animate-fade-in-up">
-              <div className="mb-4">
-                <h3 className="text-xl md:text-2xl font-semibold text-white/90 mb-2 neon-text-yellow">
-                  ✝️ BCH Youth Program ✝️
-                </h3>
-                <div className="w-16 h-1 bg-gradient-to-r from-cyan-400 via-pink-400 to-purple-400 mx-auto mb-4 shadow-neon-multi"></div>
-              </div>
-              <h2 className="text-5xl md:text-7xl font-bold text-white mb-4 drop-shadow-2xl neon-text-cyan">
-                Camp Registration 🏕️
-                <span className="block neon-text-pink">Website ✨</span>
+
+            {/* Badge */}
+            <div className="inline-flex items-center space-x-2 px-4 py-2 rounded-full bg-orange-500/20 border border-orange-400/40 backdrop-blur-sm mb-6 animate-fade-in-up">
+              <Sun className="h-4 w-4 text-orange-300" />
+              <span className="text-sm font-semibold text-orange-200 uppercase tracking-wider">
+                BCH Youth Program ✝️
+              </span>
+              <Sun className="h-4 w-4 text-orange-300" />
+            </div>
+
+            {/* Main heading */}
+            <div className="mb-8 animate-fade-in-up" style={{ animationDelay: '0.1s' }}>
+              <h2 className="text-5xl sm:text-6xl md:text-7xl font-bold text-white mb-4 drop-shadow-2xl leading-tight">
+                Summer Camp
+                <span className="block text-orange-300 summer-text-glow">2026 ⛺</span>
               </h2>
-              <p className="text-xl md:text-2xl text-white/90 max-w-2xl mx-auto drop-shadow-lg neon-text-white">
-                Join an unforgettable faith-filled adventure 🙏
+              <p className="text-xl md:text-2xl text-white/85 max-w-2xl mx-auto drop-shadow-lg">
+                An unforgettable faith-filled adventure awaits 🙏
               </p>
             </div>
 
-            {/* Features */}
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-12 max-w-4xl mx-auto">
-              <div className="bg-white/10 backdrop-blur-md rounded-lg p-6 border-2 border-cyan-400/50 hover:border-cyan-400 hover:shadow-neon-cyan transition-all transform hover:scale-105">
-                <h4 className="text-lg font-semibold text-white mb-2 neon-text-cyan">🏔️ Multiple Camps</h4>
-                <p className="text-white/80">Register for Winter ❄️ and Summer ☀️ camps throughout the year</p>
+            {/* Feature cards */}
+            <div
+              className="grid grid-cols-1 md:grid-cols-3 gap-4 sm:gap-6 mb-10 max-w-4xl mx-auto animate-fade-in-up"
+              style={{ animationDelay: '0.2s' }}
+            >
+              <div className="bg-white/10 backdrop-blur-md rounded-2xl p-5 sm:p-6 border border-orange-400/30 hover:border-orange-400/60 hover:bg-white/15 transition-all duration-200 transform hover:scale-105">
+                <Tent className="h-8 w-8 text-orange-300 mb-3 mx-auto" />
+                <h4 className="text-base font-bold text-white mb-2">☀️ Summer Camp 2026</h4>
+                <p className="text-sm text-white/75">
+                  Register for an epic summer camp — full of adventure, faith, and fun
+                </p>
               </div>
 
-              <div className="bg-white/10 backdrop-blur-md rounded-lg p-6 border-2 border-pink-400/50 hover:border-pink-400 hover:shadow-neon-pink transition-all transform hover:scale-105">
-                <h4 className="text-lg font-semibold text-white mb-2 neon-text-pink">🔥 Team Selection</h4>
-                <p className="text-white/80">Choose your team and connect with friends 🤝</p>
+              <div className="bg-white/10 backdrop-blur-md rounded-2xl p-5 sm:p-6 border border-amber-400/30 hover:border-amber-400/60 hover:bg-white/15 transition-all duration-200 transform hover:scale-105">
+                <Users className="h-8 w-8 text-amber-300 mb-3 mx-auto" />
+                <h4 className="text-base font-bold text-white mb-2">🔥 Team Selection</h4>
+                <p className="text-sm text-white/75">
+                  Choose your team, compete together, and build lifelong friendships
+                </p>
               </div>
 
-              <div className="bg-white/10 backdrop-blur-md rounded-lg p-6 border-2 border-purple-400/50 hover:border-purple-400 hover:shadow-neon-purple transition-all transform hover:scale-105">
-                <h4 className="text-lg font-semibold text-white mb-2 neon-text-purple">✝️ Faith & Fun</h4>
-                <p className="text-white/80">Grow spiritually 📖 while having an amazing time 🎉</p>
+              <div className="bg-white/10 backdrop-blur-md rounded-2xl p-5 sm:p-6 border border-green-400/30 hover:border-green-400/60 hover:bg-white/15 transition-all duration-200 transform hover:scale-105">
+                <Heart className="h-8 w-8 text-green-300 mb-3 mx-auto" />
+                <h4 className="text-base font-bold text-white mb-2">✝️ Faith & Adventure</h4>
+                <p className="text-sm text-white/75">
+                  Grow spiritually 📖 through outdoor adventures and Christ-centered community
+                </p>
               </div>
             </div>
 
-            {/* CTA Buttons */}
-            <div className="flex flex-col sm:flex-row gap-4 justify-center items-center mb-8">
+            {/* CTA buttons */}
+            <div
+              className="flex flex-col sm:flex-row gap-4 justify-center items-center mb-8 animate-fade-in-up"
+              style={{ animationDelay: '0.3s' }}
+            >
               <button
                 onClick={handleGetStarted}
-                className="inline-flex items-center px-8 py-4 border-2 border-cyan-400 text-lg font-bold rounded-lg text-white bg-gradient-to-r from-cyan-500 to-purple-500 hover:from-cyan-400 hover:to-purple-400 focus:outline-none focus:ring-2 focus:ring-cyan-400 transform hover:scale-105 transition-all duration-200 shadow-neon-cyan neon-text-white"
+                className="inline-flex items-center px-8 py-4 text-lg font-bold rounded-2xl text-white bg-gradient-to-r from-orange-500 to-amber-500 hover:from-orange-400 hover:to-amber-400 focus:outline-none focus:ring-2 focus:ring-orange-400 transform hover:scale-105 transition-all duration-200 shadow-summer"
               >
-                Get Started ⛺
+                Register Now ⛺
                 <ArrowRight className="ml-2 h-5 w-5" />
               </button>
 
               <button
                 onClick={handleSignIn}
-                className="inline-flex items-center px-8 py-4 text-lg font-bold rounded-lg text-white bg-white/10 backdrop-blur-sm border-2 border-pink-400/50 hover:border-pink-400 hover:shadow-neon-pink focus:outline-none focus:ring-2 focus:ring-pink-400 transition-all duration-200"
+                className="inline-flex items-center px-8 py-4 text-lg font-bold rounded-2xl text-white bg-white/10 backdrop-blur-sm border-2 border-white/30 hover:border-white/60 hover:bg-white/20 focus:outline-none focus:ring-2 focus:ring-white/50 transition-all duration-200"
               >
                 Sign In ✨
               </button>
             </div>
 
-            {/* Additional Info */}
-            <div className="text-sm text-white/70">
-              <p>Join thousands of campers in a Christ-centered community ⛪✝️</p>
-            </div>
+            <p className="text-sm text-white/60 animate-fade-in-up" style={{ animationDelay: '0.4s' }}>
+              Join the BCH community for a Christ-centered summer experience ⛪✝️
+            </p>
           </div>
         </main>
 
         {/* Footer */}
-        <footer className="p-6 text-center text-white/70 text-sm">
-          <p>© 2026 BCH Youth Program • Christian Camp Registration Platform 🙏</p>
+        <footer className="p-5 sm:p-6 text-center text-white/55 text-sm">
+          <p>© 2026 BCH Youth Program • Summer Camp Registration Platform 🏕️</p>
         </footer>
       </div>
 
-      {/* CSS for animations and neon effects */}
       <style>{`
         @keyframes fade-in-up {
-          from {
-            opacity: 0;
-            transform: translateY(30px);
-          }
-          to {
-            opacity: 1;
-            transform: translateY(0);
-          }
+          from { opacity: 0; transform: translateY(24px); }
+          to   { opacity: 1; transform: translateY(0); }
         }
-
         .animate-fade-in-up {
-          animation: fade-in-up 1s ease-out;
+          animation: fade-in-up 0.8s ease-out both;
         }
 
-        /* Neon text effects */
-        .neon-text-cyan {
+        /* Warm summer sun glow */
+        .summer-text-glow {
           text-shadow:
-            0 0 5px rgba(6, 182, 212, 0.8),
-            0 0 10px rgba(6, 182, 212, 0.6),
-            0 0 20px rgba(6, 182, 212, 0.4),
-            0 0 40px rgba(6, 182, 212, 0.2);
+            0 0 6px  rgba(251, 146, 60, 0.7),
+            0 0 14px rgba(251, 146, 60, 0.5),
+            0 0 28px rgba(251, 146, 60, 0.3);
         }
 
-        .neon-text-pink {
-          text-shadow:
-            0 0 5px rgba(236, 72, 153, 0.8),
-            0 0 10px rgba(236, 72, 153, 0.6),
-            0 0 20px rgba(236, 72, 153, 0.4),
-            0 0 40px rgba(236, 72, 153, 0.2);
-        }
-
-        .neon-text-purple {
-          text-shadow:
-            0 0 5px rgba(168, 85, 247, 0.8),
-            0 0 10px rgba(168, 85, 247, 0.6),
-            0 0 20px rgba(168, 85, 247, 0.4),
-            0 0 40px rgba(168, 85, 247, 0.2);
-        }
-
-        .neon-text-yellow {
-          text-shadow:
-            0 0 5px rgba(250, 204, 21, 0.8),
-            0 0 10px rgba(250, 204, 21, 0.6),
-            0 0 20px rgba(250, 204, 21, 0.4),
-            0 0 40px rgba(250, 204, 21, 0.2);
-        }
-
-        .neon-text-white {
-          text-shadow:
-            0 0 5px rgba(255, 255, 255, 0.6),
-            0 0 10px rgba(255, 255, 255, 0.4),
-            0 0 20px rgba(255, 255, 255, 0.2);
-        }
-
-        /* Neon box shadows */
-        .shadow-neon-cyan {
+        /* Campfire glow box-shadow */
+        .shadow-summer {
           box-shadow:
-            0 0 10px rgba(6, 182, 212, 0.6),
-            0 0 20px rgba(6, 182, 212, 0.4),
-            0 0 30px rgba(6, 182, 212, 0.2);
-        }
-
-        .shadow-neon-pink {
-          box-shadow:
-            0 0 10px rgba(236, 72, 153, 0.6),
-            0 0 20px rgba(236, 72, 153, 0.4),
-            0 0 30px rgba(236, 72, 153, 0.2);
-        }
-
-        .shadow-neon-purple {
-          box-shadow:
-            0 0 10px rgba(168, 85, 247, 0.6),
-            0 0 20px rgba(168, 85, 247, 0.4),
-            0 0 30px rgba(168, 85, 247, 0.2);
-        }
-
-        .shadow-neon-multi {
-          box-shadow:
-            0 0 10px rgba(6, 182, 212, 0.6),
-            0 0 20px rgba(236, 72, 153, 0.4),
-            0 0 30px rgba(168, 85, 247, 0.2);
+            0 0 10px rgba(249, 115, 22, 0.5),
+            0 0 22px rgba(249, 115, 22, 0.3),
+            0 0 40px rgba(249, 115, 22, 0.15);
         }
       `}</style>
     </div>

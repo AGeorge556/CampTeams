@@ -557,18 +557,19 @@ export default function Dashboard({ onPageChange }: DashboardProps) {
         )}
       </div>
 
-      {/* Large, Fun Countdown Section with Summer Icons */}
-      <div className="relative p-4 sm:p-6">
-        {/* Summer Icons - background/floating */}
-        <Sun className="absolute left-2 sm:left-4 top-1 sm:top-2 text-cyan-200 opacity-30 w-16 h-16 sm:w-24 sm:h-24 animate-spin-slow" />
-        <Star className="absolute right-4 sm:right-8 top-4 sm:top-8 text-yellow-200 opacity-30 w-12 h-12 sm:w-16 sm:h-16 animate-bounce" />
-        <Flame className="absolute left-1/2 -translate-x-1/2 bottom-1 sm:bottom-2 text-cyan-300 opacity-20 w-16 h-16 sm:w-20 sm:h-20" />
-        <Trees className="absolute left-4 sm:left-8 bottom-4 sm:bottom-8 text-green-200 opacity-30 w-16 h-16 sm:w-20 sm:h-20" />
-        <Mountain className="absolute right-2 sm:right-4 bottom-2 sm:bottom-4 text-blue-200 opacity-30 w-20 h-20 sm:w-24 sm:h-24" />
-        <div className="relative z-10 w-full">
-          <CountdownTimer targetDate={currentCamp.start_date} compact={false} />
+      {/* Countdown — only shown when CampHero is not displayed (no camp bible verse) */}
+      {!currentCamp.bible_verse && (
+        <div className="relative p-4 sm:p-6 rounded-2xl overflow-hidden bg-gradient-to-br from-orange-50 to-amber-50 dark:from-orange-950/30 dark:to-amber-950/30 border border-orange-200/50 dark:border-orange-800/30">
+          <Sun className="absolute left-2 sm:left-4 top-1 sm:top-2 text-orange-200 dark:text-orange-900 opacity-40 w-16 h-16 sm:w-24 sm:h-24 animate-spin-slow" />
+          <Star className="absolute right-4 sm:right-8 top-4 sm:top-8 text-amber-200 dark:text-amber-900 opacity-40 w-12 h-12 sm:w-16 sm:h-16 animate-bounce" />
+          <Flame className="absolute left-1/2 -translate-x-1/2 bottom-1 sm:bottom-2 text-orange-300 dark:text-orange-900 opacity-25 w-16 h-16 sm:w-20 sm:h-20" />
+          <Trees className="absolute left-4 sm:left-8 bottom-4 sm:bottom-8 text-green-200 dark:text-green-900 opacity-35 w-16 h-16 sm:w-20 sm:h-20" />
+          <Mountain className="absolute right-2 sm:right-4 bottom-2 sm:bottom-4 text-sky-200 dark:text-sky-900 opacity-35 w-20 h-20 sm:w-24 sm:h-24" />
+          <div className="relative z-10 w-full">
+            <CountdownTimer targetDate={currentCamp.start_date} compact={false} />
+          </div>
         </div>
-      </div>
+      )}
 
       {/* Scoreboard visible after Daily Inspiration */}
       <Scoreboard />
@@ -584,12 +585,7 @@ export default function Dashboard({ onPageChange }: DashboardProps) {
          </h3>
          <div className="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4">
            {(() => {
-             // Cache and validate teamBalance once per render
-             if (!Array.isArray(teamBalance)) {
-               console.error('[Dashboard] teamBalance is not an array:', typeof teamBalance, teamBalance)
-               return null
-             }
-
+             if (!Array.isArray(teamBalance)) return null
              return teamBalance.map((team) => {
                const teamKey = team.team as TeamColor
                const teamData = TEAMS[teamKey]

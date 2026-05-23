@@ -38,13 +38,13 @@ USING (
   bucket_id = 'gallery-photos'
   AND EXISTS (
     SELECT 1 FROM profiles
-    WHERE id = auth.uid() AND (is_admin = true OR role = 'admin')
+    WHERE id = auth.uid() AND is_admin = true
   )
 )
 WITH CHECK (
   bucket_id = 'gallery-photos'
   AND EXISTS (
     SELECT 1 FROM profiles
-    WHERE id = auth.uid() AND (is_admin = true OR role = 'admin')
+    WHERE id = auth.uid() AND is_admin = true
   )
 );

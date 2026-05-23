@@ -70,7 +70,7 @@ CREATE POLICY "Admins can view all photos"
   USING (
     EXISTS (
       SELECT 1 FROM profiles
-      WHERE id = auth.uid() AND (is_admin = true OR role = 'admin')
+      WHERE id = auth.uid() AND is_admin = true
     )
   );
 
@@ -82,7 +82,7 @@ CREATE POLICY "Admins can manage all photos"
   USING (
     EXISTS (
       SELECT 1 FROM profiles
-      WHERE id = auth.uid() AND (is_admin = true OR role = 'admin')
+      WHERE id = auth.uid() AND is_admin = true
     )
   );
 

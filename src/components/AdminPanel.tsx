@@ -356,9 +356,9 @@ export default function AdminPanel() {
             <p className="text-sm text-[var(--color-text-muted)]">{campSettings?.max_team_size || 50}</p>
           </div>
           <div className="bg-[var(--color-bg-muted)] rounded-lg p-4">
-            <h4 className="font-medium text-[var(--color-text)]">{t('oilExtractionVisibility')}</h4>
+            <h4 className="font-medium text-[var(--color-text)]">Big Game Visibility</h4>
             <p className="text-sm text-[var(--color-text-muted)]">
-              {oilExtractionVisible ? t('oilExtractionVisible') : t('oilExtractionHidden')}
+              {oilExtractionVisible ? 'Visible to campers' : 'Hidden from campers'}
             </p>
           </div>
           <div className="bg-[var(--color-bg-muted)] rounded-lg p-4">
@@ -369,28 +369,28 @@ export default function AdminPanel() {
           </div>
         </div>
         
-        {/* Oil Extraction Visibility Toggle */}
+        {/* Big Game Visibility Toggle */}
         <div className="mt-4 flex items-center justify-between p-4 bg-[var(--color-bg-muted)] border border-[var(--color-border)] rounded-lg">
           <div className="flex items-center">
-            <Zap className="h-5 w-5 text-sky-600 mr-3" />
+            <Zap className="h-5 w-5 text-orange-500 mr-3" />
             <div>
-              <h4 className="font-medium text-[var(--color-text)]">{t('oilExtractionVisibility')}</h4>
+              <h4 className="font-medium text-[var(--color-text)]">Big Game Visibility</h4>
               <p className="text-sm text-[var(--color-text-muted)]">
-                {oilExtractionVisible ? t('oilExtractionVisible') : t('oilExtractionHidden')}
+                {oilExtractionVisible ? 'Visible to campers' : 'Hidden from campers'}
               </p>
             </div>
           </div>
           <button
             onClick={toggleOilExtractionVisibility}
             disabled={oilVisibilityLoading}
-            className="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md text-white bg-sky-600 hover:bg-sky-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-sky-500 disabled:opacity-50"
+            className="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md text-white bg-orange-600 hover:bg-orange-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-orange-500 disabled:opacity-50"
           >
             {oilVisibilityLoading ? (
               <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white mr-2"></div>
             ) : (
               <Zap className="h-4 w-4 mr-2" />
             )}
-            {oilExtractionVisible ? t('hideOilExtraction') : t('showOilExtraction')}
+            {oilExtractionVisible ? 'Hide Big Game' : 'Show Big Game'}
           </button>
         </div>
 
