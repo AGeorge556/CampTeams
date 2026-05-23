@@ -104,7 +104,28 @@ export function CampProvider({ children }: { children: ReactNode }) {
   // Load camp and registration data
   const loadCampData = async () => {
     setLoading(true)
-    const campId = getCampIdFromUrl()
+    let campId = getCampIdFromUrl()
+
+    // SINGLE-CAMP MODE: auto-select the active camp if none in URL
+    if (!campId) {
+      try {
+        const { data } = await supabase
+          .from('camps')
+          .select('id')
+          .eq('is_active', true)
+          .limit(1)
+          .single()
+
+        if (data?.id) {
+          campId = data.id
+          const url = new URL(window.location.href)
+          url.searchParams.set('camp', campId)
+          window.history.replaceState({}, '', url.toString())
+        }
+      } catch {
+        // No active camp — leave campId null
+      }
+    }
 
     if (!campId) {
       setCurrentCamp(null)

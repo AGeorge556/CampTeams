@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react'
-import { Users, Save, AlertCircle } from 'lucide-react'
+import { Users, Save, AlertCircle, Loader2 } from 'lucide-react'
 import { useCamp } from '../contexts/CampContext'
 import { useToast } from './Toast'
 import { TEAMS, TeamColor } from '../lib/supabase'
@@ -10,19 +10,18 @@ import { useTeamBalancing } from '../hooks/useTeamBalancing'
 export default function TeamSelection() {
   const { currentCamp, currentRegistration, refreshRegistration } = useCamp()
   const { addToast } = useToast()
-  const { canTeamAcceptPlayer } = useTeamBalancing()
+  const { canTeamAcceptPlayer, teamBalances, loading: balancesLoading } = useTeamBalancing()
   const [selectedTeam, setSelectedTeam] = useState<TeamColor>('red')
   const [loading, setLoading] = useState(false)
   const [teamStatus, setTeamStatus] = useState<Record<TeamColor, { canAccept: boolean; reason: string }>>({} as any)
 
-  // Check team availability on mount and when selection changes
+  // Check team availability once balances have loaded
   useEffect(() => {
     const checkTeamAvailability = async () => {
-      if (!currentRegistration) return
+      if (!currentRegistration || balancesLoading || teamBalances.length === 0) return
 
       const status: Record<TeamColor, { canAccept: boolean; reason: string }> = {} as any
 
-      // Convert TEAMS object to array
       const teamKeys = Object.keys(TEAMS) as TeamColor[]
       for (const teamKey of teamKeys) {
         const result = await canTeamAcceptPlayer(teamKey, currentRegistration.gender)
@@ -33,7 +32,7 @@ export default function TeamSelection() {
     }
 
     checkTeamAvailability()
-  }, [currentRegistration])
+  }, [currentRegistration, teamBalances, balancesLoading])
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
@@ -82,6 +81,14 @@ export default function TeamSelection() {
     } finally {
       setLoading(false)
     }
+  }
+
+  if (balancesLoading || teamBalances.length === 0) {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-[var(--gradient-app-bg)]">
+        <Loader2 className="w-8 h-8 text-[var(--color-primary)] animate-spin" />
+      </div>
+    )
   }
 
   return (

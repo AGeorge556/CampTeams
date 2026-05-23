@@ -4,7 +4,7 @@ import { useCamp } from '../contexts/CampContext'
 import { useToast } from './Toast'
 import { supabase } from '../lib/supabase'
 import Button from './ui/Button'
-import { UserCircle, Calendar, Snowflake, Sun, Users, Phone, User } from 'lucide-react'
+import { UserCircle, Calendar, Snowflake, Sun, Phone, User } from 'lucide-react'
 
 export default function CampRegistrationOnboarding() {
   const { user } = useAuth()
@@ -19,7 +19,6 @@ export default function CampRegistrationOnboarding() {
     parent_number: '',
     grade: '',
     gender: '',
-    preferred_team: '',
     participate_in_teams: true,
   })
 
@@ -92,15 +91,6 @@ export default function CampRegistrationOnboarding() {
       return
     }
 
-    if (formData.participate_in_teams && !formData.preferred_team) {
-      addToast({
-        type: 'error',
-        title: 'Validation Error',
-        message: 'Please select your preferred team'
-      })
-      return
-    }
-
     setLoading(true)
 
     try {
@@ -116,8 +106,8 @@ export default function CampRegistrationOnboarding() {
           parent_number: formData.parent_number.trim(),
           grade: parseInt(formData.grade),
           gender: formData.gender,
-          preferred_team: formData.participate_in_teams ? formData.preferred_team : null,
-          current_team: null, // Will be assigned by admin
+          preferred_team: null,
+          current_team: null, // Assigned via TeamSelection step
           participate_in_teams: formData.participate_in_teams,
           role: 'camper',
           switches_remaining: 3,
@@ -325,35 +315,6 @@ export default function CampRegistrationOnboarding() {
                 </span>
               </label>
             </div>
-
-            {/* Preferred Team (only if participating) */}
-            {formData.participate_in_teams && (
-              <div>
-                <label className="block text-sm font-medium text-[var(--color-text)] mb-3">
-                  Preferred Team *
-                </label>
-                <div className="grid grid-cols-2 gap-4">
-                  {['red', 'blue', 'green', 'yellow'].map((team) => (
-                    <button
-                      key={team}
-                      type="button"
-                      onClick={() => setFormData({ ...formData, preferred_team: team })}
-                      className={`py-4 px-4 rounded-lg border-2 transition-all capitalize font-medium ${
-                        formData.preferred_team === team
-                          ? `border-${team}-500 bg-${team}-50 dark:bg-${team}-950 text-${team}-700 dark:text-${team}-300`
-                          : 'border-[var(--color-border)] bg-[var(--color-bg-muted)] text-[var(--color-text)]'
-                      }`}
-                    >
-                      <Users className="w-5 h-5 mx-auto mb-1" />
-                      Team {team}
-                    </button>
-                  ))}
-                </div>
-                <p className="mt-2 text-xs text-[var(--color-text-muted)]">
-                  Note: Your preferred team is a suggestion. Final team assignment will be made by camp administrators for balanced teams.
-                </p>
-              </div>
-            )}
 
             {/* Submit Button */}
             <Button

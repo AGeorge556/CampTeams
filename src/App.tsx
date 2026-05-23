@@ -37,7 +37,8 @@ import LanguageNotification from './components/LanguageNotification'
 import Scoreboard from './components/Scoreboard'
 import ScoreboardAdmin from './components/ScoreboardAdmin'
 import AttendanceCheckIn from './components/AttendanceCheckIn'
-import CampSelection from './components/CampSelection'
+// SINGLE-CAMP MODE: CampSelection commented out — context auto-picks the active camp
+// import CampSelection from './components/CampSelection'
 import CampLandingPage from './components/CampLandingPage'
 import { supabase } from './lib/supabase'
 import { CheckCircle, XCircle, Loader2 } from 'lucide-react'
@@ -296,10 +297,17 @@ function AppContent({
     return <RulesAgreement />
   }
 
-  // Show camp selection if no camp is selected
-  // This allows users to choose which camp they want to access
+  // SINGLE-CAMP MODE: if auto-select found no active camp, show a message
+  // To restore multi-camp selection: uncomment CampSelection import above and swap this block
   if (!currentCamp) {
-    return <CampSelection />
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-[var(--gradient-app-bg)] px-4">
+        <div className="text-center">
+          <p className="text-2xl font-bold text-[var(--color-text)] mb-2">No Active Camp</p>
+          <p className="text-[var(--color-text-muted)]">Please check back soon — camp registration will open shortly.</p>
+        </div>
+      </div>
+    )
   }
 
   // If camp is selected but user is not registered for it, show registration
