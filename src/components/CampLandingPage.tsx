@@ -1,5 +1,6 @@
 import { useState } from 'react'
 import { Calendar, Sun, ArrowRight } from 'lucide-react'
+import logoUrl from '../assets/Logo.png'
 import { useCamp } from '../contexts/CampContext'
 import Button from './ui/Button'
 
@@ -40,8 +41,8 @@ export default function CampLandingPage({ onEnter }: CampLandingPageProps) {
           <div className="relative z-10 p-8 md:p-12">
             {/* Welcome Header */}
             <div className="text-center mb-8">
-              <div className="inline-flex p-5 rounded-full bg-gradient-to-br from-amber-400 to-orange-500 text-white mb-6 shadow-lg">
-                <Sun className="w-12 h-12" />
+              <div className="inline-flex p-3 rounded-full bg-white/90 dark:bg-white/10 mb-6 shadow-lg backdrop-blur-sm">
+                <img src={logoUrl} alt="BCH Youth" className="w-16 h-16 object-contain" />
               </div>
               <h1 className="text-3xl md:text-4xl font-bold text-[var(--color-text)] mb-2">
                 Welcome to {currentCamp.name}!

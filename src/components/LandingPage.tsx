@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react'
-import { ArrowRight, Sun, Tent, Users, Heart } from 'lucide-react'
+import { ArrowRight, Tent, Users, Heart } from 'lucide-react'
 import Auth from './Auth'
 import CampfireCanvas from './CampfireCanvas'
 
@@ -97,7 +97,7 @@ export default function LandingPage() {
 
             {/* Eyebrow */}
             <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-orange-500/18 border border-orange-400/30 backdrop-blur-sm mb-7 anim-up" style={{ animationDelay: '0ms' }}>
-              <Sun className="h-3.5 w-3.5 text-orange-400" />
+              <img src={LOGO_PATH} alt="" className="h-4 w-4 object-contain" />
               <span className="text-xs font-bold text-orange-300 uppercase tracking-[0.16em]">
                 BCH Youth Program
               </span>

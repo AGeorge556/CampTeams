@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react'
 import { Menu, X, Users, Calendar, Trophy, LogOut, Camera, QrCode, Home, Sun, Swords } from 'lucide-react'
+import logoUrl from '../assets/Logo.png'
 import { useAuth } from '../hooks/useAuth'
 import { useProfile } from '../hooks/useProfile'
 import { useLanguage } from '../contexts/LanguageContext'
@@ -80,9 +81,11 @@ export default function Navigation({ currentPage, onPageChange }: NavigationProp
             onClick={() => handlePageChange('dashboard')}
             className="flex items-center space-x-2.5 group"
           >
-            <div className="flex items-center justify-center w-9 h-9 rounded-xl bg-gradient-to-br from-orange-400 to-amber-500 text-white shadow-md group-hover:shadow-lg transition-shadow duration-200">
-              <Sun className="h-5 w-5" />
-            </div>
+            <img
+              src={logoUrl}
+              alt="BCH Youth"
+              className="h-9 w-9 rounded-xl object-contain shadow-md group-hover:shadow-lg transition-shadow duration-200"
+            />
             <div className="flex flex-col leading-none">
               <span className="text-[10px] font-bold text-[var(--color-primary)] uppercase tracking-widest">
                 BCH Youth
@@ -186,9 +189,7 @@ export default function Navigation({ currentPage, onPageChange }: NavigationProp
                 {profile?.is_admin && ' • Admin'}
               </p>
             </div>
-            <div className="inline-flex items-center justify-center w-8 h-8 rounded-lg bg-gradient-to-br from-orange-400 to-amber-500 text-white shadow-sm">
-              <Sun className="h-4 w-4" />
-            </div>
+            <img src={logoUrl} alt="BCH Youth" className="w-8 h-8 rounded-lg object-contain" />
           </div>
 
           {/* Nav links */}
