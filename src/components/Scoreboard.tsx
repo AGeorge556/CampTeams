@@ -1,5 +1,4 @@
-// React runtime is automatic; no default import required
-
+import { Trophy } from 'lucide-react'
 import { useScoreboard } from '../hooks/useScoreboard'
 import { TEAMS } from '../lib/supabase'
 import LoadingSpinner from './LoadingSpinner'
@@ -8,50 +7,79 @@ export default function Scoreboard() {
   const { scores, loading, error } = useScoreboard()
 
   if (loading) return <LoadingSpinner text="Loading scores..." />
-  if (error) return <div className="text-red-600">{error}</div>
+  if (error) return <div className="text-[var(--color-danger)] p-4 text-sm">{error}</div>
 
-  // Ensure all teams are displayed, default to 0
   const teamIds = ['red', 'blue', 'green', 'yellow'] as const
   const map: Record<string, number> = { red: 0, blue: 0, green: 0, yellow: 0 }
   scores.forEach(s => { map[s.team_id] = s.points })
 
-  const values = teamIds.map(t => map[t])
-  const maxVal = Math.max(1, ...values)
-  const topVal = Math.max(...values)
+  const ranked = teamIds
+    .map(id => ({ id, points: map[id], data: TEAMS[id] }))
+    .sort((a, b) => b.points - a.points)
 
-  const funLabel = (points: number, isTop: boolean) => {
-    if (isTop && points > 0) return `${points} pts 🏆`
-    if (points >= 50) return `${points} pts 🔥`
-    if (points >= 10) return `${points} pts ✨`
-    if (points > 0) return `${points} pts 💪`
-    return `${points} pts 😴`
-  }
+  const maxPts   = Math.max(1, ...ranked.map(t => t.points))
+  const hasScores = ranked.some(t => t.points > 0)
+
+  const suffix = (rank: number) =>
+    rank === 0 ? 'st' : rank === 1 ? 'nd' : rank === 2 ? 'rd' : 'th'
 
   return (
-    <div className="bg-[var(--color-card-bg)] rounded-lg shadow p-4 sm:p-6 border border-[var(--color-border)]">
-      <h2 className="text-lg sm:text-xl font-bold mb-4 sm:mb-6 text-[var(--color-text)]">Team Scoreboard</h2>
+    <div className="bg-[var(--color-card-bg)] rounded-2xl border border-[var(--color-border)] p-5 sm:p-6 shadow-[var(--shadow-sm)]">
+      <div className="flex items-center justify-between mb-5">
+        <h2 className="text-base font-bold text-[var(--color-text)]">Scoreboard</h2>
+        <Trophy className="h-5 w-5 text-amber-500" />
+      </div>
 
-      {/* Bar Chart */}
-      <div className="flex items-end justify-around gap-2 sm:gap-4 h-48 sm:h-64 md:h-72 mb-4 sm:mb-6">
-        {teamIds.map(team => {
-          const points = map[team] ?? 0
-          const heightPct = Math.round((points / maxVal) * 100)
-          const isTop = points === topVal && topVal > 0
-          const teamData = TEAMS[team]
+      <div className="space-y-2.5">
+        {ranked.map((team, rank) => {
+          const isLeader = rank === 0 && hasScores
+          const barPct   = `${Math.round((team.points / maxPts) * 100)}%`
+
           return (
-            <div key={team} className="flex flex-col items-center flex-1">
-              <div className="w-full max-w-[40px] sm:max-w-[50px] md:max-w-[60px] lg:max-w-[72px] bg-[var(--color-bg-muted)] rounded-t-md overflow-hidden flex items-end justify-center h-36 sm:h-44 md:h-48 lg:h-56 border border-[var(--color-border)]">
-                <div
-                  className={`w-full ${teamData.color} transition-all duration-700 ease-out rounded-t-md`}
-                  style={{ height: `${heightPct}%` }}
-                  aria-label={`${teamData.name} bar: ${points} points`}
-                  title={`${teamData.name}: ${points} points`}
-                />
+            <div
+              key={team.id}
+              className={`flex items-center gap-3 px-3 py-2.5 rounded-xl transition-colors ${
+                isLeader
+                  ? 'bg-amber-50/80 dark:bg-amber-950/20 ring-1 ring-amber-300/50 dark:ring-amber-700/30'
+                  : 'bg-[var(--color-bg-muted)]'
+              }`}
+            >
+              {/* Rank label */}
+              <span
+                className={`w-7 text-xs font-bold tabular-nums shrink-0 ${
+                  isLeader ? 'text-amber-600 dark:text-amber-400' : 'text-[var(--color-text-muted)]'
+                }`}
+              >
+                {rank + 1}{suffix(rank)}
+              </span>
+
+              {/* Team color tile */}
+              <div
+                className="w-8 h-8 rounded-lg flex items-center justify-center shrink-0"
+                style={{ background: team.data.colorValue }}
+              >
+                {isLeader && <Trophy className="h-3.5 w-3.5 text-white" />}
               </div>
-              <div className="mt-2 sm:mt-3 text-center">
-                <div className="text-xs sm:text-sm font-medium text-[var(--color-text)]">{teamData.name}</div>
-                <div className={`text-sm sm:text-base md:text-lg lg:text-xl font-extrabold ${isTop ? 'text-[var(--color-primary)]' : 'text-[var(--color-text)]'}`}>
-                  {funLabel(points, isTop)}
+
+              {/* Name + progress bar + points */}
+              <div className="flex-1 min-w-0">
+                <div className="flex items-center justify-between gap-2 mb-1.5">
+                  <span className="text-sm font-semibold text-[var(--color-text)]">
+                    {team.data.name}
+                  </span>
+                  <span
+                    className={`text-sm font-bold tabular-nums shrink-0 ${
+                      isLeader ? 'text-amber-600 dark:text-amber-400' : 'text-[var(--color-text)]'
+                    }`}
+                  >
+                    {team.points.toLocaleString()} pts
+                  </span>
+                </div>
+                <div className="h-1.5 rounded-full bg-[var(--color-border)] overflow-hidden">
+                  <div
+                    className="h-full rounded-full transition-all duration-700 ease-out"
+                    style={{ width: barPct, background: team.data.colorValue }}
+                  />
                 </div>
               </div>
             </div>
@@ -59,18 +87,11 @@ export default function Scoreboard() {
         })}
       </div>
 
-      {/* Legend */}
-      <div className="flex flex-wrap justify-center gap-2 sm:gap-4 text-xs sm:text-sm text-[var(--color-text-muted)]">
-        {teamIds.map(team => {
-           const teamData = TEAMS[team]
-           return (
-             <div key={team} className="flex items-center gap-1 sm:gap-2">
-               <span className={`inline-block w-2 h-2 sm:w-3 sm:h-3 rounded ${teamData.color}`} />
-               {teamData.name}
-             </div>
-           )
-         })}
-       </div>
-     </div>
-   )
- }
+      {!hasScores && (
+        <p className="text-center text-sm text-[var(--color-text-muted)] mt-3">
+          No scores yet — competition starts soon.
+        </p>
+      )}
+    </div>
+  )
+}

@@ -1,5 +1,5 @@
 import React from 'react'
-import { Users, User, ArrowRight, AlertTriangle, Shield, Info } from 'lucide-react'
+import { Users, User, ArrowRight, AlertTriangle, Shield } from 'lucide-react'
 import { TEAMS, TeamColor, supabase } from '../lib/supabase'
 import { usePlayers } from '../hooks/usePlayers'
 import { useProfile } from '../hooks/useProfile'
@@ -16,102 +16,55 @@ export default function PlayerLists() {
   const { players, loading } = usePlayers()
   const { profile } = useProfile()
   const { currentCamp, currentRegistration } = useCamp()
-  const { teamBalances, canUserSwitchToTeam, isTeamAtCapacity, getTeamSize } = useTeamBalancing()
+  const { teamBalances, canUserSwitchToTeam, isTeamAtCapacity } = useTeamBalancing()
   const { addToast } = useToast()
   const [switching, setSwitching] = React.useState<string | null>(null)
   const [teamValidation, setTeamValidation] = React.useState<Record<string, { canSwitch: boolean; reason: string }>>({})
 
-  // Validate players is a proper object
   if (!players || typeof players !== 'object') {
-    console.error('[PlayerLists] players is invalid:', typeof players, players)
     return (
-      <div className="bg-[var(--color-card-bg)] rounded-lg shadow-sm p-6 border border-[var(--color-border)]">
-        <p>Loading team rosters...</p>
+      <div className="bg-[var(--color-card-bg)] rounded-2xl border border-[var(--color-border)] p-6 text-sm text-[var(--color-text-muted)]">
+        Loading team rosters...
       </div>
     )
   }
 
-  // Pre-validate team switches for current user
   React.useEffect(() => {
     if (!currentRegistration) return
-
-    const validateTeams = async () => {
-      const validation: Record<string, { canSwitch: boolean; reason: string }> = {}
-
-      for (const teamKey of Object.keys(TEAMS)) {
-        if (teamKey !== currentRegistration.current_team) {
-          const result = await canUserSwitchToTeam(teamKey as TeamColor)
-          validation[teamKey] = result
+    const validate = async () => {
+      const result: Record<string, { canSwitch: boolean; reason: string }> = {}
+      for (const key of Object.keys(TEAMS)) {
+        if (key !== currentRegistration.current_team) {
+          result[key] = await canUserSwitchToTeam(key as TeamColor)
         }
       }
-
-      setTeamValidation(validation)
+      setTeamValidation(result)
     }
-
-    validateTeams()
+    validate()
   }, [currentRegistration, canUserSwitchToTeam])
 
   const handleSwitchTeam = async (newTeam: TeamColor) => {
     if (!currentRegistration || !currentCamp || switching) return
-
     setSwitching(newTeam)
     try {
-      // Check if switch is allowed using the database validation
-      const switchResult = await canUserSwitchToTeam(newTeam)
-
-      if (!switchResult.canSwitch) {
-        addToast({
-          type: 'error',
-          title: t('cannotSwitchTeams'),
-          message: switchResult.reason
-        })
+      const check = await canUserSwitchToTeam(newTeam)
+      if (!check.canSwitch) {
+        addToast({ type: 'error', title: t('cannotSwitchTeams'), message: check.reason })
         return
       }
-
-      // Record the switch in team_switches table
-      const { error: switchError } = await supabase
+      const { error: switchErr } = await supabase
         .from('team_switches')
-        .insert({
-          user_id: currentRegistration.user_id,
-          from_team: currentRegistration.current_team,
-          to_team: newTeam
-        })
-
-      if (switchError) {
-        throw switchError
-      }
-
-      // Update camp_registration (not profile!)
-      const { error: updateError } = await supabase
+        .insert({ user_id: currentRegistration.user_id, from_team: currentRegistration.current_team, to_team: newTeam })
+      if (switchErr) throw switchErr
+      const { error: updateErr } = await supabase
         .from('camp_registrations')
-        .update({
-          current_team: newTeam,
-          switches_remaining: (currentRegistration.switches_remaining || 0) - 1
-        })
+        .update({ current_team: newTeam, switches_remaining: (currentRegistration.switches_remaining || 0) - 1 })
         .eq('id', currentRegistration.id)
-
-      if (updateError) {
-        throw updateError
-      }
-
-      addToast({
-        type: 'success',
-        title: t('teamSwitchSuccessful'),
-        message: `${t('successfullyJoinedTeam')} ${TEAMS[newTeam].name} team!`
-      })
-
-      // Refresh the page to ensure all components update properly
-      setTimeout(() => {
-        window.location.reload()
-      }, 500)
-
-    } catch (error: any) {
-      console.error('Error switching team:', error)
-      addToast({
-        type: 'error',
-        title: 'Error',
-        message: error.message || t('failedToSwitchTeams')
-      })
+      if (updateErr) throw updateErr
+      addToast({ type: 'success', title: t('teamSwitchSuccessful'), message: `${t('successfullyJoinedTeam')} ${TEAMS[newTeam].name} team!` })
+      setTimeout(() => window.location.reload(), 500)
+    } catch (err: any) {
+      addToast({ type: 'error', title: 'Error', message: err.message || t('failedToSwitchTeams') })
     } finally {
       setSwitching(null)
     }
@@ -119,139 +72,123 @@ export default function PlayerLists() {
 
   if (loading) {
     return (
-      <div className="bg-[var(--color-card-bg)] rounded-lg shadow-sm p-6 border border-[var(--color-border)]">
+      <div className="bg-[var(--color-card-bg)] rounded-2xl border border-[var(--color-border)] p-6">
         <LoadingSpinner text={t('loadingTeamRosters')} />
       </div>
     )
   }
 
   return (
-    <div className="bg-[var(--color-card-bg)] rounded-lg shadow-sm p-6 border border-[var(--color-border)]">
-      <h3 className="text-lg font-semibold text-[var(--color-text)] mb-6 flex items-center">
-        <Users className="h-5 w-5 mr-2" />
-        {t('teamRosters')}
-      </h3>
-      
-      {/* Team Balance Summary */}
-      {(() => {
-        // Cache and validate teamBalances once per render
-        if (!Array.isArray(teamBalances)) {
-          console.error('[PlayerLists] teamBalances is not an array:', typeof teamBalances, teamBalances)
-          return null
-        }
+    <div className="bg-[var(--color-card-bg)] rounded-2xl border border-[var(--color-border)] shadow-[var(--shadow-sm)] overflow-hidden">
+      {/* Header */}
+      <div className="flex items-center gap-2.5 px-5 py-4 border-b border-[var(--color-border)]">
+        <Users className="h-4.5 w-4.5 text-[var(--color-primary)]" />
+        <h3 className="text-base font-bold text-[var(--color-text)]">{t('teamRosters')}</h3>
+      </div>
 
-        if (teamBalances.length === 0) return null
+      {/* Balance summary */}
+      {Array.isArray(teamBalances) && teamBalances.length > 0 && (
+        <div className="px-5 py-3 bg-[var(--color-bg-muted)] border-b border-[var(--color-border)] flex flex-wrap gap-4 text-xs text-[var(--color-text-muted)]">
+          {teamBalances.map(b => (
+            <span key={b.team} className="flex items-center gap-1.5">
+              <span
+                className="w-2 h-2 rounded-full inline-block"
+                style={{ background: TEAMS[b.team as TeamColor].colorValue }}
+              />
+              <span className="font-semibold text-[var(--color-text)]">{TEAMS[b.team as TeamColor].name}</span>
+              <span>{b.total_count}/24</span>
+              {isTeamAtCapacity(b.team as TeamColor) && (
+                <span className="text-[var(--color-danger)] font-semibold">FULL</span>
+              )}
+            </span>
+          ))}
+        </div>
+      )}
 
-        return (
-          <div className="mb-6 p-4 bg-[var(--color-bg-muted)] rounded-lg border border-[var(--color-border)]">
-            <div className="flex items-center mb-3">
-              <Info className="h-5 w-5 mr-2 text-[var(--color-primary)]" />
-              <h4 className="font-medium text-[var(--color-text)]">{t('teamBalanceSummary')}</h4>
-            </div>
-            <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-              {teamBalances.map((balance) => (
-                <div key={balance.team} className="text-center">
-                  <div className="font-semibold text-[var(--color-text)]">
-                    {TEAMS[balance.team as TeamColor].name}
-                  </div>
-                  <div className="text-sm text-[var(--color-text-muted)]">
-                    {balance.total_count}/24 {t('players')} {balance.male_count} {t('male')} {balance.female_count} {t('female')}
-                    {isTeamAtCapacity(balance.team as TeamColor) && (
-                      <div className="text-red-600 text-xs font-medium mt-1">FULL</div>
-                    )}
-                  </div>
-                </div>
-              ))}
-            </div>
-          </div>
-        )
-      })()}
-      
-      <div className="grid grid-cols-1 lg:grid-cols-4 gap-6">
-        {TEAMS && Object.entries(TEAMS).map(([teamKey, teamConfig]) => {
-          const teamPlayersRaw = players[teamKey]
-          if (!Array.isArray(teamPlayersRaw)) {
-            console.error(`[PlayerLists] players[${teamKey}] is not an array:`, typeof teamPlayersRaw, teamPlayersRaw)
-          }
-          const teamPlayers = Array.isArray(teamPlayersRaw) ? teamPlayersRaw : []
-          const nonAdminPlayers = teamPlayers.filter(p => p && p.participate_in_teams && !p.is_admin)
-          const adminPlayers = teamPlayers.filter(p => p && p.is_admin)
-          const teamValidationResult = teamValidation[teamKey]
-          const canSwitch = teamValidationResult?.canSwitch ?? false
-          const switchReason = teamValidationResult?.reason ?? 'Validating...'
-          
+      {/* Team grid */}
+      <div className="p-4 sm:p-5 grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4">
+        {Object.entries(TEAMS).map(([teamKey, teamConfig]) => {
+          const raw = players[teamKey]
+          const teamPlayers = Array.isArray(raw) ? raw : []
+          const campers = teamPlayers.filter(p => p && p.participate_in_teams && !p.is_admin)
+          const admins  = teamPlayers.filter(p => p && p.is_admin)
+
+          const validation = teamValidation[teamKey]
+          const canSwitch  = validation?.canSwitch ?? false
+          const switchReason = validation?.reason ?? 'Validating...'
+
+          const isMyTeam = currentRegistration?.current_team === teamKey
+          const canShowSwitch =
+            profile &&
+            !isMyTeam &&
+            (currentRegistration?.switches_remaining || 0) > 0 &&
+            currentRegistration?.participate_in_teams
+
           return (
-            <div key={teamKey} className="mb-8">
-              <div className={`${teamConfig.color} rounded-lg p-4 text-white`}>
-                <div className="flex items-center justify-between">
+            <div key={teamKey} className="rounded-xl overflow-hidden border border-[var(--color-border)]">
+              {/* Team header */}
+              <div className="px-3.5 py-3 text-white" style={{ background: teamConfig.colorValue }}>
+                <div className="flex items-start justify-between gap-2">
                   <div>
-                    <h4 className="font-bold text-lg">{teamConfig.name} Team</h4>
-                    <span className="text-sm opacity-90">{nonAdminPlayers.length}/24 {t('players')}</span>
-                    {profile && profile.current_team === teamKey && (
-                      <div className="mt-1">
-                        <span className="inline-flex items-center px-2 py-1 bg-[var(--color-bg-muted)] rounded-full text-xs font-medium text-[var(--color-text)] border border-[var(--color-border)]">
-                          {t('yourCurrentTeam')}
-                        </span>
-                      </div>
+                    <h4 className="font-bold text-sm leading-tight">{teamConfig.name}</h4>
+                    <p className="text-xs opacity-80 mt-0.5">{campers.length}/24</p>
+                  </div>
+                  <div className="flex flex-col items-end gap-1.5 shrink-0">
+                    {isMyTeam && (
+                      <span className="text-[10px] font-bold bg-white/25 px-1.5 py-0.5 rounded-full leading-none">
+                        You
+                      </span>
+                    )}
+                    {canShowSwitch && (
+                      <Button
+                        onClick={() => handleSwitchTeam(teamKey as TeamColor)}
+                        loading={switching === teamKey}
+                        disabled={!canSwitch}
+                        icon={canSwitch ? <ArrowRight className="h-3 w-3" /> : <AlertTriangle className="h-3 w-3" />}
+                        variant="ghost"
+                        size="sm"
+                        className={`text-[10px] px-2 py-1 leading-none ${
+                          canSwitch
+                            ? 'bg-white/20 text-white border-white/30 hover:bg-white/35'
+                            : 'bg-white/10 text-white/60 border-white/15 cursor-not-allowed'
+                        }`}
+                        title={!canSwitch ? switchReason : undefined}
+                      >
+                        {canSwitch ? t('joinTeam') : 'Full'}
+                      </Button>
                     )}
                   </div>
-                  {profile && profile.current_team !== teamKey && (profile.switches_remaining || 0) > 0 && profile.participate_in_teams && (
-                    <Button
-                      onClick={() => handleSwitchTeam(teamKey as TeamColor)}
-                      loading={switching === teamKey}
-                      disabled={!canSwitch}
-                      icon={canSwitch ? <ArrowRight /> : <AlertTriangle className="text-red-600" />}
-                      variant="ghost"
-                      size="sm"
-                      className={`${
-                        canSwitch 
-                          ? 'bg-[var(--color-bg)] bg-opacity-20 text-[var(--color-text)] border-[var(--color-border)] hover:bg-opacity-30' 
-                          : 'bg-red-100 text-red-800 border-red-300 opacity-90 cursor-not-allowed'
-                      }`}
-                      title={!canSwitch ? switchReason : undefined}
-                    >
-                      {canSwitch ? t('joinTeam') : switchReason}
-                    </Button>
-                  )}
                 </div>
               </div>
 
-              {/* Player List */}
-              <div className="bg-[var(--color-card-bg)] rounded-b-lg p-4 border-t-0 border border-[var(--color-border)] shadow-sm">
-                <div className="flex flex-wrap gap-2">
-                  {nonAdminPlayers.map((p) => {
-                    const roles: { label: string; color: string; icon: React.ReactNode }[] = []
-                    if (p.is_admin) roles.push({ label: 'Admin', color: 'bg-orange-100 text-orange-800 border border-orange-300', icon: <Shield className="h-3 w-3 mr-1 text-[var(--color-primary)]" /> })
-                    if (p.role === 'shop_owner') roles.push({ label: 'Shop Owner', color: 'bg-yellow-100 text-yellow-800 border border-yellow-300', icon: <User className="h-3 w-3 mr-1 text-yellow-500" /> })
-                    if (p.role === 'team_leader') roles.push({ label: 'Team Leader', color: 'bg-amber-100 text-amber-800 border border-amber-300', icon: <User className="h-3 w-3 mr-1 text-amber-600" /> })
-                    if (p.role === 'camper' || (!p.is_admin && p.role !== 'shop_owner' && p.role !== 'team_leader')) roles.push({ label: 'Camper', color: 'bg-green-100 text-green-800 border border-green-300', icon: <User className="h-3 w-3 mr-1 text-green-500" /> })
-                    return (
-                      <span key={p.id} className="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-[var(--color-bg-muted)] text-[var(--color-text)] mr-2 border border-[var(--color-border)]">
-                        <User className="h-4 w-4 mr-1 text-[var(--color-primary)]" />
-                        {p.full_name} {!p.is_admin && <span className="ml-1 text-xs text-[var(--color-text-muted)]">({getGradeDisplayWithNumber(p.grade)}, {p.gender === 'male' ? t('male') : t('female')})</span>}
-                        {roles.map((role, idx) => (
-                          <span key={idx} className={`ml-2 inline-flex items-center px-2 py-0.5 rounded-full text-xs font-bold ${role.color}`}>{role.icon}{role.label}</span>
-                        ))}
-                      </span>
-                    )
-                  })}
-                  {adminPlayers.map((p) => {
-                    const roles: { label: string; color: string; icon: React.ReactNode }[] = []
-                    if (p.is_admin) roles.push({ label: 'Admin', color: 'bg-orange-100 text-orange-800 border border-orange-300', icon: <Shield className="h-3 w-3 mr-1 text-[var(--color-primary)]" /> })
-                    if (p.role === 'shop_owner') roles.push({ label: 'Shop Owner', color: 'bg-yellow-100 text-yellow-800 border border-yellow-300', icon: <User className="h-3 w-3 mr-1 text-yellow-500" /> })
-                    if (p.role === 'team_leader') roles.push({ label: 'Team Leader', color: 'bg-amber-100 text-amber-800 border border-amber-300', icon: <User className="h-3 w-3 mr-1 text-amber-600" /> })
-                    if (p.role === 'camper' || (!p.is_admin && p.role !== 'shop_owner' && p.role !== 'team_leader')) roles.push({ label: 'Camper', color: 'bg-green-100 text-green-800 border border-green-300', icon: <User className="h-3 w-3 mr-1 text-green-500" /> })
-                    return (
-                      <span key={p.id} className="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-[var(--color-bg-muted)] text-[var(--color-text)] border border-[var(--color-border)] mr-2">
-                        <Shield className="h-4 w-4 mr-1 text-[var(--color-primary)]" />
-                        {p.full_name}
-                        {roles.map((role, idx) => (
-                          <span key={idx} className={`ml-2 inline-flex items-center px-2 py-0.5 rounded-full text-xs font-bold ${role.color}`}>{role.icon}{role.label}</span>
-                        ))}
-                      </span>
-                    )
-                  })}
-                </div>
+              {/* Player list */}
+              <div className="p-3 bg-[var(--color-card-bg)] min-h-[80px]">
+                {campers.length === 0 && admins.length === 0 ? (
+                  <p className="text-xs text-[var(--color-text-muted)] italic">No players yet</p>
+                ) : (
+                  <div className="flex flex-col gap-1">
+                    {campers.map(p => (
+                      <div key={p.id} className="flex items-center gap-1.5">
+                        <User className="h-3 w-3 text-[var(--color-text-muted)] shrink-0" />
+                        <span className="text-xs text-[var(--color-text)] truncate">{p.full_name}</span>
+                        {p.role === 'team_leader' && (
+                          <span className="text-[9px] font-bold text-amber-700 dark:text-amber-400 bg-amber-100 dark:bg-amber-900/40 px-1 py-0.5 rounded leading-none shrink-0">
+                            Leader
+                          </span>
+                        )}
+                      </div>
+                    ))}
+                    {admins.map(p => (
+                      <div key={p.id} className="flex items-center gap-1.5">
+                        <Shield className="h-3 w-3 text-[var(--color-primary)] shrink-0" />
+                        <span className="text-xs text-[var(--color-text)] truncate">{p.full_name}</span>
+                        <span className="text-[9px] font-bold text-orange-700 dark:text-orange-400 bg-orange-100 dark:bg-orange-900/40 px-1 py-0.5 rounded leading-none shrink-0">
+                          Admin
+                        </span>
+                      </div>
+                    ))}
+                  </div>
+                )}
               </div>
             </div>
           )

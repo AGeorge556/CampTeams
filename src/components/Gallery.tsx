@@ -173,13 +173,13 @@ export default function Gallery() {
   return (
     <div className="space-y-6">
       {/* Header */}
-      <div className="bg-[var(--color-card-bg)] rounded-lg shadow-sm p-6">
+      <div className="bg-[var(--color-card-bg)] rounded-2xl border border-[var(--color-border)] shadow-[var(--shadow-sm)] p-5 sm:p-6">
         <div className="flex items-center justify-between">
-          <div className="flex items-center space-x-3">
-            <Camera className="h-8 w-8 text-[var(--color-primary)]" />
+          <div className="flex items-center gap-3">
+            <Camera className="h-6 w-6 text-[var(--color-primary)] flex-shrink-0" />
             <div>
-              <h1 className="text-2xl font-bold text-[var(--color-text)]">{t('gallery')}</h1>
-              <p className="text-[var(--color-text-muted)]">Share your camp memories with photos</p>
+              <h1 className="text-xl font-bold text-[var(--color-text)]">{t('gallery')}</h1>
+              <p className="text-sm text-[var(--color-text-muted)]">Share your camp memories</p>
             </div>
           </div>
           <Button
@@ -193,7 +193,7 @@ export default function Gallery() {
 
       {/* Upload Section */}
       {showUpload && (
-        <div className="bg-[var(--color-card-bg)] rounded-lg shadow-sm p-6">
+        <div className="bg-[var(--color-card-bg)] rounded-2xl border border-[var(--color-border)] shadow-[var(--shadow-sm)] p-5 sm:p-6">
           <div className="flex items-center justify-between mb-4">
             <h2 className="text-lg font-semibold text-[var(--color-text)]">{t('uploadPhotos')}</h2>
             <button
@@ -277,7 +277,7 @@ export default function Gallery() {
       )}
 
       {/* My Submissions */}
-      <div className="bg-[var(--color-card-bg)] rounded-lg shadow-sm p-4 sm:p-6">
+      <div className="bg-[var(--color-card-bg)] rounded-2xl border border-[var(--color-border)] shadow-[var(--shadow-sm)] p-4 sm:p-6">
         <h2 className="text-lg font-semibold text-[var(--color-text)] mb-4">{t('mySubmissions')}</h2>
         
         {myPhotos.length === 0 ? (
@@ -366,7 +366,7 @@ export default function Gallery() {
        </div>
 
       {/* Public Gallery */}
-      <div className="bg-[var(--color-card-bg)] rounded-lg shadow-sm p-4 sm:p-6">
+      <div className="bg-[var(--color-card-bg)] rounded-2xl border border-[var(--color-border)] shadow-[var(--shadow-sm)] p-4 sm:p-6">
         <h2 className="text-lg font-semibold text-[var(--color-text)] mb-4">{t('publicGallery')}</h2>
         
         {approvedPhotos.length === 0 ? (
@@ -442,7 +442,7 @@ export default function Gallery() {
       {/* Delete Confirmation Modal */}
       {showDeleteConfirm && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-          <div className="bg-[var(--color-card-bg)] rounded-lg p-6 max-w-md w-full mx-4 border border-[var(--color-border)]">
+          <div className="bg-[var(--color-card-bg)] rounded-2xl p-6 max-w-md w-full mx-4 border border-[var(--color-border)]">
             <h3 className="text-lg font-semibold text-[var(--color-text)] mb-4">{t('confirmDelete')}</h3>
             <p className="text-[var(--color-text-muted)] mb-6">{t('deletePhotoConfirm')}</p>
             <div className="flex justify-end space-x-3">

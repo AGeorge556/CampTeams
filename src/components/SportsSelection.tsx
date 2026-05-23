@@ -127,42 +127,46 @@ export default function SportsSelection() {
     return (
       <div
         key={sport.id}
-        className={`relative bg-[var(--color-card-bg)] rounded-lg shadow-sm border-2 transition-all duration-200 cursor-pointer hover:shadow-md ${isSelected ? 'border-orange-400 bg-orange-50' : 'border-[var(--color-border)]'} ${!eligibility.eligible ? 'opacity-50 cursor-not-allowed' : ''}`}
+        className={`relative bg-[var(--color-card-bg)] rounded-2xl overflow-hidden border transition-all duration-200 ${
+          eligibility.eligible ? 'cursor-pointer active:scale-[0.99]' : 'opacity-50 cursor-not-allowed'
+        } ${
+          isSelected
+            ? 'border-orange-400 ring-2 ring-orange-400/20 shadow-md'
+            : 'border-[var(--color-border)] hover:border-orange-300 hover:shadow-sm'
+        }`}
         onClick={() => eligibility.eligible && toggleSport(sport.id)}
         aria-disabled={!eligibility.eligible}
       >
         {isSelected && (
-          <div className="absolute top-3 right-3">
-            <CheckCircle className="h-6 w-6 text-green-500" />
+          <div className="absolute top-3 right-3 z-10">
+            <CheckCircle className="h-5 w-5 text-white drop-shadow" />
           </div>
         )}
 
-        <div className={`${sport.color} rounded-t-lg p-4 text-white`}>
-          <div className="flex items-center justify-between">
-            <div className="flex items-center space-x-3">
-              <span className="text-2xl">{sport.icon}</span>
-              <div>
-                <h3 className="font-bold text-lg">{sport.name}</h3>
-                <p className="text-sm opacity-90">{sport.participants} {t('participants')}</p>
-              </div>
+        <div className={`${sport.color} p-4 text-white`}>
+          <div className="flex items-center gap-3">
+            <span className="text-2xl leading-none">{sport.icon}</span>
+            <div>
+              <h3 className="font-bold text-base leading-tight">{sport.name}</h3>
+              <p className="text-xs opacity-80 mt-0.5">{sport.participants} {t('participants')}</p>
             </div>
           </div>
         </div>
 
         <div className="p-4">
-          <p className="text-[var(--color-text-muted)] text-sm mb-4">{sport.description}</p>
-          {!eligibility.eligible && (
-            <div className="text-xs text-red-500 mb-2">{eligibility.reason}</div>
+          <p className="text-[var(--color-text-muted)] text-sm leading-relaxed mb-3">{sport.description}</p>
+          {!eligibility.eligible ? (
+            <p className="text-xs text-[var(--color-danger)]">{eligibility.reason}</p>
+          ) : (
+            <div className="flex items-center justify-between">
+              <span className={`text-xs font-semibold ${isSelected ? 'text-[var(--color-success)]' : 'text-[var(--color-text-muted)]'}`}>
+                {isSelected ? t('youreParticipating') : t('clickToJoin')}
+              </span>
+              {saving && isSelected && (
+                <div className="h-3.5 w-3.5 border-2 border-orange-400/40 border-t-orange-500 rounded-full animate-spin" />
+              )}
+            </div>
           )}
-
-          <div className="flex items-center justify-between">
-            <span className={`text-sm font-medium ${isSelected ? 'text-green-600' : 'text-[var(--color-text-muted)]'}`}>
-              {isSelected ? t('youreParticipating') : t('clickToJoin')}
-            </span>
-            {saving && isSelected && (
-              <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-orange-500"></div>
-            )}
-          </div>
         </div>
       </div>
     )
@@ -302,22 +306,22 @@ export default function SportsSelection() {
 
   return (
     <div className="space-y-8">
-      <div className="bg-[var(--color-card-bg)] rounded-lg shadow-sm p-6">
-        <div className="flex items-center space-x-3">
-          <Trophy className="h-8 w-8 text-[var(--color-primary)]" />
+      <div className="bg-[var(--color-card-bg)] rounded-2xl border border-[var(--color-border)] shadow-[var(--shadow-sm)] p-5 sm:p-6">
+        <div className="flex items-center gap-3">
+          <Trophy className="h-6 w-6 text-[var(--color-primary)] flex-shrink-0" />
           <div>
-            <h1 className="text-2xl font-bold text-[var(--color-text)]">{t('sportsSelection')}</h1>
-            <p className="text-[var(--color-text-muted)]">{t('chooseSportsToParticipate')}</p>
+            <h1 className="text-xl font-bold text-[var(--color-text)]">{t('sportsSelection')}</h1>
+            <p className="text-sm text-[var(--color-text-muted)]">{t('chooseSportsToParticipate')}</p>
           </div>
         </div>
       </div>
 
-      <div className="bg-[var(--color-bg-muted)] border border-[var(--color-border)] rounded-lg p-4">
-        <h3 className="font-semibold text-[var(--color-text)] mb-2">{t('howItWorks')}</h3>
+      <div className="bg-[var(--color-bg-muted)] border border-[var(--color-border)] rounded-2xl px-5 py-4">
+        <h3 className="text-sm font-semibold text-[var(--color-text)] mb-2">{t('howItWorks')}</h3>
         <ul className="text-sm text-[var(--color-text-muted)] space-y-1">
-          <li>• {t('clickToJoinOrLeave')}</li>
-          <li>• {t('participateInMultipleSports')}</li>
-          <li>• {t('changesSavedAutomatically')}</li>
+          <li>· {t('clickToJoinOrLeave')}</li>
+          <li>· {t('participateInMultipleSports')}</li>
+          <li>· {t('changesSavedAutomatically')}</li>
         </ul>
       </div>
 
@@ -326,7 +330,7 @@ export default function SportsSelection() {
       </div>
 
       {userSelections.length > 0 && (
-        <div className="bg-[var(--color-card-bg)] rounded-lg shadow-sm p-6 border border-[var(--color-border)]">
+        <div className="bg-[var(--color-card-bg)] rounded-2xl shadow-[var(--shadow-sm)] p-5 sm:p-6 border border-[var(--color-border)]">
           <h3 className="text-lg font-semibold text-[var(--color-text)] mb-4">{t('yourSports')}</h3>
           <div className="flex flex-wrap gap-2">
             {userSelections.map(sportId => {
@@ -348,7 +352,7 @@ export default function SportsSelection() {
               const standings = computeStandings(list)
               const sport = sports.find((s) => s.id === sportId)
               return (
-                <div key={sportId} className="border border-[var(--color-border)] rounded-lg p-4 bg-[var(--color-card-bg)]">
+                <div key={sportId} className="border border-[var(--color-border)] rounded-2xl p-4 bg-[var(--color-card-bg)]">
                   <div className="flex items-center justify-between mb-3">
                     <h4 className="font-semibold text-[var(--color-text)]">{sport?.name || sportId} Schedule</h4>
                   </div>
@@ -450,7 +454,7 @@ export default function SportsSelection() {
       )}
 
       {userSelections.length === 0 && (
-        <div className="bg-[var(--color-card-bg)] rounded-lg p-8 text-center">
+        <div className="bg-[var(--color-card-bg)] rounded-2xl p-8 text-center border border-[var(--color-border)]">
           <Trophy className="h-12 w-12 text-[var(--color-text-muted)] mx-auto mb-4" />
           <h3 className="text-lg font-medium text-[var(--color-text)] mb-2">{t('noSportsSelectedYet')}</h3>
           <p className="text-[var(--color-text-muted)]">{t('clickOnAnySportToStart')}</p>
