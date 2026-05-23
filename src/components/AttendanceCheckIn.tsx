@@ -259,7 +259,7 @@ export default function AttendanceCheckIn() {
                 console.log('Testing check-in for session:', firstSession)
                 handleCheckIn(firstSession.id)
               }}
-              className="px-3 py-2 text-xs sm:text-sm bg-blue-500 text-white rounded hover:bg-blue-600 min-h-[44px] touch-manipulation"
+              className="px-3 py-2 text-xs sm:text-sm bg-[var(--color-primary)] text-white rounded hover:opacity-90 min-h-[44px] touch-manipulation"
             >
               Test Check-in
             </button>
@@ -326,7 +326,7 @@ export default function AttendanceCheckIn() {
                         <button
                           onClick={() => handleCheckIn(session.id)}
                           disabled={checkingIn === session.id || !isActive}
-                          className="inline-flex items-center justify-center px-4 py-3 border border-transparent text-sm font-medium rounded-md text-white bg-sky-600 hover:bg-sky-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-sky-500 disabled:opacity-50 disabled:cursor-not-allowed min-h-[44px] touch-manipulation"
+                          className="inline-flex items-center justify-center px-4 py-3 border border-transparent text-sm font-medium rounded-md text-white bg-[var(--color-primary)] hover:opacity-90 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-orange-400 disabled:opacity-50 disabled:cursor-not-allowed min-h-[44px] touch-manipulation"
                         >
                           {checkingIn === session.id ? (
                             <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white mr-2"></div>

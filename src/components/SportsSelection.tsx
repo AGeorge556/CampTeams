@@ -30,9 +30,9 @@ export default function SportsSelection() {
   const availableSports: Sport[] = [
     { id: 'soccer', name: t('soccer'), description: t('soccerDescription'), icon: '⚽', color: 'bg-green-500', participants: 0 },
     { id: 'dodgeball', name: t('dodgeball'), description: t('dodgeballDescription'), icon: '🏐', color: 'bg-red-500', participants: 0 },
-    { id: 'chairball', name: t('chairball'), description: t('chairballDescription'), icon: '🪑', color: 'bg-blue-500', participants: 0 },
-    { id: 'big-game', name: t('bigGame'), description: t('bigGameDescription'), icon: '🎯', color: 'bg-purple-500', participants: 0 },
-    { id: 'pool-time', name: t('poolTime'), description: t('poolTimeDescription'), icon: '🏊', color: 'bg-cyan-500', participants: 0 }
+    { id: 'chairball', name: t('chairball'), description: t('chairballDescription'), icon: '🪑', color: 'bg-amber-500', participants: 0 },
+    { id: 'big-game', name: t('bigGame'), description: t('bigGameDescription'), icon: '🎯', color: 'bg-orange-600', participants: 0 },
+    { id: 'pool-time', name: t('poolTime'), description: t('poolTimeDescription'), icon: '🏊', color: 'bg-sky-500', participants: 0 }
   ]
 
   useEffect(() => {
@@ -127,7 +127,7 @@ export default function SportsSelection() {
     return (
       <div
         key={sport.id}
-        className={`relative bg-[var(--color-card-bg)] rounded-lg shadow-sm border-2 transition-all duration-200 cursor-pointer hover:shadow-md ${isSelected ? 'border-sky-500 bg-orange-50' : 'border-[var(--color-border)]'} ${!eligibility.eligible ? 'opacity-50 cursor-not-allowed' : ''}`}
+        className={`relative bg-[var(--color-card-bg)] rounded-lg shadow-sm border-2 transition-all duration-200 cursor-pointer hover:shadow-md ${isSelected ? 'border-orange-400 bg-orange-50' : 'border-[var(--color-border)]'} ${!eligibility.eligible ? 'opacity-50 cursor-not-allowed' : ''}`}
         onClick={() => eligibility.eligible && toggleSport(sport.id)}
         aria-disabled={!eligibility.eligible}
       >
@@ -160,7 +160,7 @@ export default function SportsSelection() {
               {isSelected ? t('youreParticipating') : t('clickToJoin')}
             </span>
             {saving && isSelected && (
-              <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-sky-500"></div>
+              <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-orange-500"></div>
             )}
           </div>
         </div>
@@ -296,7 +296,7 @@ export default function SportsSelection() {
 
   if (loading) return (
     <div className="flex items-center justify-center min-h-screen">
-      <div className="animate-spin rounded-full h-32 w-32 border-b-2 border-sky-500"></div>
+      <div className="animate-spin rounded-full h-32 w-32 border-b-2 border-orange-500"></div>
     </div>
   )
 
@@ -304,7 +304,7 @@ export default function SportsSelection() {
     <div className="space-y-8">
       <div className="bg-[var(--color-card-bg)] rounded-lg shadow-sm p-6">
         <div className="flex items-center space-x-3">
-          <Trophy className="h-8 w-8 text-sky-500" />
+          <Trophy className="h-8 w-8 text-[var(--color-primary)]" />
           <div>
             <h1 className="text-2xl font-bold text-[var(--color-text)]">{t('sportsSelection')}</h1>
             <p className="text-[var(--color-text-muted)]">{t('chooseSportsToParticipate')}</p>

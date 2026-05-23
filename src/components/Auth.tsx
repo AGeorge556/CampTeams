@@ -1,11 +1,10 @@
 import { useState } from 'react'
-import { Mail, Lock, UserPlus, LogIn, Clock, ArrowLeft } from 'lucide-react'
+import { Mail, Lock, UserPlus, LogIn, Clock, ArrowLeft, Sun } from 'lucide-react'
 import { useAuth } from '../hooks/useAuth'
 import { useToast } from './Toast'
 import Button from './ui/Button'
 import Input from './ui/Input'
 
-// Logo path - Replace with your church logo
 const LOGO_PATH = '/logo.png'
 
 interface AuthProps {
@@ -34,14 +33,12 @@ export default function Auth({ initialMode = 'signin', onBack }: AuthProps) {
   const validateForm = (): boolean => {
     const newErrors: FormErrors = {}
 
-    // Email validation
     if (!email.trim()) {
       newErrors.email = 'Email is required'
     } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
       newErrors.email = 'Please enter a valid email address'
     }
 
-    // Password validation (skip for forgot password)
     if (!isForgotPassword) {
       if (!password) {
         newErrors.password = 'Password is required'
@@ -59,24 +56,15 @@ export default function Auth({ initialMode = 'signin', onBack }: AuthProps) {
   const handleForgotPassword = async (e: React.FormEvent) => {
     e.preventDefault()
 
-    // Only validate email for forgot password
     if (!email.trim()) {
       setErrors({ email: 'Email is required' })
-      addToast({
-        type: 'error',
-        title: 'Validation Error',
-        message: 'Please enter your email address'
-      })
+      addToast({ type: 'error', title: 'Validation Error', message: 'Please enter your email address' })
       return
     }
 
     if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
       setErrors({ email: 'Please enter a valid email address' })
-      addToast({
-        type: 'error',
-        title: 'Validation Error',
-        message: 'Please enter a valid email address'
-      })
+      addToast({ type: 'error', title: 'Validation Error', message: 'Please enter a valid email address' })
       return
     }
 
@@ -84,23 +72,12 @@ export default function Auth({ initialMode = 'signin', onBack }: AuthProps) {
 
     try {
       const { error } = await resetPassword(email)
-      if (error) {
-        throw error
-      }
-
+      if (error) throw error
       setShowResetEmailSent(true)
-      addToast({
-        type: 'success',
-        title: 'Reset Email Sent',
-        message: 'Check your email for a password reset link.'
-      })
+      addToast({ type: 'success', title: 'Reset Email Sent', message: 'Check your email for a password reset link.' })
     } catch (error: any) {
       console.error('Password reset error:', error)
-      addToast({
-        type: 'error',
-        title: 'Reset Failed',
-        message: error.message || 'Failed to send reset email. Please try again.'
-      })
+      addToast({ type: 'error', title: 'Reset Failed', message: error.message || 'Failed to send reset email. Please try again.' })
     } finally {
       setLoading(false)
     }
@@ -108,13 +85,9 @@ export default function Auth({ initialMode = 'signin', onBack }: AuthProps) {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
-    
+
     if (!validateForm()) {
-      addToast({
-        type: 'error',
-        title: 'Validation Error',
-        message: 'Please fix the errors in the form'
-      })
+      addToast({ type: 'error', title: 'Validation Error', message: 'Please fix the errors in the form' })
       return
     }
 
@@ -128,31 +101,19 @@ export default function Auth({ initialMode = 'signin', onBack }: AuthProps) {
             const match = error.message.match(/after (\d+) seconds/)
             const seconds = match ? parseInt(match[1]) : 60
             startCooldownTimer(seconds)
-            addToast({
-              type: 'warning',
-              title: 'Rate Limited',
-              message: `Please wait ${seconds} seconds before trying again due to rate limiting.`
-            })
+            addToast({ type: 'warning', title: 'Rate Limited', message: `Please wait ${seconds} seconds before trying again.` })
           } else {
             throw error
           }
         } else {
           setShowEmailConfirmation(true)
-          addToast({
-            type: 'success',
-            title: 'Account Created',
-            message: 'Please check your email and click the confirmation link.'
-          })
+          addToast({ type: 'success', title: 'Account Created', message: 'Please check your email and click the confirmation link.' })
         }
       } else {
         const { error } = await signIn(email, password)
         if (error) {
           if (error.message.includes('Email not confirmed')) {
-            addToast({
-              type: 'info',
-              title: 'Email Confirmation Required',
-              message: 'Please check your email and click the confirmation link before signing in.'
-            })
+            addToast({ type: 'info', title: 'Email Confirmation Required', message: 'Please check your email and click the confirmation link before signing in.' })
           } else {
             throw error
           }
@@ -160,11 +121,7 @@ export default function Auth({ initialMode = 'signin', onBack }: AuthProps) {
       }
     } catch (error: any) {
       console.error('Auth error:', error)
-      addToast({
-        type: 'error',
-        title: 'Authentication Error',
-        message: error.message || 'An error occurred during authentication.'
-      })
+      addToast({ type: 'error', title: 'Authentication Error', message: error.message || 'An error occurred during authentication.' })
     } finally {
       setLoading(false)
     }
@@ -174,154 +131,137 @@ export default function Auth({ initialMode = 'signin', onBack }: AuthProps) {
     setRateLimitCooldown(seconds)
     const timer = setInterval(() => {
       setRateLimitCooldown((prev) => {
-        if (prev <= 1) {
-          clearInterval(timer)
-          return 0
-        }
+        if (prev <= 1) { clearInterval(timer); return 0 }
         return prev - 1
       })
     }, 1000)
   }
 
   const clearErrors = (field: keyof FormErrors) => {
-    if (errors[field]) {
-      setErrors({ ...errors, [field]: undefined })
-    }
+    if (errors[field]) setErrors({ ...errors, [field]: undefined })
   }
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-gray-900 via-purple-900/20 to-gray-900 px-4 sm:px-6 lg:px-8 relative overflow-hidden">
-      {/* Animated background elements */}
-      <div className="absolute inset-0 overflow-hidden pointer-events-none">
-        <div className="absolute top-1/4 left-1/4 w-64 h-64 bg-cyan-500/10 rounded-full blur-3xl animate-pulse"></div>
-        <div className="absolute bottom-1/4 right-1/4 w-64 h-64 bg-pink-500/10 rounded-full blur-3xl animate-pulse" style={{ animationDelay: '1s' }}></div>
-        <div className="absolute top-1/2 right-1/3 w-48 h-48 bg-purple-500/10 rounded-full blur-3xl animate-pulse" style={{ animationDelay: '2s' }}></div>
-      </div>
-
+    <div className="min-h-screen flex items-center justify-center bg-[var(--gradient-app-bg)] px-4 sm:px-6 lg:px-8">
       {onBack && (
-        <Button
+        <button
           onClick={onBack}
-          variant="ghost"
-          className="absolute top-6 left-6 text-white border-cyan-400/50 hover:border-cyan-400 hover:shadow-neon-cyan z-10"
+          className="absolute top-6 left-6 inline-flex items-center text-sm font-medium text-[var(--color-text-muted)] hover:text-[var(--color-primary)] transition-colors"
         >
-          ← Back to Home
-        </Button>
+          <ArrowLeft className="h-4 w-4 mr-1" />
+          Back to Home
+        </button>
       )}
-      <div className="max-w-md w-full space-y-8 relative z-10">
+
+      <div className="max-w-md w-full space-y-8">
+        {/* Logo + Title */}
         <div className="text-center">
           <div className="flex justify-center mb-4">
-            <div className="p-3 bg-gradient-to-br from-cyan-500/20 to-purple-500/20 backdrop-blur-sm rounded-xl border-2 border-cyan-400/50 shadow-neon-cyan">
+            <div className="p-3 bg-white rounded-2xl border border-[var(--color-border)] shadow-md">
               <img
                 src={LOGO_PATH}
-                alt="Church Logo"
-                className="h-16 w-16 object-contain"
+                alt="BCH Youth"
+                className="h-14 w-14 object-contain"
                 onError={(e) => {
-                  // Fallback if logo doesn't exist yet
                   e.currentTarget.style.display = 'none'
-                  e.currentTarget.parentElement!.innerHTML = '<div class="h-16 w-16 flex items-center justify-center text-4xl">⛪</div>'
+                  e.currentTarget.parentElement!.innerHTML =
+                    '<div class="h-14 w-14 flex items-center justify-center"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="#f97316" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="w-10 h-10"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M6.34 17.66l-1.41 1.41M19.07 4.93l-1.41 1.41"/></svg></div>'
                 }}
               />
             </div>
           </div>
-          <h2 className="mt-6 text-3xl font-extrabold text-white neon-text-cyan">
-            {isForgotPassword ? '🔑 Reset Password' : isSignUp ? '⛺ Join Camp Registration' : '✨ Welcome Back'}
+          <h2 className="text-2xl font-bold text-[var(--color-text)]">
+            {isForgotPassword ? 'Reset your password' : isSignUp ? 'Join Summer Camp 2026' : 'Welcome back'}
           </h2>
-          <p className="mt-2 text-sm text-gray-300">
+          <p className="mt-1 text-sm text-[var(--color-text-muted)]">
             {isForgotPassword
-              ? 'Enter your email to receive a password reset link 📧'
+              ? 'Enter your email to receive a reset link'
               : isSignUp
-                ? 'Create your account to register for camp 🏕️'
-                : 'Sign in to your account 🙏'}
+                ? 'Create an account to register for camp'
+                : 'Sign in to your account'}
           </p>
+          {!isForgotPassword && !isSignUp && (
+            <div className="mt-2 inline-flex items-center space-x-1 text-xs font-semibold text-orange-600 dark:text-orange-400 bg-orange-50 dark:bg-orange-950/40 px-3 py-1 rounded-full border border-orange-200 dark:border-orange-800">
+              <Sun className="h-3 w-3" />
+              <span>August 20–23, 2026</span>
+            </div>
+          )}
         </div>
 
-        <form className="mt-8 space-y-6 bg-gray-900/50 backdrop-blur-md p-6 rounded-xl border-2 border-cyan-400/30 shadow-neon-multi" onSubmit={isForgotPassword ? handleForgotPassword : handleSubmit}>
-           <div className="space-y-4">
-             <Input
-               label="Email address"
-                  type="email"
+        {/* Form */}
+        <form
+          className="space-y-5 bg-[var(--color-card-bg)] p-6 sm:p-8 rounded-2xl border border-[var(--color-border)] shadow-md"
+          onSubmit={isForgotPassword ? handleForgotPassword : handleSubmit}
+        >
+          <div className="space-y-4">
+            <Input
+              label="Email address"
+              type="email"
               icon={<Mail />}
-                  value={email}
-              onChange={(e) => {
-                setEmail(e.target.value)
-                clearErrors('email')
-              }}
+              value={email}
+              onChange={(e) => { setEmail(e.target.value); clearErrors('email') }}
               error={errors.email}
-              placeholder="Enter your email"
-                  required
+              placeholder="you@example.com"
+              required
             />
 
             {!isForgotPassword && (
               <Input
                 label="Password"
-                    type="password"
+                type="password"
                 icon={<Lock />}
-                    value={password}
-                onChange={(e) => {
-                  setPassword(e.target.value)
-                  clearErrors('password')
-                }}
+                value={password}
+                onChange={(e) => { setPassword(e.target.value); clearErrors('password') }}
                 error={errors.password}
                 placeholder="Enter your password"
-                    required
-                  />
+                required
+              />
             )}
           </div>
 
           {showEmailConfirmation && !isForgotPassword && (
-            <div className="rounded-md bg-green-500/10 border-2 border-green-400/50 p-4 shadow-lg">
+            <div className="rounded-xl bg-[var(--toast-success-bg)] border border-[var(--toast-success-border)] p-4">
               <div className="flex">
-                <Mail className="h-5 w-5 text-green-400 mt-0.5 mr-3" />
-                <div className="text-sm text-green-200">
-                  <p className="font-medium">Check your email! 📧✨</p>
-                  <p className="mt-1">We've sent you a confirmation link. Please click it to activate your account, then return here to sign in.</p>
+                <Mail className="h-5 w-5 text-[var(--toast-success-text)] mt-0.5 mr-3 shrink-0" />
+                <div className="text-sm text-[var(--toast-success-text)]">
+                  <p className="font-semibold">Check your email</p>
+                  <p className="mt-1 opacity-90">We sent you a confirmation link. Click it to activate your account, then return here to sign in.</p>
                 </div>
               </div>
             </div>
           )}
 
           {showResetEmailSent && isForgotPassword && (
-            <div className="rounded-md bg-green-500/10 border-2 border-green-400/50 p-4 shadow-lg">
+            <div className="rounded-xl bg-[var(--toast-success-bg)] border border-[var(--toast-success-border)] p-4">
               <div className="flex">
-                <Mail className="h-5 w-5 text-green-400 mt-0.5 mr-3" />
-                <div className="text-sm text-green-200">
-                  <p className="font-medium">Reset email sent! 📧🔑</p>
-                  <p className="mt-1">Check your email for a password reset link. Click the link to set a new password.</p>
+                <Mail className="h-5 w-5 text-[var(--toast-success-text)] mt-0.5 mr-3 shrink-0" />
+                <div className="text-sm text-[var(--toast-success-text)]">
+                  <p className="font-semibold">Reset email sent</p>
+                  <p className="mt-1 opacity-90">Check your inbox for a password reset link.</p>
                 </div>
               </div>
             </div>
           )}
 
           <Button
-              type="submit"
+            type="submit"
             loading={loading || rateLimitCooldown > 0}
             icon={isForgotPassword ? <Mail /> : isSignUp ? <UserPlus /> : <LogIn />}
-            className="w-full bg-gradient-to-r from-cyan-500 to-purple-500 hover:from-cyan-400 hover:to-purple-400 border-2 border-cyan-400/50 shadow-neon-cyan font-bold"
-            >
-              {loading || rateLimitCooldown > 0 ? (
-              rateLimitCooldown > 0 ? (
-                    <>
-                      <Clock className="h-5 w-5 mr-2" />
-                      Wait {rateLimitCooldown}s ⏱️
-                </>
-              ) : (
-                'Processing... ⚡'
-              )
-            ) : (
-              isForgotPassword ? 'Send Reset Link 📧' : isSignUp ? 'Create Account ⛺' : 'Sign In ✨'
-              )}
+            className="w-full bg-[var(--color-primary)] hover:opacity-90 text-white font-semibold"
+          >
+            {loading || rateLimitCooldown > 0
+              ? rateLimitCooldown > 0
+                ? <span className="flex items-center"><Clock className="h-4 w-4 mr-2" />Wait {rateLimitCooldown}s</span>
+                : 'Processing...'
+              : isForgotPassword ? 'Send Reset Link' : isSignUp ? 'Create Account' : 'Sign In'}
           </Button>
 
           {isForgotPassword ? (
             <div className="text-center">
               <button
                 type="button"
-                onClick={() => {
-                  setIsForgotPassword(false)
-                  setShowResetEmailSent(false)
-                  setErrors({})
-                }}
-                className="text-sm text-cyan-400 hover:text-cyan-300 font-medium inline-flex items-center neon-text-cyan"
+                onClick={() => { setIsForgotPassword(false); setShowResetEmailSent(false); setErrors({}) }}
+                className="text-sm text-[var(--color-primary)] hover:opacity-80 font-medium inline-flex items-center transition-opacity"
               >
                 <ArrowLeft className="h-4 w-4 mr-1" />
                 Back to Sign In
@@ -333,71 +273,26 @@ export default function Auth({ initialMode = 'signin', onBack }: AuthProps) {
                 <div>
                   <button
                     type="button"
-                    onClick={() => {
-                      setIsForgotPassword(true)
-                      setErrors({})
-                      setPassword('')
-                    }}
-                    className="text-sm text-cyan-400 hover:text-cyan-300 font-medium neon-text-cyan"
+                    onClick={() => { setIsForgotPassword(true); setErrors({}); setPassword('') }}
+                    className="text-sm text-[var(--color-text-muted)] hover:text-[var(--color-primary)] transition-colors"
                   >
-                    Forgot your password? 🔑
+                    Forgot your password?
                   </button>
                 </div>
               )}
               <div>
                 <button
                   type="button"
-                  onClick={() => {
-                    setIsSignUp(!isSignUp)
-                    setErrors({})
-                  }}
-                  className="text-sm text-pink-400 hover:text-pink-300 font-medium neon-text-pink"
+                  onClick={() => { setIsSignUp(!isSignUp); setErrors({}) }}
+                  className="text-sm font-medium text-[var(--color-primary)] hover:opacity-80 transition-opacity"
                 >
-                  {isSignUp
-                    ? 'Already have an account? Sign in ✨'
-                    : "Don't have an account? Sign up ⛺"
-                  }
+                  {isSignUp ? 'Already have an account? Sign in' : "Don't have an account? Sign up"}
                 </button>
               </div>
             </div>
           )}
         </form>
       </div>
-
-      {/* CSS for neon effects */}
-      <style>{`
-        /* Neon text effects */
-        .neon-text-cyan {
-          text-shadow:
-            0 0 5px rgba(6, 182, 212, 0.8),
-            0 0 10px rgba(6, 182, 212, 0.6),
-            0 0 20px rgba(6, 182, 212, 0.4),
-            0 0 40px rgba(6, 182, 212, 0.2);
-        }
-
-        .neon-text-pink {
-          text-shadow:
-            0 0 5px rgba(236, 72, 153, 0.8),
-            0 0 10px rgba(236, 72, 153, 0.6),
-            0 0 20px rgba(236, 72, 153, 0.4),
-            0 0 40px rgba(236, 72, 153, 0.2);
-        }
-
-        /* Neon box shadows */
-        .shadow-neon-cyan {
-          box-shadow:
-            0 0 10px rgba(6, 182, 212, 0.6),
-            0 0 20px rgba(6, 182, 212, 0.4),
-            0 0 30px rgba(6, 182, 212, 0.2);
-        }
-
-        .shadow-neon-multi {
-          box-shadow:
-            0 0 10px rgba(6, 182, 212, 0.6),
-            0 0 20px rgba(236, 72, 153, 0.4),
-            0 0 30px rgba(168, 85, 247, 0.2);
-        }
-      `}</style>
     </div>
   )
 }

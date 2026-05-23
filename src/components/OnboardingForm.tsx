@@ -89,7 +89,7 @@ export default function OnboardingForm() {
       <div className="max-w-md w-full space-y-8">
         <div className="text-center">
           <div className="flex justify-center">
-            <User className="h-16 w-16 text-sky-500" />
+            <User className="h-16 w-16 text-[var(--color-primary)]" />
           </div>
           <h2 className="mt-6 text-3xl font-extrabold text-[var(--color-text)]">
             Welcome to Camp Registration!
@@ -112,8 +112,8 @@ export default function OnboardingForm() {
               required
             />
 
-            <div className="bg-sky-50 dark:bg-sky-950 border border-sky-200 dark:border-sky-800 rounded-lg p-4">
-              <p className="text-sm text-sky-800 dark:text-sky-200">
+            <div className="bg-amber-50 dark:bg-amber-950/30 border border-amber-200 dark:border-amber-800 rounded-lg p-4">
+              <p className="text-sm text-amber-800 dark:text-amber-200">
                 <strong>Note:</strong> You'll provide additional details (grade, gender, team preference) when you register for a specific camp.
               </p>
             </div>

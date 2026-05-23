@@ -145,7 +145,7 @@ export default function PlayerLists() {
         return (
           <div className="mb-6 p-4 bg-[var(--color-bg-muted)] rounded-lg border border-[var(--color-border)]">
             <div className="flex items-center mb-3">
-              <Info className="h-5 w-5 mr-2 text-blue-600" />
+              <Info className="h-5 w-5 mr-2 text-[var(--color-primary)]" />
               <h4 className="font-medium text-[var(--color-text)]">{t('teamBalanceSummary')}</h4>
             </div>
             <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
@@ -221,13 +221,13 @@ export default function PlayerLists() {
                 <div className="flex flex-wrap gap-2">
                   {nonAdminPlayers.map((p) => {
                     const roles: { label: string; color: string; icon: React.ReactNode }[] = []
-                    if (p.is_admin) roles.push({ label: 'Admin', color: 'bg-purple-100 text-purple-800 border border-purple-300', icon: <Shield className="h-3 w-3 mr-1 text-purple-500" /> })
+                    if (p.is_admin) roles.push({ label: 'Admin', color: 'bg-orange-100 text-orange-800 border border-orange-300', icon: <Shield className="h-3 w-3 mr-1 text-[var(--color-primary)]" /> })
                     if (p.role === 'shop_owner') roles.push({ label: 'Shop Owner', color: 'bg-yellow-100 text-yellow-800 border border-yellow-300', icon: <User className="h-3 w-3 mr-1 text-yellow-500" /> })
-                    if (p.role === 'team_leader') roles.push({ label: 'Team Leader', color: 'bg-blue-100 text-blue-800 border border-blue-300', icon: <User className="h-3 w-3 mr-1 text-blue-500" /> })
+                    if (p.role === 'team_leader') roles.push({ label: 'Team Leader', color: 'bg-amber-100 text-amber-800 border border-amber-300', icon: <User className="h-3 w-3 mr-1 text-amber-600" /> })
                     if (p.role === 'camper' || (!p.is_admin && p.role !== 'shop_owner' && p.role !== 'team_leader')) roles.push({ label: 'Camper', color: 'bg-green-100 text-green-800 border border-green-300', icon: <User className="h-3 w-3 mr-1 text-green-500" /> })
                     return (
                       <span key={p.id} className="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-[var(--color-bg-muted)] text-[var(--color-text)] mr-2 border border-[var(--color-border)]">
-                        <User className="h-4 w-4 mr-1 text-sky-500" />
+                        <User className="h-4 w-4 mr-1 text-[var(--color-primary)]" />
                         {p.full_name} {!p.is_admin && <span className="ml-1 text-xs text-[var(--color-text-muted)]">({getGradeDisplayWithNumber(p.grade)}, {p.gender === 'male' ? t('male') : t('female')})</span>}
                         {roles.map((role, idx) => (
                           <span key={idx} className={`ml-2 inline-flex items-center px-2 py-0.5 rounded-full text-xs font-bold ${role.color}`}>{role.icon}{role.label}</span>
@@ -237,13 +237,13 @@ export default function PlayerLists() {
                   })}
                   {adminPlayers.map((p) => {
                     const roles: { label: string; color: string; icon: React.ReactNode }[] = []
-                    if (p.is_admin) roles.push({ label: 'Admin', color: 'bg-purple-100 text-purple-800 border border-purple-300', icon: <Shield className="h-3 w-3 mr-1 text-purple-500" /> })
+                    if (p.is_admin) roles.push({ label: 'Admin', color: 'bg-orange-100 text-orange-800 border border-orange-300', icon: <Shield className="h-3 w-3 mr-1 text-[var(--color-primary)]" /> })
                     if (p.role === 'shop_owner') roles.push({ label: 'Shop Owner', color: 'bg-yellow-100 text-yellow-800 border border-yellow-300', icon: <User className="h-3 w-3 mr-1 text-yellow-500" /> })
-                    if (p.role === 'team_leader') roles.push({ label: 'Team Leader', color: 'bg-blue-100 text-blue-800 border border-blue-300', icon: <User className="h-3 w-3 mr-1 text-blue-500" /> })
+                    if (p.role === 'team_leader') roles.push({ label: 'Team Leader', color: 'bg-amber-100 text-amber-800 border border-amber-300', icon: <User className="h-3 w-3 mr-1 text-amber-600" /> })
                     if (p.role === 'camper' || (!p.is_admin && p.role !== 'shop_owner' && p.role !== 'team_leader')) roles.push({ label: 'Camper', color: 'bg-green-100 text-green-800 border border-green-300', icon: <User className="h-3 w-3 mr-1 text-green-500" /> })
                     return (
                       <span key={p.id} className="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-[var(--color-bg-muted)] text-[var(--color-text)] border border-[var(--color-border)] mr-2">
-                        <Shield className="h-4 w-4 mr-1 text-purple-500" />
+                        <Shield className="h-4 w-4 mr-1 text-[var(--color-primary)]" />
                         {p.full_name}
                         {roles.map((role, idx) => (
                           <span key={idx} className={`ml-2 inline-flex items-center px-2 py-0.5 rounded-full text-xs font-bold ${role.color}`}>{role.icon}{role.label}</span>

@@ -56,7 +56,7 @@ export default function Dashboard({ onPageChange }: DashboardProps) {
       description: t('chooseSportsToParticipate'),
       icon: Trophy,
       action: () => onPageChange?.('sports'),
-      color: 'bg-gradient-to-br from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800',
+      color: 'bg-gradient-to-br from-orange-500 to-amber-600 hover:from-orange-600 hover:to-amber-700',
       available: true
     },
     {
@@ -449,7 +449,7 @@ export default function Dashboard({ onPageChange }: DashboardProps) {
               <button
                 onClick={handleOptInToTeams}
                 disabled={optInLoading}
-                className="inline-flex items-center justify-center px-6 py-3 border border-transparent text-sm font-semibold rounded-xl text-white bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 focus:outline-none focus:ring-4 focus:ring-blue-500 focus:ring-opacity-50 disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-300 transform hover:scale-105 active:scale-95 shadow-lg hover:shadow-xl touch-manipulation min-h-[48px] min-w-[120px]"
+                className="inline-flex items-center justify-center px-6 py-3 border border-transparent text-sm font-semibold rounded-xl text-white bg-gradient-to-r from-orange-500 to-amber-500 hover:from-orange-600 hover:to-amber-600 focus:outline-none focus:ring-4 focus:ring-orange-400 focus:ring-opacity-50 disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-300 transform hover:scale-105 active:scale-95 shadow-lg hover:shadow-xl touch-manipulation min-h-[48px] min-w-[120px]"
               >
                 {optInLoading ? (
                   <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-white mr-2"></div>
@@ -474,12 +474,12 @@ export default function Dashboard({ onPageChange }: DashboardProps) {
         <div className="mb-4 p-3 bg-[var(--color-bg-muted)] rounded-lg border border-[var(--color-border)]">
           <div className="flex items-center justify-between mb-2">
             <span className="text-sm font-semibold text-[var(--color-text-muted)]">
-              {t('teamSwitchesRemaining')}: <span className="text-sky-600 font-bold">{currentRegistration.switches_remaining ?? 0}</span>
+              {t('teamSwitchesRemaining')}: <span className="text-[var(--color-primary)] font-bold">{currentRegistration.switches_remaining ?? 0}</span>
             </span>
           </div>
           <div className="w-full bg-[var(--color-bg-muted)] rounded-full h-3 overflow-hidden shadow-inner">
             <div
-              className="bg-gradient-to-r from-sky-500 to-sky-600 h-3 rounded-full transition-all duration-500 ease-out shadow-sm"
+              className="bg-gradient-to-r from-orange-400 to-amber-500 h-3 rounded-full transition-all duration-500 ease-out shadow-sm"
               style={{ width: `${((currentRegistration.switches_remaining ?? 0) / 3) * 100}%` }}
             ></div>
           </div>
@@ -499,10 +499,10 @@ export default function Dashboard({ onPageChange }: DashboardProps) {
                <button
                  onClick={generateRandomVerse}
                  disabled={generatingVerse}
-                 className="inline-flex items-center justify-center px-4 py-3 border border-[var(--color-border)] shadow-lg text-sm font-semibold rounded-xl text-[var(--color-text)] bg-[var(--color-bg)] hover:bg-[var(--color-bg-muted)] focus:outline-none focus:ring-4 focus:ring-sky-500 focus:ring-opacity-50 disabled:opacity-50 transition-all duration-300 transform hover:scale-105 active:scale-95 touch-manipulation min-h-[48px]"
+                 className="inline-flex items-center justify-center px-4 py-3 border border-[var(--color-border)] shadow-lg text-sm font-semibold rounded-xl text-[var(--color-text)] bg-[var(--color-bg)] hover:bg-[var(--color-bg-muted)] focus:outline-none focus:ring-4 focus:ring-orange-400 focus:ring-opacity-50 disabled:opacity-50 transition-all duration-300 transform hover:scale-105 active:scale-95 touch-manipulation min-h-[48px]"
                >
                  {generatingVerse ? (
-                   <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-sky-500 mr-2"></div>
+                   <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-orange-500 mr-2"></div>
                  ) : (
                    <RefreshCw className="h-5 w-5 mr-2" />
                  )}
@@ -512,7 +512,7 @@ export default function Dashboard({ onPageChange }: DashboardProps) {
              <button
                onClick={downloadVerseImage}
                disabled={downloading || !currentVerse}
-               className="inline-flex items-center justify-center px-4 py-3 border border-transparent text-sm font-semibold rounded-xl text-white bg-gradient-to-r from-sky-600 to-red-600 hover:from-sky-700 hover:to-red-700 focus:outline-none focus:ring-4 focus:ring-sky-500 focus:ring-opacity-50 disabled:opacity-50 transition-all duration-300 transform hover:scale-105 active:scale-95 shadow-lg hover:shadow-xl touch-manipulation min-h-[48px]"
+               className="inline-flex items-center justify-center px-4 py-3 border border-transparent text-sm font-semibold rounded-xl text-white bg-gradient-to-r from-orange-500 to-amber-500 hover:from-orange-600 hover:to-amber-600 focus:outline-none focus:ring-4 focus:ring-orange-400 focus:ring-opacity-50 disabled:opacity-50 transition-all duration-300 transform hover:scale-105 active:scale-95 shadow-lg hover:shadow-xl touch-manipulation min-h-[48px]"
              >
                {downloading ? (
                  <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-white mr-2"></div>
@@ -564,7 +564,7 @@ export default function Dashboard({ onPageChange }: DashboardProps) {
           <Star className="absolute right-4 sm:right-8 top-4 sm:top-8 text-amber-200 dark:text-amber-900 opacity-40 w-12 h-12 sm:w-16 sm:h-16 animate-bounce" />
           <Flame className="absolute left-1/2 -translate-x-1/2 bottom-1 sm:bottom-2 text-orange-300 dark:text-orange-900 opacity-25 w-16 h-16 sm:w-20 sm:h-20" />
           <Trees className="absolute left-4 sm:left-8 bottom-4 sm:bottom-8 text-green-200 dark:text-green-900 opacity-35 w-16 h-16 sm:w-20 sm:h-20" />
-          <Mountain className="absolute right-2 sm:right-4 bottom-2 sm:bottom-4 text-sky-200 dark:text-sky-900 opacity-35 w-20 h-20 sm:w-24 sm:h-24" />
+          <Mountain className="absolute right-2 sm:right-4 bottom-2 sm:bottom-4 text-stone-200 dark:text-stone-900 opacity-35 w-20 h-20 sm:w-24 sm:h-24" />
           <div className="relative z-10 w-full">
             <CountdownTimer targetDate={currentCamp.start_date} compact={false} />
           </div>
@@ -580,7 +580,7 @@ export default function Dashboard({ onPageChange }: DashboardProps) {
       {/* Enhanced Team Balance Overview */}
       <div className="bg-[var(--color-card-bg)] rounded-xl shadow-sm p-4 sm:p-6 border border-[var(--color-border)]">
         <h3 className="text-lg font-semibold text-[var(--color-text)] mb-4 flex items-center">
-           <BarChart3 className="h-5 w-5 mr-2 text-blue-600" />
+           <BarChart3 className="h-5 w-5 mr-2 text-[var(--color-primary)]" />
            {t('teamBalanceOverview')}
          </h3>
          <div className="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4">
@@ -597,11 +597,11 @@ export default function Dashboard({ onPageChange }: DashboardProps) {
                    <h4 className="font-semibold text-[var(--color-text)] text-sm sm:text-base lg:text-lg mb-1">{teamData.name}</h4>
                    <div className="flex justify-center items-center space-x-2 text-xs sm:text-sm text-[var(--color-text-muted)]">
                      <span className="flex items-center">
-                       <div className="w-2 h-2 bg-blue-500 rounded-full mr-1"></div>
+                       <div className="w-2 h-2 bg-amber-500 rounded-full mr-1"></div>
                        {team.male_count}M
                      </span>
                      <span className="flex items-center">
-                       <div className="w-2 h-2 bg-pink-500 rounded-full mr-1"></div>
+                       <div className="w-2 h-2 bg-rose-400 rounded-full mr-1"></div>
                        {team.female_count}F
                      </span>
                    </div>

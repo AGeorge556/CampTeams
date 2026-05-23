@@ -272,7 +272,7 @@ export default function AdminPanel() {
       <div className="bg-[var(--color-card-bg)] rounded-lg shadow-sm p-6">
         <div className="flex items-center justify-between">
           <div className="flex items-center space-x-3">
-            <Shield className="h-8 w-8 text-purple-500" />
+            <Shield className="h-8 w-8 text-[var(--color-primary)]" />
             <div>
               <h2 className="text-2xl font-bold text-[var(--color-text)]">Admin Panel</h2>
               <p className="text-[var(--color-text-muted)]">Manage camp participants and settings</p>
@@ -289,7 +289,7 @@ export default function AdminPanel() {
               onClick={() => setActiveTab('participants')}
               className={`py-2 px-1 border-b-2 font-medium text-sm ${
                 activeTab === 'participants'
-                  ? 'border-purple-500 text-purple-600'
+                  ? 'border-orange-500 text-orange-600'
                   : 'border-transparent text-[var(--color-text-muted)] hover:text-[var(--color-text)] hover:border-[var(--color-border)]'
               }`}
             >
@@ -300,7 +300,7 @@ export default function AdminPanel() {
               onClick={() => setActiveTab('sports')}
               className={`py-2 px-1 border-b-2 font-medium text-sm ${
                 activeTab === 'sports'
-                  ? 'border-purple-500 text-purple-600'
+                  ? 'border-orange-500 text-orange-600'
                   : 'border-transparent text-[var(--color-text-muted)] hover:text-[var(--color-text)] hover:border-[var(--color-border)]'
               }`}
             >
@@ -311,7 +311,7 @@ export default function AdminPanel() {
               onClick={() => setActiveTab('roles')}
               className={`py-2 px-1 border-b-2 font-medium text-sm ${
                 activeTab === 'roles'
-                  ? 'border-purple-500 text-purple-600'
+                  ? 'border-orange-500 text-orange-600'
                   : 'border-transparent text-[var(--color-text-muted)] hover:text-[var(--color-text)] hover:border-[var(--color-border)]'
               }`}
             >
@@ -329,7 +329,7 @@ export default function AdminPanel() {
           <button
             onClick={toggleTeamsLock}
             disabled={loading}
-            className="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md text-white bg-purple-600 hover:bg-purple-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-purple-500 disabled:opacity-50"
+            className="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md text-white bg-[var(--color-primary)] hover:opacity-90 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-orange-400 disabled:opacity-50"
           >
             <Settings className="h-4 w-4 mr-2" />
             {campSettings?.teams_locked ? 'Unlock Teams' : 'Lock Teams'}
@@ -397,7 +397,7 @@ export default function AdminPanel() {
         {/* Gallery Visibility Toggle */}
         <div className="mt-4 flex items-center justify-between p-4 bg-[var(--color-bg-muted)] border border-[var(--color-border)] rounded-lg">
           <div className="flex items-center">
-            <Camera className="h-5 w-5 text-purple-600 mr-3" />
+            <Camera className="h-5 w-5 text-[var(--color-primary)] mr-3" />
             <div>
               <h4 className="font-medium text-[var(--color-text)]">{t('galleryVisibility')}</h4>
               <p className="text-sm text-[var(--color-text-muted)]">
@@ -408,7 +408,7 @@ export default function AdminPanel() {
           <button
             onClick={toggleGalleryVisibility}
             disabled={galleryVisibilityLoading}
-            className="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md text-white bg-purple-600 hover:bg-purple-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-purple-500 disabled:opacity-50"
+            className="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md text-white bg-[var(--color-primary)] hover:opacity-90 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-orange-400 disabled:opacity-50"
           >
             {galleryVisibilityLoading ? (
               <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white mr-2"></div>
@@ -434,7 +434,7 @@ export default function AdminPanel() {
               <select
                 value={selectedTeam}
                 onChange={(e) => setSelectedTeam(e.target.value as TeamColor | 'all')}
-                className="rounded-md border-[var(--color-border)] shadow-sm bg-[var(--color-input-bg)] focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50"
+                className="rounded-md border-[var(--color-border)] shadow-sm bg-[var(--color-input-bg)] focus:border-orange-300 focus:ring focus:ring-orange-200 focus:ring-opacity-50"
               >
                 <option value="all">All Teams</option>
                 {TEAMS && Object.entries(TEAMS).map(([key, team]) => (
@@ -444,7 +444,7 @@ export default function AdminPanel() {
               <div className="flex space-x-2">
                 <button
                   onClick={exportRoster}
-                  className="inline-flex items-center px-3 py-2 border border-[var(--color-border)] shadow-sm text-sm leading-4 font-medium rounded-md text-[var(--color-text)] bg-[var(--color-bg)] hover:bg-[var(--color-bg-muted)] focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
+                  className="inline-flex items-center px-3 py-2 border border-[var(--color-border)] shadow-sm text-sm leading-4 font-medium rounded-md text-[var(--color-text)] bg-[var(--color-bg)] hover:bg-[var(--color-bg-muted)] focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-orange-400"
                 >
                   <Download className="h-4 w-4 mr-2" />
                   Export CSV
@@ -467,7 +467,7 @@ export default function AdminPanel() {
                         lockedTeams.includes(key)
                           ? 'border-red-500 text-red-700 hover:bg-red-50'
                           : 'border-green-500 text-green-700 hover:bg-green-50'
-                      } text-sm font-medium rounded-md focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-purple-500 disabled:opacity-50`}
+                      } text-sm font-medium rounded-md focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-orange-400 disabled:opacity-50`}
                     >
                       {lockedTeams.includes(key) ? 'Unlock' : 'Lock'}
                     </button>
@@ -536,7 +536,7 @@ export default function AdminPanel() {
                       <select
                         value={profile.current_team || ''}
                         onChange={(e) => reassignUser(profile.id, e.target.value as TeamColor)}
-                        className="rounded-md border-[var(--color-border)] shadow-sm bg-[var(--color-input-bg)] focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50 text-sm"
+                        className="rounded-md border-[var(--color-border)] shadow-sm bg-[var(--color-input-bg)] focus:border-orange-300 focus:ring focus:ring-orange-200 focus:ring-opacity-50 text-sm"
                       >
                         <option value="">Unassigned</option>
                         {TEAMS && Object.entries(TEAMS).map(([key, team]) => (
@@ -556,7 +556,7 @@ export default function AdminPanel() {
             <h3 className="font-semibold text-[var(--color-text)]">Sport Selections</h3>
             <button
               onClick={exportSportSelections}
-              className="inline-flex items-center px-3 py-2 border border-[var(--color-border)] shadow-sm text-sm leading-4 font-medium rounded-md text-[var(--color-text)] bg-[var(--color-bg)] hover:bg-[var(--color-bg-muted)] focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
+              className="inline-flex items-center px-3 py-2 border border-[var(--color-border)] shadow-sm text-sm leading-4 font-medium rounded-md text-[var(--color-text)] bg-[var(--color-bg)] hover:bg-[var(--color-bg-muted)] focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-orange-400"
             >
               <Download className="h-4 w-4 mr-2" />
               Export CSV
@@ -593,7 +593,7 @@ export default function AdminPanel() {
                             </p>
                           </div>
                           {participant.is_admin && (
-                            <span className="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-purple-100 text-purple-800">
+                            <span className="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-orange-100 text-orange-800">
                               Admin
                             </span>
                           )}
@@ -661,9 +661,9 @@ export default function AdminPanel() {
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap text-sm text-[var(--color-text-muted)]">
                       <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${
-                        profile.role === 'admin' ? 'bg-purple-100 text-purple-800' :
+                        profile.role === 'admin' ? 'bg-orange-100 text-orange-800' :
                         profile.role === 'shop_owner' ? 'bg-yellow-100 text-yellow-800' :
-                        profile.role === 'team_leader' ? 'bg-blue-100 text-blue-800' :
+                        profile.role === 'team_leader' ? 'bg-amber-100 text-amber-800' :
                         'bg-green-100 text-green-800'
                       }`}>
                         {profile.role === 'admin' ? 'Admin' :
@@ -676,7 +676,7 @@ export default function AdminPanel() {
                       <select
                         value={profile.role || 'camper'}
                         onChange={(e) => updateUserRole(profile.id, e.target.value)}
-                        className="rounded-md border-[var(--color-border)] bg-[var(--color-input-bg)] shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50 text-sm"
+                        className="rounded-md border-[var(--color-border)] bg-[var(--color-input-bg)] shadow-sm focus:border-orange-300 focus:ring focus:ring-orange-200 focus:ring-opacity-50 text-sm"
                       >
                         <option value="camper">Camper</option>
                         <option value="team_leader">Team Leader</option>

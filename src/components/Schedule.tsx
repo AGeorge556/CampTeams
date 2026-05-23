@@ -70,7 +70,7 @@ export default function Schedule() {
       <div className="bg-[var(--color-card-bg)] rounded-lg shadow-sm p-4 md:p-6 border border-[var(--color-border)]">
         <div className="flex items-center justify-between">
           <div className="flex items-center space-x-2 md:space-x-3">
-            <Calendar className="h-6 w-6 md:h-8 md:w-8 text-blue-500" />
+            <Calendar className="h-6 w-6 md:h-8 md:w-8 text-[var(--color-primary)]" />
             <div>
               <h2 className="text-xl md:text-2xl font-bold text-[var(--color-text)]">Schedule Management</h2>
               <p className="text-sm md:text-base text-[var(--color-text-muted)]">Manage camp schedule, sessions, and attendance</p>
@@ -81,7 +81,7 @@ export default function Schedule() {
             <button
               onClick={handleToggleScheduleVisibility}
               disabled={loading}
-              className="inline-flex items-center px-3 py-2 sm:px-4 sm:py-2.5 border border-transparent text-xs sm:text-sm font-medium rounded-lg text-white bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 disabled:opacity-50 transition-all duration-200 shadow-sm hover:shadow-md min-h-[44px]"
+              className="inline-flex items-center px-3 py-2 sm:px-4 sm:py-2.5 border border-transparent text-xs sm:text-sm font-medium rounded-lg text-white bg-[var(--color-primary)] hover:opacity-90 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-orange-400 disabled:opacity-50 transition-all duration-200 shadow-sm hover:shadow-md min-h-[44px]"
             >
               {loading ? (
                 <div className="animate-spin rounded-full h-3 w-3 sm:h-4 sm:w-4 border-b-2 border-white mr-1.5 sm:mr-2"></div>
@@ -96,7 +96,7 @@ export default function Schedule() {
             {/* Mobile menu button */}
             <button
               onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-              className="md:hidden inline-flex items-center justify-center p-2 rounded-md text-[var(--color-text-muted)] hover:text-[var(--color-text)] hover:bg-[var(--color-bg-muted)] focus:outline-none focus:ring-2 focus:ring-inset focus:ring-blue-500"
+              className="md:hidden inline-flex items-center justify-center p-2 rounded-md text-[var(--color-text-muted)] hover:text-[var(--color-text)] hover:bg-[var(--color-bg-muted)] focus:outline-none focus:ring-2 focus:ring-inset focus:ring-orange-400"
             >
               {mobileMenuOpen ? (
                 <X className="h-6 w-6" />
@@ -121,7 +121,7 @@ export default function Schedule() {
                   onClick={() => setActiveTab(tab.id)}
                   className={`py-4 px-1 border-b-2 font-medium text-sm transition-colors duration-200 ${
                     activeTab === tab.id
-                      ? 'border-blue-500 text-blue-600'
+                      ? 'border-orange-500 text-orange-600'
                       : 'border-transparent text-[var(--color-text-muted)] hover:text-[var(--color-text)] hover:border-[var(--color-border)]'
                   }`}
                 >

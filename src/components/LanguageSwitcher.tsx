@@ -47,11 +47,11 @@ const LanguageSwitcher: React.FC = () => {
             transition-all duration-300 ease-in-out
             transform hover:scale-105 active:scale-95
             ${language === 'ar' 
-              ? 'bg-gradient-to-r from-green-400 to-blue-500 text-white shadow-lg' 
-              : 'bg-gradient-to-r from-blue-400 to-purple-500 text-white shadow-lg'
+              ? 'bg-gradient-to-r from-green-500 to-emerald-600 text-white shadow-lg'
+              : 'bg-gradient-to-r from-orange-500 to-amber-500 text-white shadow-lg'
             }
             ${isAnimating ? 'animate-pulse' : ''}
-            focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-sky-500
+            focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-orange-400
             disabled:opacity-50 disabled:cursor-not-allowed
           `}
           title={getFunMessage()}
@@ -77,12 +77,11 @@ const LanguageSwitcher: React.FC = () => {
             transition-all duration-300 ease-in-out
             transform hover:scale-105 active:scale-95
             ${language === 'ar' 
-              ? 'bg-gradient-to-r from-green-400 to-blue-500 text-white shadow-lg hover:shadow-xl' 
-              : 'bg-gradient-to-r from-blue-400 to-purple-500 text-white shadow-lg hover:shadow-xl'
+              ? 'bg-gradient-to-r from-green-500 to-emerald-600 text-white shadow-lg hover:shadow-xl'
+              : 'bg-gradient-to-r from-orange-500 to-amber-500 text-white shadow-lg hover:shadow-xl'
             }
             ${isAnimating ? 'animate-pulse' : ''}
-            hover:from-opacity-90 hover:to-opacity-90
-            focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-sky-500
+            focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-orange-400
             disabled:opacity-50 disabled:cursor-not-allowed
           `}
           title={getFunMessage()}

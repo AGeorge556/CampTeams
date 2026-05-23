@@ -104,7 +104,7 @@ export default function Navigation({ currentPage, onPageChange }: NavigationProp
             {/* Desktop user info + logout */}
             <div className="hidden md:flex items-center space-x-2">
               {profile?.is_admin && (
-                <span className="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-semibold bg-purple-100 text-purple-800 dark:bg-purple-900 dark:text-purple-200">
+                <span className="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-semibold bg-orange-100 text-orange-800 dark:bg-orange-900/40 dark:text-orange-200">
                   {t('admin')}
                 </span>
               )}

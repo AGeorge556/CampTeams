@@ -139,8 +139,8 @@ export default function CampRegistrationOnboarding() {
 
   const CampIcon = currentCamp.season === 'winter' ? Snowflake : Sun
   const campColor = currentCamp.season === 'winter'
-    ? 'from-sky-500 to-blue-600'
-    : 'from-orange-500 to-red-600'
+    ? 'from-orange-500 to-amber-600'
+    : 'from-orange-500 to-red-500'
 
   const formatDate = (dateString: string) => {
     const date = new Date(dateString)
@@ -176,7 +176,7 @@ export default function CampRegistrationOnboarding() {
                 type="text"
                 value={formData.full_name}
                 onChange={(e) => setFormData({ ...formData, full_name: e.target.value })}
-                className="w-full px-4 py-3 rounded-lg border border-[var(--color-border)] bg-[var(--color-bg-muted)] text-[var(--color-text)] focus:outline-none focus:ring-2 focus:ring-sky-500"
+                className="w-full px-4 py-3 rounded-lg border border-[var(--color-border)] bg-[var(--color-bg-muted)] text-[var(--color-text)] focus:outline-none focus:ring-2 focus:ring-orange-400"
                 placeholder="Enter your full name"
               />
             </div>
@@ -192,7 +192,7 @@ export default function CampRegistrationOnboarding() {
                 max="25"
                 value={formData.age}
                 onChange={(e) => setFormData({ ...formData, age: e.target.value })}
-                className="w-full px-4 py-3 rounded-lg border border-[var(--color-border)] bg-[var(--color-bg-muted)] text-[var(--color-text)] focus:outline-none focus:ring-2 focus:ring-sky-500"
+                className="w-full px-4 py-3 rounded-lg border border-[var(--color-border)] bg-[var(--color-bg-muted)] text-[var(--color-text)] focus:outline-none focus:ring-2 focus:ring-orange-400"
                 placeholder="Enter your age"
               />
             </div>
@@ -210,7 +210,7 @@ export default function CampRegistrationOnboarding() {
                   type="tel"
                   value={formData.mobile_number}
                   onChange={(e) => setFormData({ ...formData, mobile_number: e.target.value })}
-                  className="w-full pl-10 pr-4 py-3 rounded-lg border border-[var(--color-border)] bg-[var(--color-bg-muted)] text-[var(--color-text)] focus:outline-none focus:ring-2 focus:ring-sky-500"
+                  className="w-full pl-10 pr-4 py-3 rounded-lg border border-[var(--color-border)] bg-[var(--color-bg-muted)] text-[var(--color-text)] focus:outline-none focus:ring-2 focus:ring-orange-400"
                   placeholder="Enter your mobile number"
                 />
               </div>
@@ -229,7 +229,7 @@ export default function CampRegistrationOnboarding() {
                   type="text"
                   value={formData.parent_name}
                   onChange={(e) => setFormData({ ...formData, parent_name: e.target.value })}
-                  className="w-full pl-10 pr-4 py-3 rounded-lg border border-[var(--color-border)] bg-[var(--color-bg-muted)] text-[var(--color-text)] focus:outline-none focus:ring-2 focus:ring-sky-500"
+                  className="w-full pl-10 pr-4 py-3 rounded-lg border border-[var(--color-border)] bg-[var(--color-bg-muted)] text-[var(--color-text)] focus:outline-none focus:ring-2 focus:ring-orange-400"
                   placeholder="Enter parent/guardian name"
                 />
               </div>
@@ -248,7 +248,7 @@ export default function CampRegistrationOnboarding() {
                   type="tel"
                   value={formData.parent_number}
                   onChange={(e) => setFormData({ ...formData, parent_number: e.target.value })}
-                  className="w-full pl-10 pr-4 py-3 rounded-lg border border-[var(--color-border)] bg-[var(--color-bg-muted)] text-[var(--color-text)] focus:outline-none focus:ring-2 focus:ring-sky-500"
+                  className="w-full pl-10 pr-4 py-3 rounded-lg border border-[var(--color-border)] bg-[var(--color-bg-muted)] text-[var(--color-text)] focus:outline-none focus:ring-2 focus:ring-orange-400"
                   placeholder="Enter parent/guardian phone number"
                 />
               </div>
@@ -265,7 +265,7 @@ export default function CampRegistrationOnboarding() {
                 max="12"
                 value={formData.grade}
                 onChange={(e) => setFormData({ ...formData, grade: e.target.value })}
-                className="w-full px-4 py-3 rounded-lg border border-[var(--color-border)] bg-[var(--color-bg-muted)] text-[var(--color-text)] focus:outline-none focus:ring-2 focus:ring-sky-500"
+                className="w-full px-4 py-3 rounded-lg border border-[var(--color-border)] bg-[var(--color-bg-muted)] text-[var(--color-text)] focus:outline-none focus:ring-2 focus:ring-orange-400"
                 placeholder="Enter your grade (1-12)"
               />
             </div>
@@ -281,7 +281,7 @@ export default function CampRegistrationOnboarding() {
                   onClick={() => setFormData({ ...formData, gender: 'male' })}
                   className={`py-3 px-4 rounded-lg border-2 transition-all ${
                     formData.gender === 'male'
-                      ? 'border-sky-500 bg-sky-50 dark:bg-sky-950 text-sky-700 dark:text-sky-300'
+                      ? 'border-orange-500 bg-orange-50 dark:bg-orange-950/40 text-orange-700 dark:text-orange-300'
                       : 'border-[var(--color-border)] bg-[var(--color-bg-muted)] text-[var(--color-text)]'
                   }`}
                 >
@@ -292,7 +292,7 @@ export default function CampRegistrationOnboarding() {
                   onClick={() => setFormData({ ...formData, gender: 'female' })}
                   className={`py-3 px-4 rounded-lg border-2 transition-all ${
                     formData.gender === 'female'
-                      ? 'border-sky-500 bg-sky-50 dark:bg-sky-950 text-sky-700 dark:text-sky-300'
+                      ? 'border-orange-500 bg-orange-50 dark:bg-orange-950/40 text-orange-700 dark:text-orange-300'
                       : 'border-[var(--color-border)] bg-[var(--color-bg-muted)] text-[var(--color-text)]'
                   }`}
                 >
@@ -308,7 +308,7 @@ export default function CampRegistrationOnboarding() {
                   type="checkbox"
                   checked={formData.participate_in_teams}
                   onChange={(e) => setFormData({ ...formData, participate_in_teams: e.target.checked })}
-                  className="w-5 h-5 rounded border-gray-300 text-sky-600 focus:ring-sky-500"
+                  className="w-5 h-5 rounded border-gray-300 text-orange-600 focus:ring-orange-400"
                 />
                 <span className="text-sm font-medium text-[var(--color-text)]">
                   I want to participate in team activities

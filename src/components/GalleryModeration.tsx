@@ -136,7 +136,7 @@ export default function GalleryModeration() {
       <div className="bg-[var(--color-card-bg)] rounded-lg shadow-sm p-6">
         <div className="flex items-center justify-between">
           <div className="flex items-center space-x-3">
-            <Shield className="h-8 w-8 text-purple-500" />
+            <Shield className="h-8 w-8 text-[var(--color-primary)]" />
             <div>
               <h1 className="text-2xl font-bold text-[var(--color-text)]">{t('photoModeration')}</h1>
               <p className="text-[var(--color-text-muted)]">Review and moderate photo submissions</p>
@@ -177,7 +177,7 @@ export default function GalleryModeration() {
               <div className="text-sm text-[var(--color-text-muted)]">{t('rejectedCount')}</div>
             </div>
             <div className="text-center">
-              <div className="text-2xl font-bold text-blue-600">{stats.total_users}</div>
+              <div className="text-2xl font-bold text-[var(--color-primary)]">{stats.total_users}</div>
               <div className="text-sm text-[var(--color-text-muted)]">{t('totalUsers')}</div>
             </div>
           </div>
@@ -280,7 +280,7 @@ export default function GalleryModeration() {
                     <div className="flex space-x-1">
                       <button
                         onClick={() => setSelectedPhoto(photo)}
-                        className="bg-blue-500 text-white rounded-full p-1"
+                        className="bg-[var(--color-primary)] text-white rounded-full p-1"
                         title={t('photoPreview')}
                       >
                         <Eye className="h-3 w-3" />

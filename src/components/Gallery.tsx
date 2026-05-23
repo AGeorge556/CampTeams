@@ -176,7 +176,7 @@ export default function Gallery() {
       <div className="bg-[var(--color-card-bg)] rounded-lg shadow-sm p-6">
         <div className="flex items-center justify-between">
           <div className="flex items-center space-x-3">
-            <Camera className="h-8 w-8 text-sky-500" />
+            <Camera className="h-8 w-8 text-[var(--color-primary)]" />
             <div>
               <h1 className="text-2xl font-bold text-[var(--color-text)]">{t('gallery')}</h1>
               <p className="text-[var(--color-text-muted)]">Share your camp memories with photos</p>
@@ -214,7 +214,7 @@ export default function Gallery() {
               multiple
               accept="image/*,video/*"
               onChange={handleFileSelect}
-              className="block w-full text-sm text-[var(--color-text-muted)] file:mr-4 file:py-2 file:px-4 file:rounded-md file:border-0 file:text-sm file:font-medium file:bg-orange-50 file:text-sky-700 hover:file:bg-sky-100"
+              className="block w-full text-sm text-[var(--color-text-muted)] file:mr-4 file:py-2 file:px-4 file:rounded-md file:border-0 file:text-sm file:font-medium file:bg-orange-50 file:text-orange-700 hover:file:bg-orange-100"
             />
           </div>
 
@@ -333,7 +333,7 @@ export default function Gallery() {
                   <div className="flex space-x-1">
                     <button
                       onClick={() => setSelectedPhoto(photo)}
-                      className="bg-blue-500 text-white rounded-full p-1.5 sm:p-1 touch-target"
+                      className="bg-[var(--color-primary)] text-white rounded-full p-1.5 sm:p-1 touch-target"
                     >
                       <Eye className="h-3 w-3 sm:h-3 sm:w-3" />
                     </button>
@@ -412,7 +412,7 @@ export default function Gallery() {
                 <div className="absolute top-2 right-2 opacity-0 group-hover:opacity-100 transition-opacity">
                   <button
                     onClick={() => setSelectedPhoto(photo)}
-                    className="bg-blue-500 text-white rounded-full p-1.5 sm:p-1 touch-target"
+                    className="bg-[var(--color-primary)] text-white rounded-full p-1.5 sm:p-1 touch-target"
                   >
                     <Eye className="h-3 w-3 sm:h-3 sm:w-3" />
                   </button>

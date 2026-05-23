@@ -220,7 +220,7 @@ export default function ScheduleEditor() {
               setEditForm({ ...editForm, day: selectedDay })
               setShowAddForm(true)
             }}
-            className="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
+            className="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md text-white bg-[var(--color-primary)] hover:opacity-90 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-orange-400"
           >
             <Plus className="h-4 w-4 mr-2" />
             Add Activity
@@ -234,7 +234,7 @@ export default function ScheduleEditor() {
               onClick={() => setSelectedDay(day)}
               className={`px-4 py-2 rounded-md text-sm font-medium ${
                 selectedDay === day
-                  ? 'bg-blue-100 text-blue-700 border border-blue-300'
+                  ? 'bg-orange-100 text-orange-700 border border-orange-300'
                   : 'bg-[var(--color-bg-muted)] text-[var(--color-text)] hover:bg-[var(--color-bg-muted)]'
                }`}
              >
@@ -259,7 +259,7 @@ export default function ScheduleEditor() {
                 <select
                   value={editForm.day}
                   onChange={(e) => setEditForm({ ...editForm, day: parseInt(e.target.value) })}
-                  className="w-full px-3 py-2 border border-[var(--color-border)] rounded-md bg-[var(--color-input-bg)] focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  className="w-full px-3 py-2 border border-[var(--color-border)] rounded-md bg-[var(--color-input-bg)] focus:outline-none focus:ring-2 focus:ring-orange-400"
                 >
                   {[1, 2, 3, 4].map((day) => (
                     <option key={day} value={day}>Day {day}</option>
@@ -274,7 +274,7 @@ export default function ScheduleEditor() {
                   type="time"
                   value={editForm.time}
                   onChange={(e) => setEditForm({ ...editForm, time: e.target.value })}
-                  className="w-full px-3 py-2 border border-[var(--color-border)] rounded-md bg-[var(--color-input-bg)] focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  className="w-full px-3 py-2 border border-[var(--color-border)] rounded-md bg-[var(--color-input-bg)] focus:outline-none focus:ring-2 focus:ring-orange-400"
                   required
                 />
               </div>
@@ -288,7 +288,7 @@ export default function ScheduleEditor() {
                 type="text"
                 value={editForm.activity}
                 onChange={(e) => setEditForm({ ...editForm, activity: e.target.value })}
-                className="w-full px-3 py-2 border border-[var(--color-border)] rounded-md bg-[var(--color-input-bg)] focus:outline-none focus:ring-2 focus:ring-blue-500"
+                className="w-full px-3 py-2 border border-[var(--color-border)] rounded-md bg-[var(--color-input-bg)] focus:outline-none focus:ring-2 focus:ring-orange-400"
                 placeholder="e.g., Morning Devotion, Sports Activities"
                 required
               />
@@ -302,7 +302,7 @@ export default function ScheduleEditor() {
                 type="text"
                 value={editForm.location}
                 onChange={(e) => setEditForm({ ...editForm, location: e.target.value })}
-                className="w-full px-3 py-2 border border-[var(--color-border)] rounded-md bg-[var(--color-input-bg)] focus:outline-none focus:ring-2 focus:ring-blue-500"
+                className="w-full px-3 py-2 border border-[var(--color-border)] rounded-md bg-[var(--color-input-bg)] focus:outline-none focus:ring-2 focus:ring-orange-400"
                 placeholder="e.g., Main Hall, Sports Field"
                 required
               />
@@ -316,7 +316,7 @@ export default function ScheduleEditor() {
                 value={editForm.description}
                 onChange={(e) => setEditForm({ ...editForm, description: e.target.value })}
                 rows={3}
-                className="w-full px-3 py-2 border border-[var(--color-border)] rounded-md bg-[var(--color-input-bg)] focus:outline-none focus:ring-2 focus:ring-blue-500"
+                className="w-full px-3 py-2 border border-[var(--color-border)] rounded-md bg-[var(--color-input-bg)] focus:outline-none focus:ring-2 focus:ring-orange-400"
                 placeholder="Additional details about this activity"
               />
             </div>
@@ -325,7 +325,7 @@ export default function ScheduleEditor() {
               <button
                 type="submit"
                 disabled={loading}
-                className="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 disabled:opacity-50"
+                className="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md text-white bg-[var(--color-primary)] hover:opacity-90 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-orange-400 disabled:opacity-50"
               >
                 {loading ? (
                   <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white mr-2"></div>
@@ -337,7 +337,7 @@ export default function ScheduleEditor() {
               <button
                 type="button"
                 onClick={resetForm}
-                className="inline-flex items-center px-4 py-2 border border-[var(--color-border)] text-sm font-medium rounded-md text-[var(--color-text)] bg-[var(--color-bg)] hover:bg-[var(--color-bg-muted)] focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
+                className="inline-flex items-center px-4 py-2 border border-[var(--color-border)] text-sm font-medium rounded-md text-[var(--color-text)] bg-[var(--color-bg)] hover:bg-[var(--color-bg-muted)] focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-orange-400"
               >
                 <X className="h-4 w-4 mr-2" />
                 Cancel
@@ -380,7 +380,7 @@ export default function ScheduleEditor() {
                   <div className="flex items-center space-x-2">
                     <button
                       onClick={() => editItem(item)}
-                      className="inline-flex items-center px-3 py-2 border border-[var(--color-border)] shadow-sm text-sm font-medium rounded-md text-[var(--color-text)] bg-[var(--color-bg)] hover:bg-[var(--color-bg-muted)] focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
+                      className="inline-flex items-center px-3 py-2 border border-[var(--color-border)] shadow-sm text-sm font-medium rounded-md text-[var(--color-text)] bg-[var(--color-bg)] hover:bg-[var(--color-bg-muted)] focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-orange-400"
                     >
                       <Edit className="h-4 w-4 mr-2" />
                       Edit

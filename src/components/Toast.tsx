@@ -72,7 +72,7 @@ export const ToastProvider: React.FC<ToastProviderProps> = ({ children }) => {
       case 'warning':
         return <AlertTriangle className="h-5 w-5 text-yellow-500" />
       case 'info':
-        return <Info className="h-5 w-5 text-blue-500" />
+        return <Info className="h-5 w-5 text-[var(--color-primary)]" />
     }
   }
 
