@@ -2,8 +2,13 @@ import { useState, useEffect } from 'react'
 import { supabase } from '../lib/supabase'
 import { useToast } from '../components/Toast'
 
+const CACHE_KEY = 'vis_big_game'
+
 export function useOilExtractionVisibility() {
-  const [oilExtractionVisible, setOilExtractionVisible] = useState<boolean>(true)
+  const [oilExtractionVisible, setOilExtractionVisible] = useState<boolean>(() => {
+    const cached = localStorage.getItem(CACHE_KEY)
+    return cached !== null ? cached === 'true' : true
+  })
   const [loading, setLoading] = useState(true)
   const { addToast } = useToast()
 
@@ -15,6 +20,7 @@ export function useOilExtractionVisibility() {
       .on('postgres_changes', { event: 'UPDATE', schema: 'public', table: 'camp_settings' }, (payload) => {
         if (payload.new && typeof payload.new.oil_extraction_visible === 'boolean') {
           setOilExtractionVisible(payload.new.oil_extraction_visible)
+          localStorage.setItem(CACHE_KEY, String(payload.new.oil_extraction_visible))
         }
       })
       .subscribe()
@@ -32,7 +38,9 @@ export function useOilExtractionVisibility() {
       if (error && error.code !== 'PGRST116') {
         console.error('Error fetching oil extraction visibility:', error)
       } else {
-        setOilExtractionVisible(data?.oil_extraction_visible ?? true)
+        const value = data?.oil_extraction_visible ?? true
+        setOilExtractionVisible(value)
+        localStorage.setItem(CACHE_KEY, String(value))
       }
     } catch (error) {
       console.error('Error fetching oil extraction visibility:', error)
@@ -61,7 +69,8 @@ export function useOilExtractionVisibility() {
       }
 
       setOilExtractionVisible(newVisibility)
-      
+      localStorage.setItem(CACHE_KEY, String(newVisibility))
+
       addToast({
         type: 'success',
         title: 'Big Game Visibility Updated',

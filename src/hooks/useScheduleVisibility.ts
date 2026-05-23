@@ -1,8 +1,13 @@
 import { useState, useEffect } from 'react'
 import { supabase } from '../lib/supabase'
 
+const CACHE_KEY = 'vis_schedule'
+
 export function useScheduleVisibility() {
-  const [scheduleVisible, setScheduleVisible] = useState(true)
+  const [scheduleVisible, setScheduleVisible] = useState<boolean>(() => {
+    const cached = localStorage.getItem(CACHE_KEY)
+    return cached !== null ? cached === 'true' : true
+  })
   const [loading, setLoading] = useState(true)
 
   useEffect(() => {
@@ -18,7 +23,9 @@ export function useScheduleVisibility() {
       if (error && (error as any).code !== 'PGRST116') {
         console.error('Error fetching schedule visibility:', error)
       } else {
-        setScheduleVisible((data as any)?.schedule_visible ?? true)
+        const value = (data as any)?.schedule_visible ?? true
+        setScheduleVisible(value)
+        localStorage.setItem(CACHE_KEY, String(value))
       }
     } catch (error) {
       console.error('Error loading schedule visibility:', error)
@@ -40,6 +47,7 @@ export function useScheduleVisibility() {
         throw updateError
       }
       setScheduleVisible(newVisibility)
+      localStorage.setItem(CACHE_KEY, String(newVisibility))
     } catch (error) {
       console.error('Error toggling schedule visibility:', error)
       throw error

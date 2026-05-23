@@ -2,8 +2,13 @@ import { useState, useEffect } from 'react'
 import { supabase } from '../lib/supabase'
 import { useToast } from '../components/Toast'
 
+const CACHE_KEY = 'vis_gallery'
+
 export function useGalleryVisibility() {
-  const [galleryVisible, setGalleryVisible] = useState<boolean>(true)
+  const [galleryVisible, setGalleryVisible] = useState<boolean>(() => {
+    const cached = localStorage.getItem(CACHE_KEY)
+    return cached !== null ? cached === 'true' : true
+  })
   const [loading, setLoading] = useState(true)
   const { addToast } = useToast()
 
@@ -20,7 +25,9 @@ export function useGalleryVisibility() {
       if (error && (error as any).code !== 'PGRST116') {
         console.error('Error fetching gallery visibility:', error)
       } else {
-        setGalleryVisible((data as any)?.gallery_visible ?? true)
+        const value = (data as any)?.gallery_visible ?? true
+        setGalleryVisible(value)
+        localStorage.setItem(CACHE_KEY, String(value))
       }
     } catch (error) {
       console.error('Error fetching gallery visibility:', error)
@@ -43,6 +50,7 @@ export function useGalleryVisibility() {
           // Update the gallery visibility when camp_settings changes
           if (payload.new && typeof payload.new.gallery_visible === 'boolean') {
             setGalleryVisible(payload.new.gallery_visible)
+            localStorage.setItem(CACHE_KEY, String(payload.new.gallery_visible))
           }
         }
       )
@@ -63,6 +71,7 @@ export function useGalleryVisibility() {
         throw updateError
       }
       setGalleryVisible(newVisibility)
+      localStorage.setItem(CACHE_KEY, String(newVisibility))
       addToast({
         type: 'success',
         title: 'Gallery Visibility Updated',
