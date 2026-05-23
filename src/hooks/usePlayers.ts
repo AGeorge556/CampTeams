@@ -58,6 +58,20 @@ export function usePlayers() {
         throw fetchError
       }
 
+      // Fetch profiles to get the authoritative is_admin flag.
+      // camp_registrations.role is set at registration time and may not reflect
+      // admin promotions done via AdminPanel (which updates profiles.role, not
+      // camp_registrations.role). profiles.is_admin is the source of truth.
+      const userIds = data?.map(r => r.user_id).filter(Boolean) ?? []
+      const adminUserIds = new Set<string>()
+      if (userIds.length > 0) {
+        const { data: profileData } = await supabase
+          .from('profiles')
+          .select('id, is_admin')
+          .in('id', userIds)
+        profileData?.forEach(p => { if (p.is_admin) adminUserIds.add(p.id) })
+      }
+
       // Group players by team
       const teamPlayers: TeamPlayers = {
         red: [],
@@ -84,7 +98,7 @@ export function usePlayers() {
             mobile_number: registration.mobile_number,
             parent_name: registration.parent_name,
             parent_number: registration.parent_number,
-            is_admin: registration.role === 'admin'
+            is_admin: adminUserIds.has(registration.user_id) || registration.role === 'admin'
           }
           teamPlayers[registration.current_team].push(player)
         }
@@ -130,17 +144,18 @@ export function usePlayers() {
     }
   }, [fetchPlayers, currentCamp])
 
-  // Memoize team statistics for performance
+  // Memoize team statistics for performance (admins excluded from all counts)
   const teamStats = useMemo(() => {
     const stats: Record<string, any> = {}
 
     Object.entries(players).forEach(([teamKey, teamPlayers]) => {
-      const maleCount = teamPlayers.filter(p => p.gender === 'male').length
-      const femaleCount = teamPlayers.filter(p => p.gender === 'female').length
-      const grades = teamPlayers.map(p => p.grade)
+      const campers = teamPlayers.filter(p => !p.is_admin)
+      const maleCount = campers.filter(p => p.gender === 'male').length
+      const femaleCount = campers.filter(p => p.gender === 'female').length
+      const grades = campers.map(p => p.grade)
 
       stats[teamKey] = {
-        total: teamPlayers.length,
+        total: campers.length,
         male: maleCount,
         female: femaleCount,
         gradeRange: grades.length > 0 ? `${Math.min(...grades)} - ${Math.max(...grades)}` : 'N/A',

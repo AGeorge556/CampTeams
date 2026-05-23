@@ -53,11 +53,14 @@ export default function TeamSelection() {
     setLoading(true)
 
     try {
+      const isFirstPick = currentRegistration.current_team === null
       const { error } = await supabase
         .from('camp_registrations')
         .update({
           current_team: selectedTeam,
-          switches_remaining: 3
+          switches_remaining: isFirstPick
+            ? 3
+            : (currentRegistration.switches_remaining ?? 3) - 1
         })
         .eq('id', currentRegistration.id)
 

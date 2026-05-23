@@ -66,9 +66,11 @@ export function useTeamBalancing() {
       }
 
       // Calculate balances from players data (already camp-scoped via usePlayers)
+      // Admins are excluded from all counts so they don't consume team capacity slots.
       const teams = ['red', 'blue', 'green', 'yellow'] as const
       const balances: TeamBalance[] = teams.map(team => {
-        const teamPlayers = Array.isArray(players[team]) ? players[team] : []
+        const allPlayers = Array.isArray(players[team]) ? players[team] : []
+        const teamPlayers = allPlayers.filter(p => !p?.is_admin)
 
         return {
           team,

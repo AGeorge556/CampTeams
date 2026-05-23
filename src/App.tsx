@@ -310,8 +310,49 @@ function AppContent({
     )
   }
 
-  // If camp is selected but user is not registered for it, show registration
+  // If camp is selected but user is not registered for it, check registration_open first
   if (currentCamp && !isRegistered && !campLoading) {
+    if (!currentCamp.registration_open) {
+      return (
+        <div className="min-h-screen flex items-center justify-center bg-[var(--gradient-app-bg)] px-4">
+          <div
+            style={{
+              background: 'var(--color-card-bg)',
+              border: '1px solid var(--color-border)',
+              borderRadius: '12px',
+              padding: '2.5rem',
+              maxWidth: '420px',
+              width: '100%',
+              textAlign: 'center',
+            }}
+          >
+            <p style={{ fontSize: '2rem', marginBottom: '0.5rem' }}>🔒</p>
+            <h1
+              style={{
+                fontSize: '1.5rem',
+                fontWeight: 700,
+                color: 'var(--color-text)',
+                marginBottom: '0.75rem',
+              }}
+            >
+              {currentCamp.name}
+            </h1>
+            <p
+              style={{
+                color: 'var(--color-text)',
+                fontWeight: 500,
+                marginBottom: '0.5rem',
+              }}
+            >
+              Registration is currently closed.
+            </p>
+            <p style={{ color: 'var(--color-text-muted)', fontSize: '0.9rem' }}>
+              Please contact the camp organizers for more information.
+            </p>
+          </div>
+        </div>
+      )
+    }
     return <CampRegistrationOnboarding />
   }
 
@@ -334,7 +375,7 @@ function AppContent({
   return (
     <div className="min-h-screen bg-[var(--gradient-app-bg)]">
       <Navigation currentPage={currentPage} onPageChange={setCurrentPage} />
-      <BottomNav currentPage={currentPage} onPageChange={setCurrentPage} showBigGame />
+      <BottomNav currentPage={currentPage} onPageChange={setCurrentPage} />
       <Layout>
         {(() => {
           switch (currentPage) {

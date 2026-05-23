@@ -1,10 +1,12 @@
 import { useState, useEffect } from 'react';
-import { Shield, Users, Settings, Download, Trophy, Zap, Camera, Megaphone } from 'lucide-react';
+import { Shield, Users, Settings, Download, Trophy, Zap, Camera, Megaphone, Calendar } from 'lucide-react';
 import ScoreboardAdmin from './ScoreboardAdmin';
+import GalleryModeration from './GalleryModeration';
 import { supabase, Profile, TEAMS, TeamColor } from '../lib/supabase';
 import { CampSettings } from '../lib/types';
 import { useOilExtractionVisibility } from '../hooks/useOilExtractionVisibility';
 import { useGalleryVisibility } from '../hooks/useGalleryVisibility';
+import { useScheduleVisibility } from '../hooks/useScheduleVisibility';
 import { useLanguage } from '../contexts/LanguageContext';
 import { getGradeDisplayWithNumber } from '../lib/utils';
 import { useCamp } from '../contexts/CampContext';
@@ -22,6 +24,7 @@ const getTeamProperty = (teamKey: keyof typeof TEAMS, property: keyof typeof TEA
 export default function AdminPanel() {
   const { oilExtractionVisible, toggleOilExtractionVisibility, loading: oilVisibilityLoading } = useOilExtractionVisibility();
   const { galleryVisible, toggleGalleryVisibility, loading: galleryVisibilityLoading } = useGalleryVisibility();
+  const { scheduleVisible, toggleScheduleVisibility } = useScheduleVisibility();
   const { t } = useLanguage();
   const { currentCamp } = useCamp();
   const [profiles, setProfiles] = useState<Profile[]>([]);
@@ -29,7 +32,7 @@ export default function AdminPanel() {
   const [sportSelections, setSportSelections] = useState<SportSelection[]>([]);
   const [loading, setLoading] = useState(false);
   const [selectedTeam, setSelectedTeam] = useState<TeamColor | 'all'>('all');
-  const [activeTab, setActiveTab] = useState<'participants' | 'sports' | 'roles'>('participants');
+  const [activeTab, setActiveTab] = useState<'participants' | 'sports' | 'roles' | 'gallery'>('participants');
   const [lockedTeams, setLockedTeams] = useState<string[]>([]);
   const [announcementText, setAnnouncementText] = useState('');
   const [announcementSaving, setAnnouncementSaving] = useState(false);
@@ -197,14 +200,22 @@ export default function AdminPanel() {
         return;
       }
 
+      if (!currentCamp) {
+        console.error('No current camp — cannot reassign user');
+        return;
+      }
+
       const { error } = await supabase
-        .from('profiles')
+        .from('camp_registrations')
         .update({ current_team: newTeam })
-        .eq('id', userId);
+        .eq('user_id', userId)
+        .eq('camp_id', currentCamp.id);
 
       if (error) throw error;
 
-      console.log(`User ${userId} reassigned to team ${newTeam}`);
+      // Keep profiles.current_team in sync so the Participants tab display stays current
+      await supabase.from('profiles').update({ current_team: newTeam }).eq('id', userId);
+
       await fetchProfiles();
     } catch (error) {
       console.error('Error reassigning user:', error);
@@ -342,6 +353,17 @@ export default function AdminPanel() {
               <Shield className="h-4 w-4 inline mr-2" />
               Role Management
             </button>
+            <button
+              onClick={() => setActiveTab('gallery')}
+              className={`py-2 px-1 border-b-2 font-medium text-sm ${
+                activeTab === 'gallery'
+                  ? 'border-orange-500 text-orange-600'
+                  : 'border-transparent text-[var(--color-text-muted)] hover:text-[var(--color-text)] hover:border-[var(--color-border)]'
+              }`}
+            >
+              <Camera className="h-4 w-4 inline mr-2" />
+              Gallery
+            </button>
           </nav>
         </div>
       </div>
@@ -440,6 +462,26 @@ export default function AdminPanel() {
               <Camera className="h-4 w-4 mr-2" />
             )}
             {galleryVisible ? t('hideGallery') : t('showGallery')}
+          </button>
+        </div>
+
+        {/* Schedule Visibility Toggle */}
+        <div className="mt-4 flex items-center justify-between p-4 bg-[var(--color-bg-muted)] border border-[var(--color-border)] rounded-lg">
+          <div className="flex items-center">
+            <Trophy className="h-5 w-5 text-[var(--color-primary)] mr-3" />
+            <div>
+              <h4 className="font-medium text-[var(--color-text)]">Schedule Visibility</h4>
+              <p className="text-sm text-[var(--color-text-muted)]">
+                {scheduleVisible ? 'Schedule tab visible to campers' : 'Schedule tab hidden from campers'}
+              </p>
+            </div>
+          </div>
+          <button
+            onClick={toggleScheduleVisibility}
+            className="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md text-white bg-[var(--color-primary)] hover:opacity-90 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-orange-400"
+          >
+            <Calendar className="h-4 w-4 mr-2" />
+            {scheduleVisible ? 'Hide Schedule' : 'Show Schedule'}
           </button>
         </div>
 
@@ -748,7 +790,11 @@ export default function AdminPanel() {
              </table>
            </div>
          </div>
-       ) : null}
+      ) : activeTab === 'gallery' ? (
+        <div>
+          <GalleryModeration />
+        </div>
+      ) : null}
     </div>
   );
 }

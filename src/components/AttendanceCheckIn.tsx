@@ -12,21 +12,19 @@ export default function AttendanceCheckIn() {
   const [loading, setLoading] = useState(false)
   const [checkingIn, setCheckingIn] = useState<string | null>(null)
   const [myAttendance, setMyAttendance] = useState<AttendanceRecord[]>([])
-  const [qrSessionId, setQrSessionId] = useState<string | null>(null)
 
   useEffect(() => {
-    loadActiveSessions()
-    loadMyAttendance()
-    
-    // Check if user arrived via QR code
-    const storedSessionId = sessionStorage.getItem('qr_session_id')
-    if (storedSessionId) {
-      setQrSessionId(storedSessionId)
-      sessionStorage.removeItem('qr_session_id') // Clear it after reading
-      
-      // Auto-check in if we have a valid session
-      handleQRCodeCheckIn(storedSessionId)
+    const init = async () => {
+      await Promise.all([loadActiveSessions(), loadMyAttendance()])
+
+      // Check if user arrived via QR code — must run after attendance is loaded
+      const storedToken = sessionStorage.getItem('qr_session_id')
+      if (storedToken) {
+        sessionStorage.removeItem('qr_session_id')
+        handleQRCodeCheckIn(storedToken)
+      }
     }
+    init()
   }, [])
 
   const loadActiveSessions = async () => {
@@ -71,26 +69,20 @@ export default function AttendanceCheckIn() {
     }
   }
 
-  const handleQRCodeCheckIn = async (sessionId: string) => {
+  const handleQRCodeCheckIn = async (qrToken: string) => {
     if (!profile) return
 
-    setCheckingIn(sessionId)
+    setCheckingIn(qrToken)
     try {
-      console.log('QR Code Check-in initiated for session ID:', sessionId)
-      
-      // For testing: use the most recent active session
-      // This bypasses the QR code URL matching issue
+      // Look up the session whose qr_code URL contains this token
       const { data: sessions, error: sessionError } = await supabase
         .from('camp_sessions')
         .select('*')
+        .like('qr_code', `%${qrToken}%`)
         .eq('is_active', true)
-        .order('created_at', { ascending: false })
         .limit(1)
 
-      console.log('Session lookup result:', { sessions, sessionError })
-
       if (sessionError) {
-        console.error('Database error:', sessionError)
         addToast({
           type: 'error',
           title: 'Database Error',
@@ -100,19 +92,17 @@ export default function AttendanceCheckIn() {
       }
 
       if (!sessions || sessions.length === 0) {
-        console.log('No active sessions found')
         addToast({
           type: 'error',
-          title: 'No Active Sessions',
-          message: 'No active sessions found for check-in'
+          title: 'Invalid QR Code',
+          message: 'This QR code does not match any active session'
         })
         return
       }
 
-      const session = sessions[0]
-      console.log('Using session:', session)
+      const session = sessions[0] as CampSession
 
-      // Check if already attended
+      // Check if already attended (myAttendance is already loaded at this point)
       const existingAttendance = myAttendance.find(att => att.session_id === session.id)
       if (existingAttendance) {
         addToast({
@@ -220,28 +210,6 @@ export default function AttendanceCheckIn() {
 
   return (
     <div className="space-y-4 sm:space-y-6">
-      {/* Debug Information (only show if QR session ID is present) */}
-      {qrSessionId && (
-        <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-4">
-          <h3 className="text-lg font-medium text-yellow-800 mb-2">QR Code Debug Info</h3>
-          <div className="text-sm text-yellow-700 space-y-1">
-            <p><strong>QR Session ID:</strong> {qrSessionId}</p>
-            <p><strong>Current URL:</strong> {window.location.href}</p>
-            <p><strong>Origin:</strong> {window.location.origin}</p>
-            <p><strong>Active Sessions Count:</strong> {activeSessions.length}</p>
-            <p><strong>My Attendance Count:</strong> {myAttendance.length}</p>
-            <p><strong>Profile ID:</strong> {profile?.id || 'Not loaded'}</p>
-            <p><strong>Check-in Status:</strong> {checkingIn ? 'Processing...' : 'Ready'}</p>
-          </div>
-          <div className="mt-3 pt-3 border-t border-yellow-200">
-            <p className="text-xs text-yellow-600">
-              <strong>Note:</strong> This debug panel will help identify QR code issues. 
-              Check the browser console for detailed logs.
-            </p>
-          </div>
-        </div>
-      )}
-      
       {/* Header */}
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between space-y-3 sm:space-y-0">
         <div>
@@ -250,20 +218,6 @@ export default function AttendanceCheckIn() {
         </div>
         <div className="flex items-center space-x-2">
           <QrCode className="h-6 w-6 sm:h-8 sm:w-8 text-[var(--color-primary)]" />
-          {/* Test button for debugging */}
-          {activeSessions.length > 0 && (
-            <button
-              onClick={() => {
-                console.log('Test button clicked')
-                const firstSession = activeSessions[0]
-                console.log('Testing check-in for session:', firstSession)
-                handleCheckIn(firstSession.id)
-              }}
-              className="px-3 py-2 text-xs sm:text-sm bg-[var(--color-primary)] text-white rounded hover:opacity-90 min-h-[44px] touch-manipulation"
-            >
-              Test Check-in
-            </button>
-          )}
         </div>
       </div>
 

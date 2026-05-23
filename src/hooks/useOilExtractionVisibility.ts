@@ -9,6 +9,17 @@ export function useOilExtractionVisibility() {
 
   useEffect(() => {
     fetchOilExtractionVisibility()
+
+    const subscription = supabase
+      .channel('camp_settings_big_game')
+      .on('postgres_changes', { event: 'UPDATE', schema: 'public', table: 'camp_settings' }, (payload) => {
+        if (payload.new && typeof payload.new.oil_extraction_visible === 'boolean') {
+          setOilExtractionVisible(payload.new.oil_extraction_visible)
+        }
+      })
+      .subscribe()
+
+    return () => { supabase.removeChannel(subscription) }
   }, [])
 
   const fetchOilExtractionVisibility = async () => {
@@ -53,8 +64,8 @@ export function useOilExtractionVisibility() {
       
       addToast({
         type: 'success',
-        title: 'Oil Extraction Visibility Updated',
-        message: `Oil extraction tab is now ${newVisibility ? 'visible' : 'hidden'} to campers`
+        title: 'Big Game Visibility Updated',
+        message: `Big Game tab is now ${newVisibility ? 'visible' : 'hidden'} to campers`
       })
     } catch (error: any) {
       console.error('Error updating oil extraction visibility:', error)

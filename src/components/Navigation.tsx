@@ -6,6 +6,7 @@ import { useProfile } from '../hooks/useProfile'
 import { useLanguage } from '../contexts/LanguageContext'
 import { useScheduleVisibility } from '../hooks/useScheduleVisibility'
 import { useGalleryVisibility } from '../hooks/useGalleryVisibility'
+import { useOilExtractionVisibility } from '../hooks/useOilExtractionVisibility'
 import LanguageSwitcher from './LanguageSwitcher'
 import { ThemeToggle } from './ThemeToggle'
 import { useCamp } from '../contexts/CampContext'
@@ -22,6 +23,7 @@ export default function Navigation({ currentPage, onPageChange }: NavigationProp
   const { t } = useLanguage()
   const { scheduleVisible } = useScheduleVisibility()
   const { galleryVisible } = useGalleryVisibility()
+  const { oilExtractionVisible: bigGameVisible } = useOilExtractionVisibility()
   const { currentRegistration } = useCamp()
   const [isMenuOpen, setIsMenuOpen] = useState(false)
   const [newGalleryCount, setNewGalleryCount] = useState(0)
@@ -59,7 +61,7 @@ export default function Navigation({ currentPage, onPageChange }: NavigationProp
     { id: 'sports', name: t('teams'), icon: Trophy },
     { id: 'attendance-checkin', name: 'Check In', icon: QrCode },
     ...(profile?.is_admin || galleryVisible ? [{ id: 'gallery', name: t('gallery'), icon: Camera }] : []),
-    { id: 'big-game', name: 'Big Game', icon: Swords },
+    ...(profile?.is_admin || bigGameVisible ? [{ id: 'big-game', name: 'Big Game', icon: Swords }] : []),
   ]
 
   const handlePageChange = (page: string) => {

@@ -1,15 +1,16 @@
 import { Home, Trophy, QrCode, Camera, Swords } from 'lucide-react'
 import { useGalleryVisibility } from '../hooks/useGalleryVisibility'
+import { useOilExtractionVisibility } from '../hooks/useOilExtractionVisibility'
 import { useProfile } from '../hooks/useProfile'
 
 interface BottomNavProps {
   currentPage: string
   onPageChange: (page: string) => void
-  showBigGame?: boolean
 }
 
-export default function BottomNav({ currentPage, onPageChange, showBigGame }: BottomNavProps) {
+export default function BottomNav({ currentPage, onPageChange }: BottomNavProps) {
   const { galleryVisible } = useGalleryVisibility()
+  const { oilExtractionVisible: bigGameVisible } = useOilExtractionVisibility()
   const { profile } = useProfile()
 
   const items = [
@@ -17,7 +18,7 @@ export default function BottomNav({ currentPage, onPageChange, showBigGame }: Bo
     { id: 'sports', icon: Trophy, label: 'Sports' },
     { id: 'attendance-checkin', icon: QrCode, label: 'Check In' },
     ...(profile?.is_admin || galleryVisible ? [{ id: 'gallery', icon: Camera, label: 'Gallery' }] : []),
-    ...(showBigGame ? [{ id: 'big-game', icon: Swords, label: 'Big Game' }] : []),
+    ...(profile?.is_admin || bigGameVisible ? [{ id: 'big-game', icon: Swords, label: 'Big Game' }] : []),
   ]
 
   return (
