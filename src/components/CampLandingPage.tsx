@@ -42,7 +42,7 @@ export default function CampLandingPage({ onEnter }: CampLandingPageProps) {
             {/* Welcome Header */}
             <div className="text-center mb-8">
               <div className="inline-flex p-3 rounded-full bg-white/90 dark:bg-white/10 mb-6 shadow-lg backdrop-blur-sm">
-                <img src={logoUrl} alt="BCH Youth" className="w-16 h-16 object-contain" />
+                <img src={logoUrl} alt="BCH Youth" className="w-24 h-24 object-contain" />
               </div>
               <h1 className="text-3xl md:text-4xl font-bold text-[var(--color-text)] mb-2">
                 Welcome to {currentCamp.name}!

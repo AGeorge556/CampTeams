@@ -73,7 +73,7 @@ export default function Navigation({ currentPage, onPageChange }: NavigationProp
 
   return (
     <header className="bg-[var(--color-bg)] border-b-2 border-[var(--color-border)] shadow-[var(--shadow-sm)] sticky top-0 z-50 transition-all duration-300">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div className="max-w-[1440px] mx-auto px-4 sm:px-6 lg:px-10 xl:px-14">
         <div className="flex justify-between items-center h-16">
 
           {/* Logo */}
@@ -84,7 +84,7 @@ export default function Navigation({ currentPage, onPageChange }: NavigationProp
             <img
               src={logoUrl}
               alt="BCH Youth"
-              className="h-9 w-9 rounded-xl object-contain shadow-md group-hover:shadow-lg transition-shadow duration-200"
+              className="h-11 w-11 rounded-xl object-contain shadow-md group-hover:shadow-lg transition-shadow duration-200"
             />
             <div className="flex flex-col leading-none">
               <span className="text-[10px] font-bold text-[var(--color-primary)] uppercase tracking-widest">
@@ -189,7 +189,7 @@ export default function Navigation({ currentPage, onPageChange }: NavigationProp
                 {profile?.is_admin && ' • Admin'}
               </p>
             </div>
-            <img src={logoUrl} alt="BCH Youth" className="w-8 h-8 rounded-lg object-contain" />
+            <img src={logoUrl} alt="BCH Youth" className="w-11 h-11 rounded-xl object-contain" />
           </div>
 
           {/* Nav links */}

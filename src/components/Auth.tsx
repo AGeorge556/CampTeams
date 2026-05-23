@@ -161,7 +161,7 @@ export default function Auth({ initialMode = 'signin', onBack }: AuthProps) {
               <img
                 src={LOGO_PATH}
                 alt="BCH Youth"
-                className="h-14 w-14 object-contain"
+                className="h-20 w-20 object-contain"
                 onError={(e) => {
                   e.currentTarget.style.display = 'none'
                   e.currentTarget.parentElement!.innerHTML =

@@ -64,12 +64,12 @@ export default function LandingPage() {
               <img
                 src={LOGO_PATH}
                 alt="BCH Youth"
-                className="h-9 w-9 object-contain"
+                className="h-12 w-12 object-contain"
                 onError={e => {
                   const el = e.currentTarget
                   el.style.display = 'none'
                   const placeholder = document.createElement('div')
-                  placeholder.className = 'h-9 w-9 flex items-center justify-center'
+                  placeholder.className = 'h-12 w-12 flex items-center justify-center'
                   placeholder.innerHTML = `<svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" fill="none" stroke="#fb923c" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24"><circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/><line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/></svg>`
                   el.parentElement?.appendChild(placeholder)
                 }}
@@ -97,7 +97,7 @@ export default function LandingPage() {
 
             {/* Eyebrow */}
             <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-orange-500/18 border border-orange-400/30 backdrop-blur-sm mb-7 anim-up" style={{ animationDelay: '0ms' }}>
-              <img src={LOGO_PATH} alt="" className="h-4 w-4 object-contain" />
+              <img src={LOGO_PATH} alt="" className="h-5 w-5 object-contain" />
               <span className="text-xs font-bold text-orange-300 uppercase tracking-[0.16em]">
                 BCH Youth Program
               </span>

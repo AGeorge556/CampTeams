@@ -10,7 +10,7 @@ export default function Layout({ children, className = '', mobileOptimized = tru
   return (
     <div className="min-h-screen bg-[var(--color-bg)]">
       <main className={`
-        max-w-7xl mx-auto px-3 sm:px-4 md:px-6 lg:px-8
+        max-w-[1440px] mx-auto px-4 sm:px-6 md:px-8 lg:px-10 xl:px-14
         pt-4 sm:pt-6 md:pt-8 pb-24 md:pb-8
         ${mobileOptimized ? 'mobile-safe-area' : ''}
         ${className}
@@ -41,7 +41,7 @@ export function CompactLayout({ children, className = '' }: { children: React.Re
   return (
     <div className="min-h-screen bg-[var(--gradient-app-bg)]">
       <main className={`
-        max-w-7xl mx-auto px-3 py-3
+        max-w-[1440px] mx-auto px-4 sm:px-6 lg:px-10 xl:px-14 py-3
         mobile-safe-area
         ${className}
       `}>
