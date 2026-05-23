@@ -1,8 +1,8 @@
 import React, { useState, useEffect, useRef } from 'react'
-import { Users, UserPlus, Download, RefreshCw, Calendar, Trophy, Camera } from 'lucide-react'
+import { Users, UserPlus, Download, RefreshCw, Calendar, Trophy, Camera, Megaphone } from 'lucide-react'
 import { useProfile } from '../hooks/useProfile'
 import { useCamp } from '../contexts/CampContext'
-import { TEAMS, TeamColor } from '../lib/supabase'
+import { TEAMS, TeamColor, supabase } from '../lib/supabase'
 import AdminPanel from './AdminPanel'
 import PlayerLists from './PlayerLists'
 import CountdownTimer from './CountdownTimer'
@@ -42,7 +42,20 @@ export default function Dashboard({ onPageChange }: DashboardProps) {
   const [backgroundImage, setBackgroundImage] = useState<string>('')
   const [generatingVerse, setGeneratingVerse] = useState(false)
   const [downloading, setDownloading] = useState(false)
+  const [announcement, setAnnouncement] = useState<string | null>(null)
   const verseRef = useRef<HTMLDivElement>(null)
+
+  useEffect(() => {
+    if (!currentCamp?.id) return
+    setAnnouncement((currentCamp.custom_content as any)?.announcement || null)
+    const channel = supabase
+      .channel(`camp_announcement_${currentCamp.id}`)
+      .on('postgres_changes', { event: 'UPDATE', schema: 'public', table: 'camps', filter: `id=eq.${currentCamp.id}` },
+        (payload: any) => setAnnouncement(payload.new?.custom_content?.announcement || null)
+      )
+      .subscribe()
+    return () => { channel.unsubscribe() }
+  }, [currentCamp?.id])
 
   const quickActions: QuickAction[] = [
     {
@@ -211,6 +224,19 @@ export default function Dashboard({ onPageChange }: DashboardProps) {
     <div className="space-y-5 pb-8">
       {/* ── Camp hero (bible verse + countdown) ── */}
       <CampHero />
+
+      {/* ── Announcement banner ── */}
+      {announcement && (
+        <div className="bg-amber-50 dark:bg-amber-950/30 border border-amber-200 dark:border-amber-800 rounded-2xl p-4 flex items-start gap-3 shadow-[var(--shadow-sm)]">
+          <div className="w-8 h-8 rounded-lg bg-amber-100 dark:bg-amber-900/50 flex items-center justify-center shrink-0 mt-0.5">
+            <Megaphone className="h-4 w-4 text-amber-700 dark:text-amber-400" />
+          </div>
+          <div>
+            <p className="text-[11px] font-bold text-amber-700 dark:text-amber-500 uppercase tracking-widest mb-1">Announcement</p>
+            <p className="text-sm text-amber-900 dark:text-amber-200 leading-relaxed">{announcement}</p>
+          </div>
+        </div>
+      )}
 
       {/* ── Personal identity card ── */}
       <div className="bg-[var(--color-card-bg)] rounded-2xl border border-[var(--color-border)] overflow-hidden shadow-[var(--shadow-sm)]">

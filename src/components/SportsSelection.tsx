@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react'
-import { Trophy, CheckCircle } from 'lucide-react'
+import { Trophy, CheckCircle, Lock } from 'lucide-react'
 import { supabase, TEAMS, type SportsMatch } from '../lib/supabase'
 import { useProfile } from '../hooks/useProfile'
 import { useCamp } from '../contexts/CampContext'
@@ -131,15 +131,27 @@ export default function SportsSelection() {
       <div
         key={sport.id}
         className={`relative bg-[var(--color-card-bg)] rounded-2xl overflow-hidden border transition-all duration-200 ${
-          eligibility.eligible ? 'cursor-pointer active:scale-[0.99]' : 'opacity-50 cursor-not-allowed'
+          eligibility.eligible ? 'cursor-pointer active:scale-[0.99]' : 'cursor-not-allowed'
         } ${
           isSelected
             ? 'border-orange-400 ring-2 ring-orange-400/20 shadow-md'
-            : 'border-[var(--color-border)] hover:border-orange-300 hover:shadow-sm'
+            : eligibility.eligible
+            ? 'border-[var(--color-border)] hover:border-orange-300 hover:shadow-sm'
+            : 'border-[var(--color-border)]'
         }`}
         onClick={() => eligibility.eligible && toggleSport(sport.id)}
         aria-disabled={!eligibility.eligible}
       >
+        {/* Lock overlay for ineligible sports */}
+        {!eligibility.eligible && (
+          <div className="absolute inset-0 bg-[var(--color-bg)]/70 backdrop-blur-[1.5px] z-10 flex items-center justify-center">
+            <div className="flex items-center gap-2 px-3 py-1.5 bg-[var(--color-card-bg)] border border-[var(--color-border)] rounded-full shadow-sm">
+              <Lock className="h-3.5 w-3.5 text-[var(--color-text-muted)]" />
+              <span className="text-xs text-[var(--color-text-muted)] font-medium">{eligibility.reason}</span>
+            </div>
+          </div>
+        )}
+
         {isSelected && (
           <div className="absolute top-3 right-3 z-10">
             <CheckCircle className="h-5 w-5 text-white drop-shadow" />
@@ -158,18 +170,14 @@ export default function SportsSelection() {
 
         <div className="p-4">
           <p className="text-[var(--color-text-muted)] text-sm leading-relaxed mb-3">{sport.description}</p>
-          {!eligibility.eligible ? (
-            <p className="text-xs text-[var(--color-danger)]">{eligibility.reason}</p>
-          ) : (
-            <div className="flex items-center justify-between">
-              <span className={`text-xs font-semibold ${isSelected ? 'text-[var(--color-success)]' : 'text-[var(--color-text-muted)]'}`}>
-                {isSelected ? t('youreParticipating') : t('clickToJoin')}
-              </span>
-              {saving && isSelected && (
-                <div className="h-3.5 w-3.5 border-2 border-orange-400/40 border-t-orange-500 rounded-full animate-spin" />
-              )}
-            </div>
-          )}
+          <div className="flex items-center justify-between">
+            <span className={`text-xs font-semibold ${isSelected ? 'text-[var(--color-success)]' : 'text-[var(--color-text-muted)]'}`}>
+              {isSelected ? t('youreParticipating') : eligibility.eligible ? t('clickToJoin') : ''}
+            </span>
+            {saving && isSelected && (
+              <div className="h-3.5 w-3.5 border-2 border-orange-400/40 border-t-orange-500 rounded-full animate-spin" />
+            )}
+          </div>
         </div>
       </div>
     )
@@ -415,36 +423,33 @@ export default function SportsSelection() {
                   </div>
 
                   <div className="mt-6">
-                    <h5 className="font-semibold text-[var(--color-text)] mb-2">Standings</h5>
-                    <div className="overflow-x-auto">
-                      <table className="min-w-full text-sm">
-                        <thead>
-                          <tr className="text-left text-[var(--color-text-muted)]">
-                            <th className="py-2 pr-4">Team</th>
-                            <th className="py-2 pr-4">P</th>
-                            <th className="py-2 pr-4">W</th>
-                            <th className="py-2 pr-4">D</th>
-                            <th className="py-2 pr-4">L</th>
-                            <th className="py-2 pr-4">GF</th>
-                            <th className="py-2 pr-4">GA</th>
-                            <th className="py-2 pr-4">Pts</th>
-                          </tr>
-                        </thead>
-                        <tbody>
-                          {standings.map((row) => (
-                            <tr key={row.team} className="border-t border-[var(--color-border)]">
-                              <td className="py-2 pr-4 font-medium text-[var(--color-text)]">{TEAMS[row.team].name}</td>
-                              <td className="py-2 pr-4 text-[var(--color-text)]">{row.played}</td>
-                              <td className="py-2 pr-4 text-[var(--color-text)]">{row.wins}</td>
-                              <td className="py-2 pr-4 text-[var(--color-text)]">{row.draws}</td>
-                              <td className="py-2 pr-4 text-[var(--color-text)]">{row.losses}</td>
-                              <td className="py-2 pr-4 text-[var(--color-text)]">{row.goalsFor}</td>
-                              <td className="py-2 pr-4 text-[var(--color-text)]">{row.goalsAgainst}</td>
-                              <td className="py-2 pr-4 font-semibold text-[var(--color-text)]">{row.points}</td>
-                            </tr>
-                          ))}
-                        </tbody>
-                      </table>
+                    <h5 className="font-semibold text-[var(--color-text)] mb-3">Standings</h5>
+                    <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
+                      {standings.map((row, i) => {
+                        const teamConfig = TEAMS[row.team]
+                        const maxPts = Math.max(1, standings[0].points)
+                        const barPct = `${Math.round((row.points / maxPts) * 100)}%`
+                        return (
+                          <div key={row.team} className="rounded-xl border border-[var(--color-border)] overflow-hidden">
+                            <div className="px-3 py-2 text-white" style={{ background: teamConfig.colorValue }}>
+                              <div className="flex items-center justify-between">
+                                <span className="text-xs font-bold">{teamConfig.name}</span>
+                                <span className="text-[10px] font-black bg-white/20 px-1.5 py-0.5 rounded-full">#{i + 1}</span>
+                              </div>
+                              <p className="text-lg font-black leading-none mt-0.5">{row.points} <span className="text-xs font-normal opacity-80">pts</span></p>
+                            </div>
+                            <div className="p-2.5 bg-[var(--color-card-bg)] space-y-1.5">
+                              <div className="h-1 rounded-full bg-[var(--color-border)] overflow-hidden">
+                                <div className="h-full rounded-full" style={{ width: barPct, background: teamConfig.colorValue }} />
+                              </div>
+                              <div className="flex justify-between text-[10px] text-[var(--color-text-muted)]">
+                                <span><span className="font-semibold text-[var(--color-text)]">{row.played}</span> played</span>
+                                <span><span className="font-semibold text-green-600 dark:text-green-400">{row.wins}W</span> <span className="font-semibold text-[var(--color-text-muted)]">{row.draws}D</span> <span className="font-semibold text-[var(--color-danger)]">{row.losses}L</span></span>
+                              </div>
+                            </div>
+                          </div>
+                        )
+                      })}
                     </div>
                   </div>
 

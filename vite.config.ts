@@ -8,7 +8,16 @@ export default defineConfig({
     exclude: ['lucide-react'],
   },
   build: {
-    sourcemap: true, // Enable source maps to debug production error
-    minify: 'esbuild', // Use esbuild (default)
+    sourcemap: true,
+    minify: 'esbuild',
+    rollupOptions: {
+      output: {
+        manualChunks: {
+          'vendor-three': ['three'],
+          'vendor-html2canvas': ['html2canvas'],
+          'vendor-supabase': ['@supabase/supabase-js'],
+        }
+      }
+    }
   },
 });

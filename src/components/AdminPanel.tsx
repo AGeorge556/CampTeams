@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { Shield, Users, Settings, Download, Trophy, Zap, Camera } from 'lucide-react';
+import { Shield, Users, Settings, Download, Trophy, Zap, Camera, Megaphone } from 'lucide-react';
 import ScoreboardAdmin from './ScoreboardAdmin';
 import { supabase, Profile, TEAMS, TeamColor } from '../lib/supabase';
 import { CampSettings } from '../lib/types';
@@ -7,6 +7,7 @@ import { useOilExtractionVisibility } from '../hooks/useOilExtractionVisibility'
 import { useGalleryVisibility } from '../hooks/useGalleryVisibility';
 import { useLanguage } from '../contexts/LanguageContext';
 import { getGradeDisplayWithNumber } from '../lib/utils';
+import { useCamp } from '../contexts/CampContext';
 
 interface SportSelection {
   sport_id: string;
@@ -22,6 +23,7 @@ export default function AdminPanel() {
   const { oilExtractionVisible, toggleOilExtractionVisibility, loading: oilVisibilityLoading } = useOilExtractionVisibility();
   const { galleryVisible, toggleGalleryVisibility, loading: galleryVisibilityLoading } = useGalleryVisibility();
   const { t } = useLanguage();
+  const { currentCamp } = useCamp();
   const [profiles, setProfiles] = useState<Profile[]>([]);
   const [campSettings, setCampSettings] = useState<CampSettings | null>(null);
   const [sportSelections, setSportSelections] = useState<SportSelection[]>([]);
@@ -29,6 +31,14 @@ export default function AdminPanel() {
   const [selectedTeam, setSelectedTeam] = useState<TeamColor | 'all'>('all');
   const [activeTab, setActiveTab] = useState<'participants' | 'sports' | 'roles'>('participants');
   const [lockedTeams, setLockedTeams] = useState<string[]>([]);
+  const [announcementText, setAnnouncementText] = useState('');
+  const [announcementSaving, setAnnouncementSaving] = useState(false);
+
+  useEffect(() => {
+    if (currentCamp) {
+      setAnnouncementText((currentCamp.custom_content as any)?.announcement || '');
+    }
+  }, [currentCamp?.id]);
 
   useEffect(() => {
     fetchProfiles();
@@ -213,6 +223,20 @@ export default function AdminPanel() {
       await fetchProfiles();
     } catch (error) {
       console.error('Error updating user role:', error);
+    }
+  };
+
+  const saveAnnouncement = async (text: string) => {
+    if (!currentCamp) return;
+    setAnnouncementSaving(true);
+    try {
+      const existing = (currentCamp.custom_content as any) || {};
+      const updated = text.trim() ? { ...existing, announcement: text.trim() } : (() => { const n = { ...existing }; delete n.announcement; return n; })();
+      await supabase.from('camps').update({ custom_content: updated }).eq('id', currentCamp.id);
+    } catch (err) {
+      console.error('Error saving announcement:', err);
+    } finally {
+      setAnnouncementSaving(false);
     }
   };
 
@@ -417,6 +441,40 @@ export default function AdminPanel() {
             )}
             {galleryVisible ? t('hideGallery') : t('showGallery')}
           </button>
+        </div>
+
+        {/* Announcement broadcast */}
+        <div className="mt-4 p-4 bg-[var(--color-bg-muted)] border border-[var(--color-border)] rounded-lg">
+          <div className="flex items-center gap-2 mb-3">
+            <Megaphone className="h-4 w-4 text-amber-600" />
+            <h4 className="font-medium text-[var(--color-text)]">Camp Announcement</h4>
+          </div>
+          <textarea
+            value={announcementText}
+            onChange={e => setAnnouncementText(e.target.value)}
+            placeholder="Write an announcement to display on every camper's dashboard..."
+            rows={3}
+            className="w-full rounded-lg border border-[var(--color-border)] bg-[var(--color-card-bg)] text-sm text-[var(--color-text)] px-3 py-2 resize-none focus:outline-none focus:ring-2 focus:ring-orange-400/50"
+          />
+          <div className="flex gap-2 mt-2">
+            <button
+              onClick={() => saveAnnouncement(announcementText)}
+              disabled={announcementSaving}
+              className="inline-flex items-center gap-1.5 px-4 py-1.5 text-sm font-medium text-white bg-amber-600 rounded-lg hover:bg-amber-700 disabled:opacity-50 transition-colors"
+            >
+              {announcementSaving ? <span className="h-3.5 w-3.5 border-2 border-white/40 border-t-white rounded-full animate-spin" /> : <Megaphone className="h-3.5 w-3.5" />}
+              Post
+            </button>
+            {announcementText && (
+              <button
+                onClick={() => { setAnnouncementText(''); saveAnnouncement(''); }}
+                disabled={announcementSaving}
+                className="px-4 py-1.5 text-sm font-medium text-[var(--color-text-muted)] border border-[var(--color-border)] rounded-lg hover:bg-[var(--color-card-bg)] disabled:opacity-50 transition-colors"
+              >
+                Clear
+              </button>
+            )}
+          </div>
         </div>
 
         {/* Scoreboard Admin */}

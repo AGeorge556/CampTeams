@@ -1,5 +1,5 @@
-import { useState } from 'react'
-import { Menu, X, Users, Calendar, Trophy, LogOut, Camera, QrCode, Home, Sun } from 'lucide-react'
+import { useState, useEffect } from 'react'
+import { Menu, X, Users, Calendar, Trophy, LogOut, Camera, QrCode, Home, Sun, Swords } from 'lucide-react'
 import { useAuth } from '../hooks/useAuth'
 import { useProfile } from '../hooks/useProfile'
 import { useLanguage } from '../contexts/LanguageContext'
@@ -8,7 +8,7 @@ import { useGalleryVisibility } from '../hooks/useGalleryVisibility'
 import LanguageSwitcher from './LanguageSwitcher'
 import { ThemeToggle } from './ThemeToggle'
 import { useCamp } from '../contexts/CampContext'
-import { TEAMS, TeamColor } from '../lib/supabase'
+import { TEAMS, TeamColor, supabase } from '../lib/supabase'
 
 interface NavigationProps {
   currentPage: string
@@ -16,13 +16,29 @@ interface NavigationProps {
 }
 
 export default function Navigation({ currentPage, onPageChange }: NavigationProps) {
-  const { signOut } = useAuth()
+  const { signOut, user } = useAuth()
   const { profile } = useProfile()
   const { t } = useLanguage()
   const { scheduleVisible } = useScheduleVisibility()
   const { galleryVisible } = useGalleryVisibility()
   const { currentRegistration } = useCamp()
   const [isMenuOpen, setIsMenuOpen] = useState(false)
+  const [newGalleryCount, setNewGalleryCount] = useState(0)
+
+  useEffect(() => {
+    if (!user?.id || !currentRegistration?.camp_id) return
+    const campId = currentRegistration.camp_id
+    const userId = user.id
+    const lastSeen = localStorage.getItem(`gallery_seen_${userId}_${campId}`) || '1970-01-01'
+    supabase
+      .from('camp_gallery')
+      .select('id', { count: 'exact', head: true })
+      .eq('camp_id', campId)
+      .eq('user_id', userId)
+      .eq('status', 'approved')
+      .gt('updated_at', lastSeen)
+      .then(({ count }) => setNewGalleryCount(count || 0))
+  }, [user?.id, currentRegistration?.camp_id])
 
   const handleSignOut = async () => {
     await signOut()
@@ -42,11 +58,14 @@ export default function Navigation({ currentPage, onPageChange }: NavigationProp
     { id: 'sports', name: t('teams'), icon: Trophy },
     { id: 'attendance-checkin', name: 'Check In', icon: QrCode },
     ...(profile?.is_admin || galleryVisible ? [{ id: 'gallery', name: t('gallery'), icon: Camera }] : []),
-    // BIG GAME NAV — Uncomment when new big game is ready
-    // { id: 'big-game', name: 'Big Game', icon: Trophy },
+    { id: 'big-game', name: 'Big Game', icon: Swords },
   ]
 
   const handlePageChange = (page: string) => {
+    if (page === 'gallery' && user?.id && currentRegistration?.camp_id) {
+      localStorage.setItem(`gallery_seen_${user.id}_${currentRegistration.camp_id}`, new Date().toISOString())
+      setNewGalleryCount(0)
+    }
     onPageChange(page)
     setIsMenuOpen(false)
   }
@@ -79,17 +98,23 @@ export default function Navigation({ currentPage, onPageChange }: NavigationProp
             {navigationItems.map((item) => {
               const Icon = item.icon
               const isActive = currentPage === item.id
+              const hasBadge = item.id === 'gallery' && newGalleryCount > 0
               return (
                 <button
                   key={item.id}
                   onClick={() => handlePageChange(item.id)}
-                  className={`flex items-center space-x-2 px-4 py-2 rounded-full text-sm font-medium transition-all duration-200 ${
+                  className={`relative flex items-center space-x-2 px-4 py-2 rounded-full text-sm font-medium transition-all duration-200 ${
                     isActive
                       ? 'bg-[var(--color-primary)] text-white shadow-md'
                       : 'text-[var(--color-text-muted)] hover:text-[var(--color-text)] hover:bg-[var(--color-bg-muted)]'
                   }`}
                 >
-                  <Icon className="h-4 w-4 flex-shrink-0" />
+                  <div className="relative">
+                    <Icon className="h-4 w-4 flex-shrink-0" />
+                    {hasBadge && (
+                      <span className="absolute -top-1 -right-1 w-2 h-2 bg-red-500 rounded-full ring-1 ring-white dark:ring-[var(--color-bg)]" />
+                    )}
+                  </div>
                   <span>{item.name}</span>
                 </button>
               )
@@ -171,6 +196,7 @@ export default function Navigation({ currentPage, onPageChange }: NavigationProp
             {navigationItems.map((item) => {
               const Icon = item.icon
               const isActive = currentPage === item.id
+              const hasBadge = item.id === 'gallery' && newGalleryCount > 0
               return (
                 <button
                   key={item.id}
@@ -181,8 +207,18 @@ export default function Navigation({ currentPage, onPageChange }: NavigationProp
                       : 'text-[var(--color-text-muted)] hover:text-[var(--color-text)] hover:bg-[var(--color-bg-muted)]'
                   }`}
                 >
-                  <Icon className="h-5 w-5 flex-shrink-0" />
+                  <div className="relative">
+                    <Icon className="h-5 w-5 flex-shrink-0" />
+                    {hasBadge && (
+                      <span className="absolute -top-1 -right-1 w-2 h-2 bg-red-500 rounded-full" />
+                    )}
+                  </div>
                   <span>{item.name}</span>
+                  {hasBadge && (
+                    <span className="ml-auto text-xs font-bold bg-red-500 text-white px-1.5 py-0.5 rounded-full">
+                      {newGalleryCount}
+                    </span>
+                  )}
                 </button>
               )
             })}

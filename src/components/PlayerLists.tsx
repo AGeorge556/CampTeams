@@ -164,7 +164,7 @@ export default function PlayerLists() {
               {/* Player list */}
               <div className="p-3 bg-[var(--color-card-bg)] min-h-[80px]">
                 {campers.length === 0 && admins.length === 0 ? (
-                  <p className="text-xs text-[var(--color-text-muted)] italic">No players yet</p>
+                  <p className="text-xs text-[var(--color-text-muted)] italic">Joining soon...</p>
                 ) : (
                   <div className="flex flex-col gap-1">
                     {campers.map(p => (

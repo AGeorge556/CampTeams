@@ -14,8 +14,7 @@ import RulesAgreement from './components/RulesAgreement'
 import Dashboard from './components/Dashboard'
 import Schedule from './components/Schedule'
 import SportsSelection from './components/SportsSelection'
-// BIG GAME IMPORT — Uncomment the new game import when ready
-// import BigGame from './components/BigGame'
+import BigGame from './components/BigGame'
 //
 // Oil Extraction (old big game — kept for reference, safe to delete)
 // import OilExtractionGame from './components/OilExtractionGame'
@@ -27,6 +26,7 @@ import Gallery from './components/Gallery'
 import GalleryModeration from './components/GalleryModeration'
 import Layout from './components/Layout'
 import Navigation from './components/Navigation'
+import BottomNav from './components/BottomNav'
 import LandingPage from './components/LandingPage'
 import ErrorBoundary from './components/ErrorBoundary'
 import { ToastProvider } from './components/Toast'
@@ -334,6 +334,7 @@ function AppContent({
   return (
     <div className="min-h-screen bg-[var(--gradient-app-bg)]">
       <Navigation currentPage={currentPage} onPageChange={setCurrentPage} />
+      <BottomNav currentPage={currentPage} onPageChange={setCurrentPage} showBigGame />
       <Layout>
         {(() => {
           switch (currentPage) {
@@ -351,9 +352,8 @@ function AppContent({
               return <ScoreboardAdmin />
             case 'attendance-checkin':
               return <AttendanceCheckIn />
-            // BIG GAME ROUTE — Uncomment and replace when new game is ready
-            // case 'big-game':
-            //   return <BigGame onPageChange={setCurrentPage} />
+            case 'big-game':
+              return <BigGame />
             //
             // Oil Extraction routes (old big game — safe to delete)
             // case 'oil-extraction':
