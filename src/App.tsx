@@ -15,6 +15,7 @@ import Dashboard from './components/Dashboard'
 import Schedule from './components/Schedule'
 import SportsSelection from './components/SportsSelection'
 import BigGame from './components/BigGame'
+import MyProfile from './components/MyProfile'
 //
 // Oil Extraction (old big game — kept for reference, safe to delete)
 // import OilExtractionGame from './components/OilExtractionGame'
@@ -395,6 +396,8 @@ function AppContent({
               return <AttendanceCheckIn />
             case 'big-game':
               return <BigGame />
+            case 'profile':
+              return <MyProfile />
             //
             // Oil Extraction routes (old big game — safe to delete)
             // case 'oil-extraction':

@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react'
-import { Menu, X, Users, Calendar, Trophy, LogOut, Camera, QrCode, Home, Sun, Swords } from 'lucide-react'
+import { Menu, X, Users, Calendar, Trophy, LogOut, Camera, QrCode, Home, Sun, Swords, User } from 'lucide-react'
 import logoUrl from '../assets/Logo.png'
 import { useAuth } from '../hooks/useAuth'
 import { useProfile } from '../hooks/useProfile'
@@ -62,6 +62,7 @@ export default function Navigation({ currentPage, onPageChange }: NavigationProp
     { id: 'attendance-checkin', name: 'Check In', icon: QrCode },
     ...(profile?.is_admin || galleryVisible ? [{ id: 'gallery', name: t('gallery'), icon: Camera }] : []),
     ...(profile?.is_admin || bigGameVisible ? [{ id: 'big-game', name: 'Big Game', icon: Swords }] : []),
+    { id: 'profile', name: 'Profile', icon: User },
   ]
 
   const handlePageChange = (page: string) => {
@@ -139,16 +140,22 @@ export default function Navigation({ currentPage, onPageChange }: NavigationProp
                 </span>
               )}
               <div className="flex items-center space-x-2 pl-2 pr-3 py-1.5 rounded-full bg-[var(--color-bg-muted)] border border-[var(--color-border)]">
-                <div
-                  className={`w-7 h-7 rounded-full flex items-center justify-center text-xs font-bold text-white shadow-sm flex-shrink-0 ${userTeam?.color ?? 'bg-gray-400'}`}
+                <button
+                  onClick={() => handlePageChange('profile')}
+                  className="flex items-center space-x-2 focus:outline-none group"
+                  title="My Profile"
                 >
-                  {userInitials}
-                </div>
-                {userTeam && (
-                  <span className="text-xs font-medium text-[var(--color-text-muted)]">
-                    {userTeam.name}
-                  </span>
-                )}
+                  <div
+                    className={`w-7 h-7 rounded-full flex items-center justify-center text-xs font-bold text-white shadow-sm flex-shrink-0 group-hover:ring-2 group-hover:ring-[var(--color-primary)] transition-all ${userTeam?.color ?? 'bg-gray-400'}`}
+                  >
+                    {userInitials}
+                  </div>
+                  {userTeam && (
+                    <span className="text-xs font-medium text-[var(--color-text-muted)] group-hover:text-[var(--color-text)] transition-colors">
+                      {userTeam.name}
+                    </span>
+                  )}
+                </button>
                 <button
                   onClick={handleSignOut}
                   className="text-[var(--color-text-muted)] hover:text-[var(--color-danger)] transition-colors ml-1"

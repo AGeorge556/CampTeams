@@ -27,7 +27,26 @@ export default function AdminPanel() {
   const { scheduleVisible, toggleScheduleVisibility } = useScheduleVisibility();
   const { t } = useLanguage();
   const { currentCamp } = useCamp();
-  const [profiles, setProfiles] = useState<Profile[]>([]);
+  type CampRegistrationRow = {
+    id: string;
+    user_id: string;
+    camp_id: string;
+    full_name: string;
+    age: number | null;
+    grade: number;
+    gender: string;
+    current_team: string | null;
+    role: string | null;
+    switches_remaining: number | null;
+    mobile_number: string | null;
+    parent_name: string | null;
+    parent_number: string | null;
+    participate_in_teams: boolean;
+    created_at: string | null;
+    // merged from profiles
+    is_admin: boolean;
+  };
+  const [profiles, setProfiles] = useState<CampRegistrationRow[]>([]);
   const [campSettings, setCampSettings] = useState<CampSettings | null>(null);
   const [sportSelections, setSportSelections] = useState<SportSelection[]>([]);
   const [loading, setLoading] = useState(false);
@@ -47,17 +66,36 @@ export default function AdminPanel() {
     fetchProfiles();
     fetchCampSettings();
     fetchSportSelections();
-  }, []);
+  }, [currentCamp]);
 
   const fetchProfiles = async () => {
+    if (!currentCamp) return;
     try {
       const { data, error } = await supabase
-        .from('profiles')
+        .from('camp_registrations')
         .select('*')
-        .order('created_at', { ascending: false });
+        .eq('camp_id', currentCamp.id)
+        .order('full_name');
 
       if (error) throw error;
-      setProfiles(data || []);
+
+      // Two-step: fetch is_admin from profiles for the registered user_ids
+      const userIds = (data ?? []).map((r: any) => r.user_id).filter(Boolean);
+      const adminUserIds = new Set<string>();
+      if (userIds.length > 0) {
+        const { data: profileData } = await supabase
+          .from('profiles')
+          .select('id, is_admin')
+          .in('id', userIds);
+        profileData?.forEach((p: any) => { if (p.is_admin) adminUserIds.add(p.id); });
+      }
+
+      const rows = (data ?? []).map((r: any) => ({
+        ...r,
+        is_admin: adminUserIds.has(r.user_id),
+      }));
+
+      setProfiles(rows);
     } catch (error) {
       console.error('Error fetching profiles:', error);
     }
@@ -255,13 +293,11 @@ export default function AdminPanel() {
   const exportRoster = () => {
     const csvContent =
       'data:text/csv;charset=utf-8,' +
-      'Name,Grade,Gender,Team,Switches Remaining,Join Date\n' +
+      'Name,Age,Grade,Gender,Team,Mobile Number,Parent Name,Parent Number,Switches Remaining\n' +
       profiles
         .map(
           (p) =>
-            `"${p.full_name}",${p.grade},${p.gender},${p.current_team || 'Unassigned'},${p.switches_remaining},${
-              p.created_at ? new Date(p.created_at).toLocaleDateString() : 'N/A'
-            }`
+            `"${p.full_name}",${p.age ?? ''},${p.grade},${p.gender},${p.current_team || 'Unassigned'},"${p.mobile_number || ''}","${p.parent_name || ''}","${p.parent_number || ''}",${p.switches_remaining ?? 0}`
         )
         .join('\n');
 
@@ -636,7 +672,7 @@ export default function AdminPanel() {
                     <td className="px-6 py-4 whitespace-nowrap text-sm text-[var(--color-text-muted)]">
                       <select
                         value={profile.current_team || ''}
-                        onChange={(e) => reassignUser(profile.id, e.target.value as TeamColor)}
+                        onChange={(e) => reassignUser(profile.user_id, e.target.value as TeamColor)}
                         className="rounded-md border-[var(--color-border)] shadow-sm bg-[var(--color-input-bg)] focus:border-orange-300 focus:ring focus:ring-orange-200 focus:ring-opacity-50 text-sm"
                       >
                         <option value="">Unassigned</option>
@@ -776,7 +812,7 @@ export default function AdminPanel() {
                     <td className="px-6 py-4 whitespace-nowrap text-sm text-[var(--color-text-muted)]">
                       <select
                         value={profile.role || 'camper'}
-                        onChange={(e) => updateUserRole(profile.id, e.target.value)}
+                        onChange={(e) => updateUserRole(profile.user_id, e.target.value)}
                         className="rounded-md border-[var(--color-border)] bg-[var(--color-input-bg)] shadow-sm focus:border-orange-300 focus:ring focus:ring-orange-200 focus:ring-opacity-50 text-sm"
                       >
                         <option value="camper">Camper</option>

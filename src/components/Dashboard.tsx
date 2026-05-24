@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from 'react'
+import React, { useState, useEffect, useRef, useMemo } from 'react'
 import { Users, UserPlus, Download, RefreshCw, Calendar, Trophy, Camera, Megaphone } from 'lucide-react'
 import { useProfile } from '../hooks/useProfile'
 import { useCamp } from '../contexts/CampContext'
@@ -12,6 +12,7 @@ import { useLanguage } from '../contexts/LanguageContext'
 import { SkeletonCard } from './LoadingSpinner'
 import { getGradeDisplayWithNumber } from '../lib/utils'
 import { useToast } from './Toast'
+import { useScoreboard } from '../hooks/useScoreboard'
 
 interface BibleVerse {
   verse: string
@@ -44,6 +45,8 @@ export default function Dashboard({ onPageChange }: DashboardProps) {
   const [downloading, setDownloading] = useState(false)
   const [announcement, setAnnouncement] = useState<string | null>(null)
   const verseRef = useRef<HTMLDivElement>(null)
+  const [mySportIds, setMySportIds] = useState<string[]>([])
+  const { scores } = useScoreboard()
 
   useEffect(() => {
     if (!currentCamp?.id) return
@@ -56,6 +59,35 @@ export default function Dashboard({ onPageChange }: DashboardProps) {
       .subscribe()
     return () => { channel.unsubscribe() }
   }, [currentCamp?.id])
+
+  // Load user's sport selections
+  useEffect(() => {
+    if (!profile?.id) return
+    supabase
+      .from('user_sport_selections')
+      .select('sport_id')
+      .eq('user_id', profile.id)
+      .then(({ data }) => {
+        if (data) setMySportIds(data.map((r: { sport_id: string }) => r.sport_id))
+      })
+  }, [profile?.id])
+
+  // Days until camp (August 20, 2026)
+  const daysUntilCamp = useMemo(() => {
+    const campStart = new Date('2026-08-20T00:00:00')
+    const now = new Date()
+    now.setHours(0, 0, 0, 0)
+    const diff = Math.ceil((campStart.getTime() - now.getTime()) / (1000 * 60 * 60 * 24))
+    return diff
+  }, [])
+
+  const sportLabels: Record<string, string> = {
+    soccer: 'Soccer',
+    dodgeball: 'Dodgeball',
+    chairball: 'Chairball',
+    'big-game': 'Big Game',
+    'pool-time': 'Pool Time',
+  }
 
   const quickActions: QuickAction[] = [
     {
@@ -224,6 +256,78 @@ export default function Dashboard({ onPageChange }: DashboardProps) {
     <div className="space-y-5 pb-8">
       {/* ── Camp hero (bible verse + countdown) ── */}
       <CampHero />
+
+      {/* ── Summary widgets (only when on a team) ── */}
+      {currentRegistration.current_team && (
+        <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+
+          {/* 1. Countdown to camp */}
+          <div className="bg-[var(--color-card-bg)] rounded-2xl border border-[var(--color-border)] p-4 shadow-[var(--shadow-sm)] flex flex-col items-center justify-center text-center gap-1">
+            <p className="text-[10px] font-bold uppercase tracking-widest text-orange-500">Summer Camp 2026</p>
+            {daysUntilCamp > 0 ? (
+              <>
+                <p className="text-5xl font-black text-orange-500 leading-none">{daysUntilCamp}</p>
+                <p className="text-xs text-[var(--color-text-muted)] font-medium">days to camp</p>
+              </>
+            ) : (
+              <p className="text-xl font-bold text-orange-500 leading-snug">Camp is here!</p>
+            )}
+          </div>
+
+          {/* 2. Team standing */}
+          {(() => {
+            const teamIds = ['red', 'blue', 'green', 'yellow'] as const
+            const pointMap: Record<string, number> = { red: 0, blue: 0, green: 0, yellow: 0 }
+            scores.forEach(s => { pointMap[s.team_id] = (s as any).points ?? 0 })
+            const ranked = [...teamIds].sort((a, b) => pointMap[b] - pointMap[a])
+            const userTeam = currentRegistration.current_team as TeamColor
+            const rank = ranked.indexOf(userTeam) + 1
+            const rankSuffix = ['', 'st', 'nd', 'rd', 'th'][rank] ?? 'th'
+            const teamData = TEAMS[userTeam]
+            return (
+              <div className="bg-[var(--color-card-bg)] rounded-2xl border border-[var(--color-border)] p-4 shadow-[var(--shadow-sm)] flex flex-col items-center justify-center text-center gap-2">
+                <p className="text-[10px] font-bold uppercase tracking-widest text-[var(--color-text-muted)]">Team Standing</p>
+                <div className="flex items-center gap-2">
+                  <span
+                    className="inline-block w-3 h-3 rounded-full flex-shrink-0"
+                    style={{ background: teamData.colorValue }}
+                  />
+                  <span className="text-sm font-bold text-[var(--color-text)]">{teamData.name} Team</span>
+                </div>
+                <p className="text-3xl font-black leading-none" style={{ color: teamData.colorValue }}>
+                  {rank}{rankSuffix}
+                </p>
+                <p className="text-xs text-[var(--color-text-muted)]">{pointMap[userTeam].toLocaleString()} pts</p>
+              </div>
+            )
+          })()}
+
+          {/* 3. My sports summary */}
+          <div className="bg-[var(--color-card-bg)] rounded-2xl border border-[var(--color-border)] p-4 shadow-[var(--shadow-sm)] flex flex-col items-start gap-2">
+            <p className="text-[10px] font-bold uppercase tracking-widest text-[var(--color-text-muted)]">My Sports</p>
+            {mySportIds.length > 0 ? (
+              <div className="flex flex-wrap gap-1.5">
+                {mySportIds.map(id => (
+                  <span
+                    key={id}
+                    className="px-2.5 py-1 rounded-full text-xs font-semibold bg-[var(--color-bg-muted)] text-[var(--color-text)]"
+                  >
+                    {sportLabels[id] ?? id}
+                  </span>
+                ))}
+              </div>
+            ) : (
+              <button
+                onClick={() => onPageChange?.('sports')}
+                className="text-sm font-semibold text-orange-500 hover:text-orange-600 transition-colors"
+              >
+                Pick your sports →
+              </button>
+            )}
+          </div>
+
+        </div>
+      )}
 
       {/* ── Announcement banner ── */}
       {announcement && (

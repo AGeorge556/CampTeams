@@ -129,7 +129,8 @@ export default function ScheduleSessionManager() {
           .from('camp_sessions')
           .select('id')
           .eq('schedule_id', item.id)
-          .single()
+          .limit(1)
+          .maybeSingle()
 
         if (existingSession) {
           return null // Session already exists
