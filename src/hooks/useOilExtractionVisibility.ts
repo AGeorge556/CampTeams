@@ -7,7 +7,7 @@ const CACHE_KEY = 'vis_big_game'
 export function useOilExtractionVisibility() {
   const [oilExtractionVisible, setOilExtractionVisible] = useState<boolean>(() => {
     const cached = localStorage.getItem(CACHE_KEY)
-    return cached !== null ? cached === 'true' : true
+    return cached !== null ? cached === 'true' : false
   })
   const [loading, setLoading] = useState(true)
   const { addToast } = useToast()
@@ -39,7 +39,7 @@ export function useOilExtractionVisibility() {
       if (error && error.code !== 'PGRST116') {
         console.error('Error fetching oil extraction visibility:', error)
       } else {
-        const value = data?.oil_extraction_visible ?? true
+        const value = data?.oil_extraction_visible ?? false
         setOilExtractionVisible(value)
         localStorage.setItem(CACHE_KEY, String(value))
       }

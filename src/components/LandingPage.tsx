@@ -1,7 +1,8 @@
-import { useState, useEffect } from 'react'
+import { useState, useEffect, lazy, Suspense } from 'react'
 import { ArrowRight, Tent, Users, Heart } from 'lucide-react'
 import Auth from './Auth'
-import CampfireCanvas from './CampfireCanvas'
+
+const CampfireCanvas = lazy(() => import('./CampfireCanvas'))
 
 const LOGO_PATH = '/logo.png'
 
@@ -52,7 +53,9 @@ export default function LandingPage() {
       </div>
 
       {/* Three.js campfire + stars layer */}
-      <CampfireCanvas />
+      <Suspense fallback={null}>
+        <CampfireCanvas />
+      </Suspense>
 
       {/* Page content */}
       <div className="relative z-10 min-h-screen flex flex-col">

@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react'
+import React, { useState, useEffect, lazy, Suspense } from 'react'
 import { useAuth } from './hooks/useAuth'
 import { useProfile } from './hooks/useProfile'
 import { useRulesAcceptance } from './hooks/useRulesAcceptance'
@@ -14,7 +14,7 @@ import RulesAgreement from './components/RulesAgreement'
 import Dashboard from './components/Dashboard'
 import Schedule from './components/Schedule'
 import SportsSelection from './components/SportsSelection'
-import BigGame from './components/BigGame'
+const BigGame = lazy(() => import('./components/BigGame'))
 import MyProfile from './components/MyProfile'
 //
 // Oil Extraction (old big game — kept for reference, safe to delete)
@@ -395,7 +395,7 @@ function AppContent({
             case 'attendance-checkin':
               return <AttendanceCheckIn />
             case 'big-game':
-              return <BigGame />
+              return <Suspense fallback={<div className="flex items-center justify-center h-64"><div className="animate-spin rounded-full h-8 w-8 border-b-2 border-[var(--color-primary)]" /></div>}><BigGame /></Suspense>
             case 'profile':
               return <MyProfile />
             //

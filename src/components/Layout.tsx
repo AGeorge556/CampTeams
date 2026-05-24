@@ -10,7 +10,7 @@ export default function Layout({ children, className = '', mobileOptimized = tru
   return (
     <div className="min-h-screen bg-[var(--color-bg)]">
       <main className={`
-        max-w-[1440px] mx-auto px-4 sm:px-6 md:px-8 lg:px-10 xl:px-14
+        max-w-[1920px] mx-auto px-4 sm:px-6 md:px-8 lg:px-12 xl:px-20
         pt-4 sm:pt-6 md:pt-8 pb-24 md:pb-8
         ${mobileOptimized ? 'mobile-safe-area' : ''}
         ${className}

@@ -76,8 +76,8 @@ export default function Navigation({ currentPage, onPageChange }: NavigationProp
 
   return (
     <header className="bg-[var(--color-bg)] border-b-2 border-[var(--color-border)] shadow-[var(--shadow-sm)] sticky top-0 z-50 transition-all duration-300">
-      <div className="max-w-[1440px] mx-auto px-4 sm:px-6 lg:px-10 xl:px-14">
-        <div className="flex justify-between items-center h-16">
+      <div className="max-w-[1920px] mx-auto px-4 sm:px-6 lg:px-12 xl:px-20">
+        <div className="flex justify-between items-center h-[68px]">
 
           {/* Logo */}
           <button
@@ -89,18 +89,13 @@ export default function Navigation({ currentPage, onPageChange }: NavigationProp
               alt="BCH Youth"
               className="h-11 w-11 rounded-xl object-contain shadow-md group-hover:shadow-lg transition-shadow duration-200"
             />
-            <div className="flex flex-col leading-none">
-              <span className="text-[10px] font-bold text-[var(--color-primary)] uppercase tracking-widest">
-                BCH Youth
-              </span>
-              <span className="text-sm font-bold text-[var(--color-text)]">
-                Summer Camp 2026
-              </span>
-            </div>
+            <span className="text-sm font-bold text-[var(--color-primary)] uppercase tracking-widest">
+              BCH Youth
+            </span>
           </button>
 
           {/* Desktop nav */}
-          <nav className="hidden md:flex items-center space-x-1">
+          <nav className="hidden md:flex items-center space-x-2">
             {navigationItems.map((item) => {
               const Icon = item.icon
               const isActive = currentPage === item.id
