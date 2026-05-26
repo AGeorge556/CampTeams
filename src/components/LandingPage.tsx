@@ -107,19 +107,14 @@ export default function LandingPage() {
             </div>
 
             {/* Main title */}
-            <div className="mb-3 anim-up" style={{ animationDelay: '80ms' }}>
+            <div className="mb-6 anim-up" style={{ animationDelay: '80ms' }}>
               <h1 className="text-[clamp(3rem,10vw,5.5rem)] font-bold text-white leading-none tracking-tight">
-                Summer Camp
+                BCH Youth
               </h1>
               <div className="text-[clamp(3rem,10vw,5.5rem)] font-bold leading-none tracking-tight" style={{ color: '#fb923c', textShadow: '0 0 40px rgba(251,146,60,0.45), 0 0 80px rgba(249,115,22,0.20)' }}>
-                2026
+                Camp Teams
               </div>
             </div>
-
-            {/* Date */}
-            <p className="text-lg sm:text-xl text-orange-200/90 font-medium mb-3 anim-up" style={{ animationDelay: '140ms' }}>
-              August 20 – 23
-            </p>
 
             {/* Sub-headline */}
             <p className="text-base sm:text-lg text-white/65 max-w-lg mx-auto leading-relaxed mb-10 anim-up" style={{ animationDelay: '200ms' }}>

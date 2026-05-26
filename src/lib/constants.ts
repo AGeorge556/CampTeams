@@ -3,7 +3,7 @@ export const APP_NAME = 'CampTeams'
 export const APP_VERSION = '1.0.0'
 
 // Camp Configuration
-export const CAMP_START_DATE = '2026-01-22T00:00:00'
+export const CAMP_START_DATE = '2026-08-20T00:00:00'
 export const MAX_TEAM_SIZE = 24
 export const MAX_SWITCHES_PER_USER = 3
 export const MAX_PLAYERS_PER_GRADE = 4

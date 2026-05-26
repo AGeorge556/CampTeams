@@ -1,12 +1,11 @@
 import { useState, useEffect } from 'react'
-import { Calendar, Users, CheckCircle, Clock, Snowflake, Sun, ArrowRight, Info } from 'lucide-react'
+import { Calendar, Users, CheckCircle, Clock, Tent, ArrowRight, Info } from 'lucide-react'
 import { supabase } from '../lib/supabase'
 import { useAuth } from '../hooks/useAuth'
 import { useCamp } from '../contexts/CampContext'
 import { useToast } from './Toast'
 import Button from './ui/Button'
 import LoadingSpinner from './LoadingSpinner'
-import WinterCamp2026Content from './WinterCamp2026Content'
 
 interface Camp {
   id: string
@@ -41,9 +40,6 @@ export default function CampSelection() {
   const [camps, setCamps] = useState<Camp[]>([])
   const [registrations, setRegistrations] = useState<CampRegistration[]>([])
   const [loading, setLoading] = useState(true)
-  const [registering, setRegistering] = useState<string | null>(null)
-  const [showWinterCampDetails, setShowWinterCampDetails] = useState(false)
-  const [winterCampId, setWinterCampId] = useState<string | null>(null)
 
   useEffect(() => {
     loadCampsAndRegistrations()
@@ -51,21 +47,13 @@ export default function CampSelection() {
 
   const loadCampsAndRegistrations = async () => {
     try {
-      console.log('Loading camps with stats...')
-      // Load camps with stats
       const { data: campsData, error: campsError } = await supabase
         .rpc('get_camps_with_stats')
 
-      if (campsError) {
-        console.error('Error loading camps:', campsError)
-        throw campsError
-      }
+      if (campsError) throw campsError
 
-      // Ensure campsData is always an array
-      const camps = Array.isArray(campsData) ? campsData : []
-      setCamps(camps)
+      setCamps(Array.isArray(campsData) ? campsData : [])
 
-      // Load user's registrations
       if (user) {
         const { data: regsData, error: regsError } = await supabase
           .from('camp_registrations')
@@ -76,9 +64,6 @@ export default function CampSelection() {
         setRegistrations(Array.isArray(regsData) ? regsData : [])
       }
     } catch (error: any) {
-      console.error('Error loading camps:', error)
-
-      // Check if it's a missing function error
       if (error?.code === 'PGRST202' || error?.message?.includes('get_camps_with_stats')) {
         addToast({
           type: 'error',
@@ -86,14 +71,8 @@ export default function CampSelection() {
           message: 'The multi-camp system needs to be set up. Please run the database migrations.'
         })
       } else {
-        addToast({
-          type: 'error',
-          title: 'Error',
-          message: 'Failed to load camps. Please try again.'
-        })
+        addToast({ type: 'error', title: 'Error', message: 'Failed to load camps. Please try again.' })
       }
-
-      // Set empty arrays to prevent map errors
       setCamps([])
       setRegistrations([])
     } finally {
@@ -101,56 +80,7 @@ export default function CampSelection() {
     }
   }
 
-  const handleSelectCamp = (campId: string) => {
-    // Use the camp context to select the camp
-    selectCamp(campId)
-  }
-
-  const isWinterCamp2026 = (camp: Camp) => {
-    return camp.season === 'winter' && camp.year === 2026
-  }
-
-  const handleCampCardClick = (camp: Camp) => {
-    // Show expanded view for Winter Camp 2026
-    if (isWinterCamp2026(camp)) {
-      setWinterCampId(camp.id)
-      setShowWinterCampDetails(true)
-    } else {
-      handleSelectCamp(camp.id)
-    }
-  }
-
-  const handleWinterCampRegister = () => {
-    if (winterCampId) {
-      handleSelectCamp(winterCampId)
-      setShowWinterCampDetails(false)
-    }
-  }
-
-  const handleBackToSelection = () => {
-    setShowWinterCampDetails(false)
-    setWinterCampId(null)
-  }
-
-  const isRegistered = (campId: string) => {
-    return registrations.some(reg => reg.camp_id === campId)
-  }
-
-  const getCampIcon = (season: string) => {
-    return season === 'winter' ? Snowflake : Sun
-  }
-
-  const getCampColor = (season: string) => {
-    return season === 'winter'
-      ? 'from-sky-500 to-blue-600'
-      : 'from-orange-500 to-red-600'
-  }
-
-  const getCampBgColor = (season: string) => {
-    return season === 'winter'
-      ? 'bg-gradient-to-br from-sky-50 to-blue-50 dark:from-sky-950 dark:to-blue-950'
-      : 'bg-gradient-to-br from-orange-50 to-red-50 dark:from-orange-950 dark:to-red-950'
-  }
+  const isRegistered = (campId: string) => registrations.some(reg => reg.camp_id === campId)
 
   const formatDate = (dateString: string) => {
     const date = new Date(dateString)
@@ -159,16 +89,6 @@ export default function CampSelection() {
 
   if (loading) {
     return <LoadingSpinner fullScreen text="Loading camps..." />
-  }
-
-  // Show expanded Winter Camp 2026 content
-  if (showWinterCampDetails) {
-    return (
-      <WinterCamp2026Content
-        onRegister={handleWinterCampRegister}
-        onBack={handleBackToSelection}
-      />
-    )
   }
 
   return (
@@ -185,9 +105,8 @@ export default function CampSelection() {
         </div>
 
         {/* Camps Grid */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 gap-6 mb-8">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
           {camps.map((camp) => {
-            const Icon = getCampIcon(camp.season)
             const registered = isRegistered(camp.id)
             const isFull = camp.max_participants !== null && camp.spots_available !== null && camp.spots_available <= 0
             const canRegister = camp.registration_open && !isFull
@@ -195,13 +114,12 @@ export default function CampSelection() {
             return (
               <div
                 key={camp.id}
-                className={`relative rounded-xl border-2 transition-all duration-300 ${getCampBgColor(camp.season)} ${
+                className={`relative rounded-xl border-2 transition-all duration-300 bg-[var(--color-card-bg)] ${
                   camp.is_active
-                    ? 'border-sky-300 dark:border-sky-700 shadow-lg'
+                    ? 'border-orange-300 dark:border-orange-700 shadow-lg'
                     : 'border-[var(--color-border)] opacity-75'
                 } hover:shadow-xl transform hover:-translate-y-1`}
               >
-                {/* Active Badge */}
                 {camp.is_active && (
                   <div className="absolute -top-3 -right-3 bg-gradient-to-r from-green-500 to-emerald-600 text-white px-4 py-1 rounded-full text-sm font-semibold shadow-lg flex items-center space-x-1">
                     <CheckCircle className="w-4 h-4" />
@@ -209,7 +127,6 @@ export default function CampSelection() {
                   </div>
                 )}
 
-                {/* Registered Badge */}
                 {registered && (
                   <div className="absolute -top-3 -left-3 bg-gradient-to-r from-purple-500 to-pink-600 text-white px-4 py-1 rounded-full text-sm font-semibold shadow-lg flex items-center space-x-1">
                     <CheckCircle className="w-4 h-4" />
@@ -221,16 +138,13 @@ export default function CampSelection() {
                   {/* Camp Icon & Name */}
                   <div className="flex items-start justify-between mb-4">
                     <div className="flex items-center space-x-3">
-                      <div className={`p-3 rounded-lg bg-gradient-to-br ${getCampColor(camp.season)} text-white`}>
-                        <Icon className="w-8 h-8" />
+                      <div className="p-3 rounded-lg bg-gradient-to-br from-orange-500 to-red-600 text-white">
+                        <Tent className="w-8 h-8" />
                       </div>
                       <div>
                         <h3 className="text-2xl font-bold text-[var(--color-text)]">
                           {camp.name}
                         </h3>
-                        <p className="text-sm text-[var(--color-text-muted)] capitalize">
-                          {camp.season} {camp.year}
-                        </p>
                       </div>
                     </div>
                   </div>
@@ -242,17 +156,15 @@ export default function CampSelection() {
 
                   {/* Camp Details */}
                   <div className="space-y-3 mb-6">
-                    {/* Dates */}
                     <div className="flex items-center space-x-2 text-sm">
-                      <Calendar className="w-4 h-4 text-sky-600" />
+                      <Calendar className="w-4 h-4 text-orange-500" />
                       <span className="text-[var(--color-text)]">
-                        {formatDate(camp.start_date)} - {formatDate(camp.end_date)}
+                        {formatDate(camp.start_date)} – {formatDate(camp.end_date)}
                       </span>
                     </div>
 
-                    {/* Participants */}
                     <div className="flex items-center space-x-2 text-sm">
-                      <Users className="w-4 h-4 text-sky-600" />
+                      <Users className="w-4 h-4 text-orange-500" />
                       <span className="text-[var(--color-text)]">
                         {camp.max_participants !== null
                           ? `${camp.registered_count} / ${camp.max_participants} registered`
@@ -266,7 +178,6 @@ export default function CampSelection() {
                       )}
                     </div>
 
-                    {/* Registration Status */}
                     {!camp.registration_open && (
                       <div className="flex items-center space-x-2 text-sm text-amber-600">
                         <Clock className="w-4 h-4" />
@@ -280,8 +191,8 @@ export default function CampSelection() {
                     <div className="mb-4">
                       <div className="w-full bg-gray-200 dark:bg-gray-700 rounded-full h-2">
                         <div
-                          className={`h-2 rounded-full bg-gradient-to-r ${getCampColor(camp.season)} transition-all duration-500`}
-                          style={{ width: `${(camp.registered_count / camp.max_participants) * 100}%` }}
+                          className="h-2 rounded-full bg-gradient-to-r from-orange-500 to-red-600 transition-all duration-500"
+                          style={{ width: `${Math.min((camp.registered_count / camp.max_participants) * 100, 100)}%` }}
                         />
                       </div>
                       <p className="text-xs text-[var(--color-text-muted)] mt-1">
@@ -292,13 +203,13 @@ export default function CampSelection() {
 
                   {/* Action Button */}
                   <Button
-                    onClick={() => handleCampCardClick(camp)}
+                    onClick={() => selectCamp(camp.id)}
                     disabled={!canRegister && !registered}
                     className={`w-full ${
                       registered
                         ? 'bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700'
                         : canRegister
-                        ? `bg-gradient-to-r ${getCampColor(camp.season)} hover:opacity-90`
+                        ? 'bg-gradient-to-r from-orange-500 to-red-600 hover:opacity-90'
                         : 'bg-gray-400 cursor-not-allowed'
                     }`}
                     icon={registered ? <CheckCircle /> : <ArrowRight />}
@@ -309,12 +220,9 @@ export default function CampSelection() {
                       ? 'Camp Full'
                       : !camp.registration_open
                       ? 'Registration Closed'
-                      : isWinterCamp2026(camp)
-                      ? 'Learn More & Register'
                       : 'Join Camp'}
                   </Button>
 
-                  {/* Additional Info */}
                   {!camp.is_active && (
                     <div className="mt-3 flex items-center justify-center space-x-2 text-xs text-[var(--color-text-muted)]">
                       <Info className="w-4 h-4" />

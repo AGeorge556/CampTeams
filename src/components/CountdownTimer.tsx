@@ -98,9 +98,6 @@ export default function CountdownTimer({ targetDate, compact = false }: Countdow
         </div>
       </div>
 
-      <div className="mt-3 text-center text-sm text-[var(--color-text-muted)]">
-        August 20 – 23, 2026
-      </div>
     </div>
   )
 }

@@ -72,14 +72,13 @@ export default function Dashboard({ onPageChange }: DashboardProps) {
       })
   }, [profile?.id])
 
-  // Days until camp (August 20, 2026)
   const daysUntilCamp = useMemo(() => {
-    const campStart = new Date('2026-08-20T00:00:00')
+    if (!currentCamp?.start_date) return 0
+    const campStart = new Date(currentCamp.start_date)
     const now = new Date()
     now.setHours(0, 0, 0, 0)
-    const diff = Math.ceil((campStart.getTime() - now.getTime()) / (1000 * 60 * 60 * 24))
-    return diff
-  }, [])
+    return Math.ceil((campStart.getTime() - now.getTime()) / (1000 * 60 * 60 * 24))
+  }, [currentCamp?.start_date])
 
   const sportLabels: Record<string, string> = {
     soccer: 'Soccer',
@@ -263,7 +262,7 @@ export default function Dashboard({ onPageChange }: DashboardProps) {
 
           {/* 1. Countdown to camp */}
           <div className="bg-[var(--color-card-bg)] rounded-2xl border border-[var(--color-border)] p-4 shadow-[var(--shadow-sm)] flex flex-col items-center justify-center text-center gap-1">
-            <p className="text-[10px] font-bold uppercase tracking-widest text-orange-500">Summer Camp 2026</p>
+            <p className="text-[10px] font-bold uppercase tracking-widest text-orange-500">{currentCamp?.name ?? 'Camp'}</p>
             {daysUntilCamp > 0 ? (
               <>
                 <p className="text-5xl font-black text-orange-500 leading-none">{daysUntilCamp}</p>

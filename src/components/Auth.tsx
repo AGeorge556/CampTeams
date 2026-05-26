@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { Mail, Lock, UserPlus, LogIn, Clock, ArrowLeft, Sun } from 'lucide-react'
+import { Mail, Lock, UserPlus, LogIn, Clock, ArrowLeft } from 'lucide-react'
 import { useAuth } from '../hooks/useAuth'
 import { useToast } from './Toast'
 import Button from './ui/Button'
@@ -174,7 +174,7 @@ export default function Auth({ initialMode = 'signin', onBack }: AuthProps) {
             </div>
           </div>
           <h2 className="text-2xl font-bold text-[var(--color-text)]">
-            {isForgotPassword ? 'Reset your password' : isSignUp ? 'Join Summer Camp 2026' : 'Welcome back'}
+            {isForgotPassword ? 'Reset your password' : isSignUp ? 'Create your account' : 'Welcome back'}
           </h2>
           <p className="mt-1 text-sm text-[var(--color-text-muted)]">
             {isForgotPassword
@@ -183,12 +183,6 @@ export default function Auth({ initialMode = 'signin', onBack }: AuthProps) {
                 ? 'Create an account to register for camp'
                 : 'Sign in to your account'}
           </p>
-          {!isForgotPassword && !isSignUp && (
-            <div className="mt-2 inline-flex items-center space-x-1 text-xs font-semibold text-orange-600 dark:text-orange-400 bg-orange-50 dark:bg-orange-950/40 px-3 py-1 rounded-full border border-orange-200 dark:border-orange-800">
-              <Sun className="h-3 w-3" />
-              <span>August 20–23, 2026</span>
-            </div>
-          )}
         </div>
 
         {/* Form */}
