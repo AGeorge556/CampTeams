@@ -95,9 +95,9 @@ export default function Auth({ initialMode = 'signin', onBack }: AuthProps) {
 
     try {
       if (isSignUp) {
-        const { error } = await signUp(email, password)
+        const { data, error } = await signUp(email, password)
         if (error) {
-          if (error.message.includes('over_email_send_rate_limit')) {
+          if (error.message.includes('over_email_send_rate_limit') || error.message.includes('rate_limit')) {
             const match = error.message.match(/after (\d+) seconds/)
             const seconds = match ? parseInt(match[1]) : 60
             startCooldownTimer(seconds)
@@ -105,6 +105,9 @@ export default function Auth({ initialMode = 'signin', onBack }: AuthProps) {
           } else {
             throw error
           }
+        } else if (data?.session) {
+          // Email confirmation disabled — user is signed in immediately
+          addToast({ type: 'success', title: 'Account Created', message: 'Welcome to BCH Youth Summer Camp!' })
         } else {
           setShowEmailConfirmation(true)
           addToast({ type: 'success', title: 'Account Created', message: 'Please check your email and click the confirmation link.' })
