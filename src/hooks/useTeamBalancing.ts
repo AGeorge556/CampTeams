@@ -97,103 +97,59 @@ export function useTeamBalancing() {
     }
   }, [players])
 
-  // Check if a team can accept a player
-  const canTeamAcceptPlayer = async (teamKey: TeamColor, userGender: string): Promise<TeamAcceptanceResult> => {
+  // Stable references via useCallback so consumers' useEffect deps don't
+  // get a new function reference on every render (which causes infinite loops).
+
+  const canTeamAcceptPlayer = useCallback(async (teamKey: TeamColor, userGender: string): Promise<TeamAcceptanceResult> => {
     const team = teamBalances.find(b => b.team === teamKey)
-    if (!team) {
-      return { canAccept: false, reason: 'Team not found' }
-    }
-
-    // Team is full (24 players max)
-    if (team.total_count >= 24) {
-      return { canAccept: false, reason: 'Team is at maximum capacity (24 players)' }
-    }
-
-    // Check gender balance (max 12 per gender per team)
+    if (!team) return { canAccept: false, reason: 'Team not found' }
+    if (team.total_count >= 24) return { canAccept: false, reason: 'Team is at maximum capacity (24 players)' }
     const genderCount = userGender === 'male' ? team.male_count : team.female_count
-    if (genderCount >= 12) {
-      return { canAccept: false, reason: `Team already has maximum ${userGender} players (12)` }
-    }
-
+    if (genderCount >= 12) return { canAccept: false, reason: `Team already has maximum ${userGender} players (12)` }
     return { canAccept: true, reason: 'Can join team' }
-  }
+  }, [teamBalances])
 
-  // Check if user can switch to a specific team
-  const canUserSwitchToTeam = async (teamKey: TeamColor): Promise<TeamSwitchResult> => {
-    if (!currentRegistration) {
-      return { canSwitch: false, reason: 'User not registered for this camp' }
-    }
-
-    // Can't switch to current team
-    if (currentRegistration.current_team === teamKey) {
-      return { canSwitch: false, reason: 'Already on this team' }
-    }
-
-    // Check if user has switches remaining
-    if ((currentRegistration.switches_remaining ?? 0) <= 0) {
+  const canUserSwitchToTeam = useCallback(async (teamKey: TeamColor): Promise<TeamSwitchResult> => {
+    if (!currentRegistration) return { canSwitch: false, reason: 'User not registered for this camp' }
+    if (currentRegistration.current_team === teamKey) return { canSwitch: false, reason: 'Already on this team' }
+    // For initial join (no current team) skip the switches check — first pick is free
+    if (currentRegistration.current_team && (currentRegistration.switches_remaining ?? 0) <= 0) {
       return { canSwitch: false, reason: 'No team switches remaining' }
     }
-
-    // Check if team can accept the player
     const acceptanceResult = await canTeamAcceptPlayer(teamKey, currentRegistration.gender)
-    if (!acceptanceResult.canAccept) {
-      return { canSwitch: false, reason: acceptanceResult.reason }
-    }
-
+    if (!acceptanceResult.canAccept) return { canSwitch: false, reason: acceptanceResult.reason }
     return { canSwitch: true, reason: 'Can switch to this team' }
-  }
+  }, [currentRegistration, canTeamAcceptPlayer])
 
-  // Check if a team is at capacity (24 players)
-  const isTeamAtCapacity = (teamKey: TeamColor): boolean => {
+  const isTeamAtCapacity = useCallback((teamKey: TeamColor): boolean => {
     const team = teamBalances.find(b => b.team === teamKey)
     return team ? team.total_count >= 24 : false
-  }
+  }, [teamBalances])
 
-  // Get the current size of a team
-  const getTeamSize = (teamKey: TeamColor): number => {
+  const getTeamSize = useCallback((teamKey: TeamColor): number => {
     const team = teamBalances.find(b => b.team === teamKey)
     return team ? team.total_count : 0
-  }
+  }, [teamBalances])
 
-  // Get the maximum team size (always 24)
-  const getMaxTeamSize = (): number => {
-    return 24
-  }
+  const getMaxTeamSize = useCallback((): number => 24, [])
 
-  // Check if a team can accept a specific gender
-  const canTeamAcceptGender = async (teamKey: TeamColor, gender: string): Promise<boolean> => {
+  const canTeamAcceptGender = useCallback(async (teamKey: TeamColor, gender: string): Promise<boolean> => {
     const team = teamBalances.find(b => b.team === teamKey)
-    if (!team) return false
-
-    // Team full
-    if (team.total_count >= 24) return false
-
-    // Check gender balance
+    if (!team || team.total_count >= 24) return false
     const genderCount = gender === 'male' ? team.male_count : team.female_count
     return genderCount < 12
-  }
+  }, [teamBalances])
 
-  // Get the best available team for a user (least populated)
-  const getBestAvailableTeam = async (userGender: string): Promise<TeamColor | null> => {
+  const getBestAvailableTeam = useCallback(async (userGender: string): Promise<TeamColor | null> => {
     const availableTeams: Array<{ team: TeamColor; count: number }> = []
-
     for (const teamKey of ['red', 'blue', 'green', 'yellow'] as TeamColor[]) {
       const canAccept = await canTeamAcceptGender(teamKey, userGender)
-      if (canAccept) {
-        availableTeams.push({
-          team: teamKey,
-          count: getTeamSize(teamKey)
-        })
-      }
+      if (canAccept) availableTeams.push({ team: teamKey, count: getTeamSize(teamKey) })
     }
-
     if (availableTeams.length === 0) return null
-
-    // Sort by count (ascending) to get the least populated team
     availableTeams.sort((a, b) => a.count - b.count)
-
     return availableTeams[0].team
-  }
+  }, [canTeamAcceptGender, getTeamSize])
 
   // EMERGENCY: Force teamBalances to always be an array
   const safeTeamBalances = Array.isArray(teamBalances) ? teamBalances : []
