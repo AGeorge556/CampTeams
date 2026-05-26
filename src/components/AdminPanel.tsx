@@ -163,28 +163,33 @@ export default function AdminPanel() {
   };
 
   const fetchSportSelections = async () => {
+    if (!currentCamp) return;
     try {
       const { data: selections, error: selectionsError } = await supabase
         .from('user_sport_selections')
-        .select(`
-          sport_id,
-          profiles!inner(
-            id,
-            full_name,
-            grade,
-            gender,
-            current_team,
-            is_admin
-          )
-        `);
+        .select('sport_id, user_id, profiles!inner(id, full_name, is_admin)');
 
       if (selectionsError) throw selectionsError;
 
-      const sportMap = new Map<string, SportSelection>();
+      // grade / gender / current_team live in camp_registrations, not profiles
+      const userIds = (selections || []).map((s: any) => s.user_id).filter(Boolean);
+      const regMap = new Map<string, { grade: number | null; gender: string | null; current_team: string | null }>();
+      if (userIds.length > 0) {
+        const { data: regs } = await supabase
+          .from('camp_registrations')
+          .select('user_id, grade, gender, current_team')
+          .eq('camp_id', currentCamp.id)
+          .in('user_id', userIds);
+        regs?.forEach((r: any) => regMap.set(r.user_id, r));
+      }
 
-      selections?.forEach((selection) => {
+      const sportMap = new Map<string, SportSelection>();
+      selections?.forEach((selection: any) => {
         const sportId = selection.sport_id;
         const profile = selection.profiles as any;
+        const reg = regMap.get(selection.user_id);
+        // Only include participants registered in the current camp
+        if (!reg) return;
 
         if (!sportMap.has(sportId)) {
           sportMap.set(sportId, {
@@ -194,7 +199,12 @@ export default function AdminPanel() {
           });
         }
 
-        sportMap.get(sportId)!.participants.push(profile);
+        sportMap.get(sportId)!.participants.push({
+          ...profile,
+          grade: reg.grade,
+          gender: reg.gender,
+          current_team: reg.current_team,
+        });
       });
 
       setSportSelections(Array.from(sportMap.values()));

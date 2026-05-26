@@ -1,10 +1,12 @@
 import { GRADE_NAMES, MAX_PLAYERS_PER_GRADE, GRADES } from './constants'
 
-export const getGradeDisplayName = (grade: number): string => {
+export const getGradeDisplayName = (grade: number | null | undefined): string => {
+  if (grade == null) return '—'
   return GRADE_NAMES[grade as keyof typeof GRADE_NAMES] || `Grade ${grade}`
 }
 
-export const getGradeDisplayWithNumber = (grade: number): string => {
+export const getGradeDisplayWithNumber = (grade: number | null | undefined): string => {
+  if (grade == null) return '—'
   return `${getGradeDisplayName(grade)} (${grade})`
 }
 
