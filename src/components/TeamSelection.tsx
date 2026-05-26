@@ -86,7 +86,7 @@ export default function TeamSelection() {
     }
   }
 
-  if (balancesLoading || teamBalances.length === 0) {
+  if (balancesLoading) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-[var(--gradient-app-bg)]">
         <Loader2 className="w-8 h-8 text-[var(--color-primary)] animate-spin" />

@@ -46,22 +46,33 @@ export default function PlayerLists() {
   const handleSwitchTeam = async (newTeam: TeamColor) => {
     if (!currentRegistration || !currentCamp || switching) return
     setSwitching(newTeam)
+    const isInitialJoin = !currentRegistration.current_team
     try {
-      const check = await canUserSwitchToTeam(newTeam)
-      if (!check.canSwitch) {
-        addToast({ type: 'error', title: t('cannotSwitchTeams'), message: check.reason })
-        return
+      if (!isInitialJoin) {
+        const check = await canUserSwitchToTeam(newTeam)
+        if (!check.canSwitch) {
+          addToast({ type: 'error', title: t('cannotSwitchTeams'), message: check.reason })
+          return
+        }
+        // Log the switch (only for actual switches, not initial joins)
+        const { error: switchErr } = await supabase
+          .from('team_switches')
+          .insert({ user_id: currentRegistration.user_id, from_team: currentRegistration.current_team, to_team: newTeam })
+        if (switchErr) throw switchErr
       }
-      const { error: switchErr } = await supabase
-        .from('team_switches')
-        .insert({ user_id: currentRegistration.user_id, from_team: currentRegistration.current_team, to_team: newTeam })
-      if (switchErr) throw switchErr
       const { error: updateErr } = await supabase
         .from('camp_registrations')
-        .update({ current_team: newTeam, switches_remaining: (currentRegistration.switches_remaining || 0) - 1 })
+        .update({
+          current_team: newTeam,
+          participate_in_teams: true,
+          switches_remaining: isInitialJoin
+            ? (currentRegistration.switches_remaining ?? 3)
+            : (currentRegistration.switches_remaining || 0) - 1
+        })
         .eq('id', currentRegistration.id)
       if (updateErr) throw updateErr
-      addToast({ type: 'success', title: t('teamSwitchSuccessful'), message: `${t('successfullyJoinedTeam')} ${TEAMS[newTeam].name} team!` })
+      const title = isInitialJoin ? 'Team Joined!' : t('teamSwitchSuccessful')
+      addToast({ type: 'success', title, message: `You've joined the ${TEAMS[newTeam].name} team!` })
       setTimeout(() => window.location.reload(), 500)
     } catch (err: any) {
       addToast({ type: 'error', title: 'Error', message: err.message || t('failedToSwitchTeams') })
@@ -86,22 +97,40 @@ export default function PlayerLists() {
         <h3 className="text-base font-bold text-[var(--color-text)]">{t('teamRosters')}</h3>
       </div>
 
+      {/* No-team prompt */}
+      {currentRegistration && !currentRegistration.current_team && (
+        <div className="px-5 py-3.5 bg-orange-50 dark:bg-orange-950/30 border-b border-orange-200 dark:border-orange-800 flex items-center gap-3">
+          <AlertTriangle className="h-4 w-4 text-orange-500 shrink-0" />
+          <div>
+            <p className="text-sm font-semibold text-orange-800 dark:text-orange-200">You haven't joined a team yet</p>
+            <p className="text-xs text-orange-600 dark:text-orange-400">Tap a team below to join — it's free and won't use a switch</p>
+          </div>
+        </div>
+      )}
+
       {/* Balance summary */}
       {Array.isArray(teamBalances) && teamBalances.length > 0 && (
-        <div className="px-5 py-3 bg-[var(--color-bg-muted)] border-b border-[var(--color-border)] flex flex-wrap gap-4 text-xs text-[var(--color-text-muted)]">
-          {teamBalances.map(b => (
-            <span key={b.team} className="flex items-center gap-1.5">
-              <span
-                className="w-2 h-2 rounded-full inline-block"
-                style={{ background: TEAMS[b.team as TeamColor].colorValue }}
-              />
-              <span className="font-semibold text-[var(--color-text)]">{TEAMS[b.team as TeamColor].name}</span>
-              <span>{b.total_count}/24</span>
-              {isTeamAtCapacity(b.team as TeamColor) && (
-                <span className="text-[var(--color-danger)] font-semibold">FULL</span>
-              )}
+        <div className="px-5 py-3 bg-[var(--color-bg-muted)] border-b border-[var(--color-border)] flex flex-wrap items-center justify-between gap-3 text-xs text-[var(--color-text-muted)]">
+          <div className="flex flex-wrap gap-4">
+            {teamBalances.map(b => (
+              <span key={b.team} className="flex items-center gap-1.5">
+                <span
+                  className="w-2 h-2 rounded-full inline-block"
+                  style={{ background: TEAMS[b.team as TeamColor].colorValue }}
+                />
+                <span className="font-semibold text-[var(--color-text)]">{TEAMS[b.team as TeamColor].name}</span>
+                <span>{b.total_count}/24</span>
+                {isTeamAtCapacity(b.team as TeamColor) && (
+                  <span className="text-[var(--color-danger)] font-semibold">FULL</span>
+                )}
+              </span>
+            ))}
+          </div>
+          {currentRegistration?.current_team && (
+            <span className="text-[var(--color-text-muted)]">
+              <span className="font-semibold text-[var(--color-text)]">{currentRegistration.switches_remaining ?? 0}</span> switch{(currentRegistration.switches_remaining ?? 0) !== 1 ? 'es' : ''} remaining
             </span>
-          ))}
+          )}
         </div>
       )}
 
@@ -118,11 +147,11 @@ export default function PlayerLists() {
           const switchReason = validation?.reason ?? 'Validating...'
 
           const isMyTeam = currentRegistration?.current_team === teamKey
+          const isInitialJoin = !currentRegistration?.current_team
           const canShowSwitch =
             profile &&
             !isMyTeam &&
-            (currentRegistration?.switches_remaining || 0) > 0 &&
-            currentRegistration?.participate_in_teams
+            (isInitialJoin || (currentRegistration?.switches_remaining || 0) > 0)
 
           return (
             <div key={teamKey} className="rounded-xl overflow-hidden border border-[var(--color-border)]">
@@ -154,7 +183,7 @@ export default function PlayerLists() {
                         }`}
                         title={!canSwitch ? switchReason : undefined}
                       >
-                        {canSwitch ? t('joinTeam') : 'Full'}
+                        {canSwitch ? (isInitialJoin ? 'Join' : 'Switch') : 'Full'}
                       </Button>
                     )}
                   </div>

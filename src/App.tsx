@@ -369,7 +369,8 @@ function AppContent({
   }
 
   // If user is registered for camp but no team assigned, show team selection
-  if (currentRegistration && !currentRegistration.current_team && currentRegistration.participate_in_teams) {
+  // Admins bypass this so they can still access the admin panel without a team
+  if (currentRegistration && !currentRegistration.current_team && !profile?.is_admin) {
     return <TeamSelection />
   }
 

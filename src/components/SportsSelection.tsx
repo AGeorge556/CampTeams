@@ -4,6 +4,7 @@ import { supabase, TEAMS, type SportsMatch } from '../lib/supabase'
 import { useProfile } from '../hooks/useProfile'
 import { useCamp } from '../contexts/CampContext'
 import { useLanguage } from '../contexts/LanguageContext'
+import PlayerLists from './PlayerLists'
 
 interface Sport {
   id: string
@@ -317,6 +318,9 @@ export default function SportsSelection() {
 
   return (
     <div className="space-y-8">
+      {/* Team rosters — visible to all registered campers */}
+      <PlayerLists />
+
       <div className="bg-[var(--color-card-bg)] rounded-2xl border border-[var(--color-border)] shadow-[var(--shadow-sm)] p-5 sm:p-6">
         <div className="flex items-center gap-3">
           <Trophy className="h-6 w-6 text-[var(--color-primary)] flex-shrink-0" />
