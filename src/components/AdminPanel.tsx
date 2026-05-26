@@ -110,7 +110,12 @@ export default function AdminPanel() {
         .maybeSingle();
 
       if (error) throw error;
-      // Cast the data to include locked_teams with proper typing and default values
+      if (!data) {
+        setCampSettings(null);
+        setLockedTeams([]);
+        return;
+      }
+
       const settingsData: CampSettings = {
         id: data.id,
         teams_locked: data.teams_locked || false,
@@ -123,7 +128,7 @@ export default function AdminPanel() {
         created_at: data.created_at,
         updated_at: data.updated_at
       };
-      
+
       setCampSettings(settingsData);
       setLockedTeams(settingsData.locked_teams);
     } catch (error) {
@@ -232,18 +237,9 @@ export default function AdminPanel() {
     }
   };
 
-  const reassignUser = async (userId: string, newTeam: TeamColor) => {
+  const reassignUser = async (userId: string, newTeam: TeamColor | null) => {
+    if (!currentCamp) return;
     try {
-      if (!newTeam) {
-        console.error('Invalid team selected');
-        return;
-      }
-
-      if (!currentCamp) {
-        console.error('No current camp — cannot reassign user');
-        return;
-      }
-
       const { error } = await supabase
         .from('camp_registrations')
         .update({ current_team: newTeam })
@@ -252,7 +248,7 @@ export default function AdminPanel() {
 
       if (error) throw error;
 
-      // Keep profiles.current_team in sync so the Participants tab display stays current
+      // Keep profiles.current_team in sync so the nav avatar and other displays stay current
       await supabase.from('profiles').update({ current_team: newTeam }).eq('id', userId);
 
       await fetchProfiles();
@@ -411,13 +407,19 @@ export default function AdminPanel() {
           <h3 className="text-lg font-semibold text-[var(--color-text)]">Camp Settings</h3>
           <button
             onClick={toggleTeamsLock}
-            disabled={loading}
+            disabled={loading || !campSettings}
+            title={!campSettings ? 'No camp_settings row found in database' : undefined}
             className="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md text-white bg-[var(--color-primary)] hover:opacity-90 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-orange-400 disabled:opacity-50"
           >
             <Settings className="h-4 w-4 mr-2" />
             {campSettings?.teams_locked ? 'Unlock Teams' : 'Lock Teams'}
           </button>
         </div>
+        {!campSettings && (
+          <div className="mb-4 px-4 py-3 bg-amber-50 dark:bg-amber-950/30 border border-amber-200 dark:border-amber-800 rounded-lg text-sm text-amber-800 dark:text-amber-200">
+            No <code className="font-mono">camp_settings</code> row found. Team lock and per-team locks won't work until a row is created in the database.
+          </div>
+        )}
         <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
           <div className="bg-[var(--color-bg-muted)] rounded-lg p-4">
             <h4 className="font-medium text-[var(--color-text)]">Teams Status</h4>
@@ -505,7 +507,7 @@ export default function AdminPanel() {
         {/* Schedule Visibility Toggle */}
         <div className="mt-4 flex items-center justify-between p-4 bg-[var(--color-bg-muted)] border border-[var(--color-border)] rounded-lg">
           <div className="flex items-center">
-            <Trophy className="h-5 w-5 text-[var(--color-primary)] mr-3" />
+            <Calendar className="h-5 w-5 text-[var(--color-primary)] mr-3" />
             <div>
               <h4 className="font-medium text-[var(--color-text)]">Schedule Visibility</h4>
               <p className="text-sm text-[var(--color-text-muted)]">
@@ -672,7 +674,7 @@ export default function AdminPanel() {
                     <td className="px-6 py-4 whitespace-nowrap text-sm text-[var(--color-text-muted)]">
                       <select
                         value={profile.current_team || ''}
-                        onChange={(e) => reassignUser(profile.user_id, e.target.value as TeamColor)}
+                        onChange={(e) => reassignUser(profile.user_id, e.target.value === '' ? null : e.target.value as TeamColor)}
                         className="rounded-md border-[var(--color-border)] shadow-sm bg-[var(--color-input-bg)] focus:border-orange-300 focus:ring focus:ring-orange-200 focus:ring-opacity-50 text-sm"
                       >
                         <option value="">Unassigned</option>

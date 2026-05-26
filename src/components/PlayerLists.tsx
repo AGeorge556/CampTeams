@@ -13,9 +13,9 @@ import { useLanguage } from '../contexts/LanguageContext'
 
 export default function PlayerLists() {
   const { t } = useLanguage()
-  const { players, loading } = usePlayers()
+  const { players, loading, refetch } = usePlayers()
   const { profile } = useProfile()
-  const { currentCamp, currentRegistration } = useCamp()
+  const { currentCamp, currentRegistration, refreshRegistration } = useCamp()
   const { teamBalances, canUserSwitchToTeam, isTeamAtCapacity } = useTeamBalancing()
   const { addToast } = useToast()
   const [switching, setSwitching] = React.useState<string | null>(null)
@@ -73,7 +73,9 @@ export default function PlayerLists() {
       if (updateErr) throw updateErr
       const title = isInitialJoin ? 'Team Joined!' : t('teamSwitchSuccessful')
       addToast({ type: 'success', title, message: `You've joined the ${TEAMS[newTeam].name} team!` })
-      setTimeout(() => window.location.reload(), 500)
+      // Refresh data in place — no page reload avoids aborting the just-completed network requests
+      await refreshRegistration()
+      await refetch()
     } catch (err: any) {
       addToast({ type: 'error', title: 'Error', message: err.message || t('failedToSwitchTeams') })
     } finally {
