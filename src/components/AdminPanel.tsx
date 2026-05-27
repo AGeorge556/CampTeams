@@ -71,28 +71,19 @@ export default function AdminPanel() {
   const fetchProfiles = async () => {
     if (!currentCamp) return;
     try {
+      // !inner join ensures orphaned registrations (deleted profiles) are excluded
       const { data, error } = await supabase
         .from('camp_registrations')
-        .select('*')
+        .select('*, profiles!inner(is_admin)')
         .eq('camp_id', currentCamp.id)
         .order('full_name');
 
       if (error) throw error;
 
-      // Two-step: fetch is_admin from profiles for the registered user_ids
-      const userIds = (data ?? []).map((r: any) => r.user_id).filter(Boolean);
-      const adminUserIds = new Set<string>();
-      if (userIds.length > 0) {
-        const { data: profileData } = await supabase
-          .from('profiles')
-          .select('id, is_admin')
-          .in('id', userIds);
-        profileData?.forEach((p: any) => { if (p.is_admin) adminUserIds.add(p.id); });
-      }
-
       const rows = (data ?? []).map((r: any) => ({
         ...r,
-        is_admin: adminUserIds.has(r.user_id),
+        is_admin: (r.profiles as any)?.is_admin ?? false,
+        profiles: undefined,
       }));
 
       setProfiles(rows);
