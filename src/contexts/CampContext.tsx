@@ -63,7 +63,7 @@ export function CampProvider({ children }: { children: ReactNode }) {
     try {
       const { data: campData, error: campError } = await supabase
         .from('camps')
-        .select('*')
+        .select('id, name, season, year, start_date, end_date, is_active, registration_open, max_participants, description, bible_verse, verse_reference, theme_primary_color, theme_secondary_color, custom_content')
         .eq('id', campId)
         .single()
 
@@ -83,9 +83,10 @@ export function CampProvider({ children }: { children: ReactNode }) {
     }
 
     try {
+      // Select the user's own registration — all fields are safe here since this is the user reading their own data
       const { data: regData, error: regError } = await supabase
         .from('camp_registrations')
-        .select('*')
+        .select('id, camp_id, user_id, full_name, grade, gender, current_team, preferred_team, switches_remaining, participate_in_teams, role')
         .eq('camp_id', campId)
         .eq('user_id', user.id)
         .single()

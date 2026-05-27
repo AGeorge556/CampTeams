@@ -284,10 +284,11 @@ export default function AdminPanel() {
 
   const saveAnnouncement = async (text: string) => {
     if (!currentCamp) return;
+    const sanitized = text.trim().slice(0, 500);
     setAnnouncementSaving(true);
     try {
       const existing = (currentCamp.custom_content as any) || {};
-      const updated = text.trim() ? { ...existing, announcement: text.trim() } : (() => { const n = { ...existing }; delete n.announcement; return n; })();
+      const updated = sanitized ? { ...existing, announcement: sanitized } : (() => { const n = { ...existing }; delete n.announcement; return n; })();
       await supabase.from('camps').update({ custom_content: updated }).eq('id', currentCamp.id);
     } catch (err) {
       console.error('Error saving announcement:', err);
@@ -542,11 +543,13 @@ export default function AdminPanel() {
           </div>
           <textarea
             value={announcementText}
-            onChange={e => setAnnouncementText(e.target.value)}
+            onChange={e => setAnnouncementText(e.target.value.slice(0, 500))}
             placeholder="Write an announcement to display on every camper's dashboard..."
             rows={3}
+            maxLength={500}
             className="w-full rounded-lg border border-[var(--color-border)] bg-[var(--color-card-bg)] text-sm text-[var(--color-text)] px-3 py-2 resize-none focus:outline-none focus:ring-2 focus:ring-orange-400/50"
           />
+          <p className="text-xs text-[var(--color-text-muted)] text-right mt-0.5">{announcementText.length}/500</p>
           <div className="flex gap-2 mt-2">
             <button
               onClick={() => saveAnnouncement(announcementText)}

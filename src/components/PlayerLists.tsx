@@ -70,6 +70,7 @@ export default function PlayerLists() {
             : (currentRegistration.switches_remaining || 0) - 1
         })
         .eq('id', currentRegistration.id)
+        .eq('user_id', currentRegistration.user_id)
       if (updateErr) throw updateErr
       const title = isInitialJoin ? 'Team Joined!' : t('teamSwitchSuccessful')
       addToast({ type: 'success', title, message: `You've joined the ${TEAMS[newTeam].name} team!` })

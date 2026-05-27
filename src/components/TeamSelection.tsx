@@ -63,6 +63,7 @@ export default function TeamSelection() {
             : (currentRegistration.switches_remaining ?? 3) - 1
         })
         .eq('id', currentRegistration.id)
+        .eq('user_id', currentRegistration.user_id)
 
       if (error) throw error
 

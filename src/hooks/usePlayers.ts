@@ -13,10 +13,6 @@ export interface CampPlayer {
   switches_remaining: number
   participate_in_teams: boolean
   role: string
-  age?: number
-  mobile_number?: string
-  parent_name?: string
-  parent_number?: string
   is_admin: boolean
 }
 
@@ -45,10 +41,10 @@ export function usePlayers() {
       setError(null)
       setLoading(true)
 
-      // Fetch camp registrations for this specific camp
+      // Fetch only the columns needed for team rosters — no PII (contact info lives in AdminPanel only)
       const { data, error: fetchError } = await supabase
         .from('camp_registrations')
-        .select('*')
+        .select('id, user_id, full_name, grade, gender, current_team, preferred_team, switches_remaining, participate_in_teams, role')
         .eq('camp_id', currentCamp.id)
         .not('current_team', 'is', null)
         .eq('participate_in_teams', true)
@@ -94,10 +90,6 @@ export function usePlayers() {
             switches_remaining: registration.switches_remaining ?? 0,
             participate_in_teams: registration.participate_in_teams,
             role: registration.role || 'camper',
-            age: registration.age,
-            mobile_number: registration.mobile_number,
-            parent_name: registration.parent_name,
-            parent_number: registration.parent_number,
             is_admin: adminUserIds.has(registration.user_id) || registration.role === 'admin'
           }
           teamPlayers[registration.current_team].push(player)
