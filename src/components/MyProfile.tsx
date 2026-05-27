@@ -5,6 +5,7 @@ import { supabase, TEAMS, TeamColor } from '../lib/supabase'
 import { useToast } from './Toast'
 import Button from './ui/Button'
 import { getGradeDisplayWithNumber } from '../lib/utils'
+import { validatePhone, validateName, sanitizeText, sanitizePhone, validate } from '../lib/inputValidation'
 
 interface EditableFields {
   mobile_number: string
@@ -63,16 +64,13 @@ export default function MyProfile() {
   }
 
   const handleSave = async () => {
-    if (!form.mobile_number.trim()) {
-      addToast({ type: 'error', title: 'Validation Error', message: 'Mobile number is required.' })
-      return
-    }
-    if (!form.parent_name.trim()) {
-      addToast({ type: 'error', title: 'Validation Error', message: "Parent's name is required." })
-      return
-    }
-    if (!form.parent_number.trim()) {
-      addToast({ type: 'error', title: 'Validation Error', message: "Parent's number is required." })
+    const check = validate(
+      validatePhone(form.mobile_number),
+      validateName(form.parent_name),
+      validatePhone(form.parent_number),
+    )
+    if (!check.ok) {
+      addToast({ type: 'error', title: 'Validation Error', message: check.error! })
       return
     }
 
@@ -81,9 +79,9 @@ export default function MyProfile() {
       const { error } = await supabase
         .from('camp_registrations')
         .update({
-          mobile_number: form.mobile_number.trim(),
-          parent_name: form.parent_name.trim(),
-          parent_number: form.parent_number.trim(),
+          mobile_number: sanitizePhone(form.mobile_number),
+          parent_name: sanitizeText(form.parent_name),
+          parent_number: sanitizePhone(form.parent_number),
         })
         .eq('id', reg.id)
 

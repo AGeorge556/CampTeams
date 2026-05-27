@@ -5,6 +5,7 @@ import { useToast } from './Toast'
 import { supabase } from '../lib/supabase'
 import Button from './ui/Button'
 import { UserCircle, Calendar, Snowflake, Sun, Phone, User } from 'lucide-react'
+import { validateName, validateAge, validatePhone, validateGrade, validateGender, sanitizeText, sanitizePhone, validate } from '../lib/inputValidation'
 
 export default function CampRegistrationOnboarding() {
   const { user } = useAuth()
@@ -27,69 +28,26 @@ export default function CampRegistrationOnboarding() {
 
     if (!user || !currentCamp) return
 
-    // Validation
-    if (!formData.full_name.trim()) {
-      addToast({
-        type: 'error',
-        title: 'Validation Error',
-        message: 'Please enter your full name'
-      })
+    // Validate all fields with shared validators
+    const check = validate(
+      validateName(formData.full_name),
+      validateAge(formData.age),
+      validatePhone(formData.mobile_number),
+      validateName(formData.parent_name),
+      validatePhone(formData.parent_number),
+      validateGrade(formData.grade),
+      validateGender(formData.gender),
+    )
+    if (!check.ok) {
+      addToast({ type: 'error', title: 'Validation Error', message: check.error! })
       return
     }
 
-    if (!formData.age || parseInt(formData.age) < 10 || parseInt(formData.age) > 25) {
-      addToast({
-        type: 'error',
-        title: 'Validation Error',
-        message: 'Please enter a valid age (10-25)'
-      })
-      return
-    }
-
-    if (!formData.mobile_number.trim()) {
-      addToast({
-        type: 'error',
-        title: 'Validation Error',
-        message: 'Please enter your mobile number'
-      })
-      return
-    }
-
-    if (!formData.parent_name.trim()) {
-      addToast({
-        type: 'error',
-        title: 'Validation Error',
-        message: 'Please enter your parent\'s name'
-      })
-      return
-    }
-
-    if (!formData.parent_number.trim()) {
-      addToast({
-        type: 'error',
-        title: 'Validation Error',
-        message: 'Please enter your parent\'s phone number'
-      })
-      return
-    }
-
-    if (!formData.grade || parseInt(formData.grade) < 1 || parseInt(formData.grade) > 12) {
-      addToast({
-        type: 'error',
-        title: 'Validation Error',
-        message: 'Please enter a valid grade (1-12)'
-      })
-      return
-    }
-
-    if (!formData.gender) {
-      addToast({
-        type: 'error',
-        title: 'Validation Error',
-        message: 'Please select your gender'
-      })
-      return
-    }
+    // Sanitize before writing
+    const fullName = sanitizeText(formData.full_name)
+    const parentName = sanitizeText(formData.parent_name)
+    const mobile = sanitizePhone(formData.mobile_number)
+    const parentPhone = sanitizePhone(formData.parent_number)
 
     setLoading(true)
 
@@ -99,11 +57,11 @@ export default function CampRegistrationOnboarding() {
         .insert({
           user_id: user.id,
           camp_id: currentCamp.id,
-          full_name: formData.full_name.trim(),
+          full_name: fullName,
           age: parseInt(formData.age),
-          mobile_number: formData.mobile_number.trim(),
-          parent_name: formData.parent_name.trim(),
-          parent_number: formData.parent_number.trim(),
+          mobile_number: mobile,
+          parent_name: parentName,
+          parent_number: parentPhone,
           grade: parseInt(formData.grade),
           gender: formData.gender,
           preferred_team: null,

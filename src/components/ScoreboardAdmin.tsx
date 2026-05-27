@@ -3,6 +3,7 @@ import { useScoreboard } from '../hooks/useScoreboard'
 import { TEAMS, TeamColor } from '../lib/supabase'
 import Button from './ui/Button'
 import LoadingSpinner from './LoadingSpinner'
+import { validateScoreDelta, validateLongText } from '../lib/inputValidation'
 
 export default function ScoreboardAdmin() {
   const { events, loading, updating, error, adjustScore, reload } = useScoreboard()
@@ -32,10 +33,14 @@ export default function ScoreboardAdmin() {
           </div>
           <div className="flex-1 min-w-[200px]">
             <label className="block text-sm text-[var(--color-text-muted)] mb-1">Reason (optional)</label>
-            <input type="text" value={reason} onChange={e => setReason(e.target.value)} className="border rounded px-3 py-2 w-full border-[var(--color-border)] bg-[var(--color-card-bg)] text-[var(--color-text)]" />
+            <input type="text" value={reason} onChange={e => setReason(e.target.value.slice(0, 200))} maxLength={200} className="border rounded px-3 py-2 w-full border-[var(--color-border)] bg-[var(--color-card-bg)] text-[var(--color-text)]" />
           </div>
           <Button onClick={async () => {
-            const res = await adjustScore(selectedTeam, delta, reason)
+            const deltaCheck = validateScoreDelta(delta)
+            if (!deltaCheck.ok) { alert(deltaCheck.error); return }
+            const reasonCheck = validateLongText(reason, 'Reason', 200)
+            if (!reasonCheck.ok) { alert(reasonCheck.error); return }
+            const res = await adjustScore(selectedTeam, delta, reason.trim())
             if (!res.success) {
               alert(res.error)
               return

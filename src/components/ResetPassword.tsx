@@ -4,6 +4,7 @@ import { useAuth } from '../hooks/useAuth'
 import { useToast } from './Toast'
 import Button from './ui/Button'
 import Input from './ui/Input'
+import { validatePassword } from '../lib/inputValidation'
 
 const LOGO_PATH = '/logo.png'
 
@@ -27,8 +28,8 @@ export default function ResetPassword() {
   }, [])
 
   const validatePasswords = (): boolean => {
-    if (!newPassword) { setError('Password is required'); return false }
-    if (newPassword.length < 8) { setError('Password must be at least 8 characters'); return false }
+    const pwResult = validatePassword(newPassword, true)
+    if (!pwResult.ok) { setError(pwResult.error); return false }
     if (newPassword !== confirmPassword) { setError('Passwords do not match'); return false }
     setError(undefined)
     return true

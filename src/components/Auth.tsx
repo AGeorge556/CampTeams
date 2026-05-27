@@ -4,6 +4,7 @@ import { useAuth } from '../hooks/useAuth'
 import { useToast } from './Toast'
 import Button from './ui/Button'
 import Input from './ui/Input'
+import { validateEmail, validatePassword } from '../lib/inputValidation'
 
 const LOGO_PATH = '/logo.png'
 
@@ -33,20 +34,12 @@ export default function Auth({ initialMode = 'signin', onBack }: AuthProps) {
   const validateForm = (): boolean => {
     const newErrors: FormErrors = {}
 
-    if (!email.trim()) {
-      newErrors.email = 'Email is required'
-    } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
-      newErrors.email = 'Please enter a valid email address'
-    }
+    const emailResult = validateEmail(email)
+    if (!emailResult.ok) newErrors.email = emailResult.error
 
     if (!isForgotPassword) {
-      if (!password) {
-        newErrors.password = 'Password is required'
-      } else if (password.length < 6) {
-        newErrors.password = 'Password must be at least 6 characters'
-      } else if (isSignUp && password.length < 8) {
-        newErrors.password = 'Password must be at least 8 characters for signup'
-      }
+      const pwResult = validatePassword(password, isSignUp)
+      if (!pwResult.ok) newErrors.password = pwResult.error
     }
 
     setErrors(newErrors)

@@ -5,6 +5,7 @@ import { useProfile } from '../hooks/useProfile'
 import { useCamp } from '../contexts/CampContext'
 import { useToast } from './Toast'
 import { ScheduleItem } from '../lib/types'
+import { validateShortText, validateLongText, sanitizeText, validate } from '../lib/inputValidation'
 
 export default function ScheduleEditor() {
   const { profile } = useProfile()
@@ -64,14 +65,22 @@ export default function ScheduleEditor() {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
-    if (!editForm.activity || !editForm.time || !editForm.location || !currentCamp) {
-      addToast({
-        type: 'error',
-        title: 'Error',
-        message: 'Please fill in all required fields'
-      })
+    if (!currentCamp) return
+
+    const check = validate(
+      validateShortText(editForm.activity, 'Activity', 100),
+      validateShortText(editForm.time, 'Time', 10),
+      validateShortText(editForm.location, 'Location', 100),
+      validateLongText(editForm.description, 'Description', 500),
+    )
+    if (!check.ok) {
+      addToast({ type: 'error', title: 'Validation Error', message: check.error! })
       return
     }
+
+    const title = sanitizeText(editForm.activity)
+    const location = sanitizeText(editForm.location)
+    const description = editForm.description.trim() || null
 
     setLoading(true)
     try {
@@ -82,9 +91,9 @@ export default function ScheduleEditor() {
           .update({
             day: editForm.day,
             time_slot: editForm.time,
-            title: editForm.activity,
-            location: editForm.location,
-            description: editForm.description || null,
+            title,
+            location,
+            description,
             updated_at: new Date().toISOString()
           })
           .eq('id', editingItem)
@@ -104,9 +113,9 @@ export default function ScheduleEditor() {
             camp_id: currentCamp.id,
             day: editForm.day,
             time_slot: editForm.time,
-            title: editForm.activity,
-            location: editForm.location,
-            description: editForm.description || null
+            title,
+            location,
+            description
           })
 
         if (error) throw error
