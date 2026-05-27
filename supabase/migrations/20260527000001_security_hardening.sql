@@ -10,6 +10,7 @@
 -- Column-level filtering (dropping sensitive PII) is enforced on the frontend
 -- by explicit select() calls — this policy covers the row-level gate.
 DROP POLICY IF EXISTS "Users can view their own registrations" ON camp_registrations;
+DROP POLICY IF EXISTS "Authenticated users can view camp registrations" ON camp_registrations;
 
 CREATE POLICY "Authenticated users can view camp registrations"
   ON camp_registrations FOR SELECT
@@ -18,6 +19,7 @@ CREATE POLICY "Authenticated users can view camp registrations"
 
 -- Admins can update ANY registration (team reassignment, role changes).
 -- Regular users are still covered by the existing "Users can update own" policy.
+DROP POLICY IF EXISTS "Admins can update any registration" ON camp_registrations;
 CREATE POLICY "Admins can update any registration"
   ON camp_registrations FOR UPDATE
   TO authenticated
@@ -29,6 +31,7 @@ CREATE POLICY "Admins can update any registration"
   );
 
 -- Admins can delete registrations (e.g. remove a participant).
+DROP POLICY IF EXISTS "Admins can delete any registration" ON camp_registrations;
 CREATE POLICY "Admins can delete any registration"
   ON camp_registrations FOR DELETE
   TO authenticated
@@ -38,8 +41,7 @@ CREATE POLICY "Admins can delete any registration"
 
 -- ── profiles ──────────────────────────────────────────────────────────────────
 
--- Admins can update any profile (role changes, is_admin toggles).
--- The existing "Users can update their own profile" policy already covers self-edits.
+DROP POLICY IF EXISTS "Admins can update any profile" ON profiles;
 CREATE POLICY "Admins can update any profile"
   ON profiles FOR UPDATE
   TO authenticated
@@ -52,7 +54,7 @@ CREATE POLICY "Admins can update any profile"
 
 -- ── camps ─────────────────────────────────────────────────────────────────────
 
--- Only admins can mutate camp records (name, dates, announcements, etc.).
+DROP POLICY IF EXISTS "Admins can update camps" ON camps;
 CREATE POLICY "Admins can update camps"
   ON camps FOR UPDATE
   TO authenticated
@@ -65,13 +67,13 @@ CREATE POLICY "Admins can update camps"
 
 -- ── team_switches ─────────────────────────────────────────────────────────────
 
--- Users may only insert their own switch records.
+DROP POLICY IF EXISTS "Users can insert own team switches" ON team_switches;
 CREATE POLICY "Users can insert own team switches"
   ON team_switches FOR INSERT
   TO authenticated
   WITH CHECK (auth.uid() = user_id);
 
--- Users can read their own history; admins can read all.
+DROP POLICY IF EXISTS "Users or admins can view team switches" ON team_switches;
 CREATE POLICY "Users or admins can view team switches"
   ON team_switches FOR SELECT
   TO authenticated
