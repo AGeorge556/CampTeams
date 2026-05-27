@@ -71,22 +71,13 @@ export default function AdminPanel() {
   const fetchProfiles = async () => {
     if (!currentCamp) return;
     try {
-      // !inner join ensures orphaned registrations (deleted profiles) are excluded
+      // RPC filters out banned auth users and orphaned registrations server-side
       const { data, error } = await supabase
-        .from('camp_registrations')
-        .select('*, profiles!inner(is_admin)')
-        .eq('camp_id', currentCamp.id)
-        .order('full_name');
+        .rpc('get_active_camp_registrations', { p_camp_id: currentCamp.id });
 
       if (error) throw error;
 
-      const rows = (data ?? []).map((r: any) => ({
-        ...r,
-        is_admin: (r.profiles as any)?.is_admin ?? false,
-        profiles: undefined,
-      }));
-
-      setProfiles(rows);
+      setProfiles(data ?? []);
     } catch (error) {
       console.error('Error fetching profiles:', error);
     }
