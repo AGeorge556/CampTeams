@@ -358,7 +358,9 @@ export default function AdminPanel() {
 
     const size = Number(settingsDraft.max_team_size);
     if (!Number.isInteger(size) || size < 1 || size > 200) {
-      setSettingsError('Max team size must be a whole number between 1 and 200.');
+      setSettingsError(
+        'Max team size must be a whole number between 1 and 200.'
+      );
       return;
     }
 
