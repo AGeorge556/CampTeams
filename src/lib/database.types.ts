@@ -1082,6 +1082,7 @@ export type Database = {
       };
       has_accepted_rules: { Args: { user_id_param: string }; Returns: boolean };
       is_admin_user: { Args: { uid: string }; Returns: boolean };
+      is_super_admin: { Args: { p_uid?: string }; Returns: boolean };
       reject_photo: {
         Args: { admin_id_param: string; photo_id_param: string };
         Returns: boolean;

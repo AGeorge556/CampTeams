@@ -23,7 +23,7 @@ import { useScheduleVisibility } from '../hooks/useScheduleVisibility';
 import { useLanguage } from '../contexts/LanguageContext';
 import { getGradeDisplayWithNumber } from '../lib/utils';
 import { useCamp } from '../contexts/CampContext';
-import { useProfile } from '../hooks/useProfile';
+import { useSuperAdmin } from '../hooks/useSuperAdmin';
 
 interface SportSelection {
   sport_id: string;
@@ -52,12 +52,12 @@ export default function AdminPanel() {
   const { scheduleVisible, toggleScheduleVisibility } = useScheduleVisibility();
   const { t } = useLanguage();
   const { currentCamp } = useCamp();
-  const { profile } = useProfile();
   // Super admin is a tier above is_admin: it owns the settings that define the
-  // shape of the camp (size, dates, lock window). The database enforces this
-  // independently via guard_camp_settings_columns, so hiding the tab is a
-  // convenience — not the security boundary.
-  const isSuperAdmin = profile?.is_super_admin === true;
+  // shape of the camp (size, dates, lock window). Asked of the database rather
+  // than read off the profile row so the client can't disagree with the server.
+  // guard_camp_settings_columns enforces this independently, so hiding the tab
+  // is a convenience — not the security boundary.
+  const { isSuperAdmin } = useSuperAdmin();
   type CampRegistrationRow = {
     id: string;
     user_id: string;
