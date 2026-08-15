@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useMemo } from 'react';
 import {
   Shield,
   Users,
@@ -11,6 +11,9 @@ import {
   Calendar,
   Lock,
   Unlock,
+  ChevronUp,
+  ChevronDown,
+  ChevronsUpDown,
 } from 'lucide-react';
 import ScoreboardAdmin from './ScoreboardAdmin';
 import GalleryModeration from './GalleryModeration';
@@ -25,6 +28,10 @@ import { useLanguage } from '../contexts/LanguageContext';
 import { getGradeDisplayWithNumber } from '../lib/utils';
 import { useCamp } from '../contexts/CampContext';
 import { useSuperAdmin } from '../hooks/useSuperAdmin';
+
+// Only these two columns are sortable; the rest of the roster table is
+// display-only.
+type SortColumn = 'full_name' | 'gender';
 
 interface SportSelection {
   sport_id: string;
@@ -84,6 +91,12 @@ export default function AdminPanel() {
   const [loading, setLoading] = useState(false);
   const [selectedTeam, setSelectedTeam] = useState<TeamColor | 'all'>('all');
   const [genderFilter, setGenderFilter] = useState<GenderFilter>('all');
+  // null = leave the roster in the order the server returned it. Sorting is
+  // opt-in so the default view doesn't shift under admins who are used to it.
+  const [sortBy, setSortBy] = useState<{
+    column: SortColumn;
+    direction: 'asc' | 'desc';
+  } | null>(null);
   const [activeTab, setActiveTab] = useState<
     'participants' | 'sports' | 'roles' | 'gallery' | 'settings'
   >('participants');
@@ -422,7 +435,7 @@ export default function AdminPanel() {
     const csvContent =
       'data:text/csv;charset=utf-8,' +
       'Name,Age,Grade,Gender,Team,Mobile Number,Parent Name,Parent Number,Switches Remaining\n' +
-      filteredProfiles
+      sortedProfiles
         .map(
           p =>
             `"${p.full_name}",${p.age ?? ''},${p.grade},${genderLabel(p.gender)},${p.current_team || 'Unassigned'},"${p.mobile_number || ''}","${p.parent_name || ''}","${p.parent_number || ''}",${p.switches_remaining ?? 0}`
@@ -462,11 +475,73 @@ export default function AdminPanel() {
     document.body.removeChild(link);
   };
 
-  const filteredProfiles = profiles.filter(
-    p =>
-      (selectedTeam === 'all' || p.current_team === selectedTeam) &&
-      matchesGenderFilter(p.gender, genderFilter)
+  const filteredProfiles = useMemo(
+    () =>
+      profiles.filter(
+        p =>
+          (selectedTeam === 'all' || p.current_team === selectedTeam) &&
+          matchesGenderFilter(p.gender, genderFilter)
+      ),
+    [profiles, selectedTeam, genderFilter]
   );
+
+  // Sorted view of the filtered rows. The CSV export reads this too, so a
+  // download always matches what is on screen — same rows, same order.
+  const sortedProfiles = useMemo(() => {
+    if (!sortBy) return filteredProfiles;
+    const factor = sortBy.direction === 'asc' ? 1 : -1;
+    // Copy first: Array.sort mutates, and filteredProfiles is derived state.
+    return [...filteredProfiles].sort((a, b) => {
+      if (sortBy.column === 'gender') {
+        // Compare the normalized label, not the raw column, so rows group by
+        // meaning ('Female' < 'Male' < 'Unknown') rather than by whatever
+        // casing happens to be stored.
+        return (
+          genderLabel(a.gender).localeCompare(genderLabel(b.gender)) * factor
+        );
+      }
+      // localeCompare, not < / >, because names may be Arabic — this app ships
+      // Arabic translations and code-unit ordering would misorder them.
+      const nameA = a.full_name?.trim() ?? '';
+      const nameB = b.full_name?.trim() ?? '';
+      // Blank names sink to the bottom in both directions, so the list never
+      // opens with a run of empty rows.
+      if (!nameA && !nameB) return 0;
+      if (!nameA) return 1;
+      if (!nameB) return -1;
+      return nameA.localeCompare(nameB) * factor;
+    });
+  }, [filteredProfiles, sortBy]);
+
+  const toggleSort = (column: SortColumn) => {
+    setSortBy(prev =>
+      prev?.column === column
+        ? { column, direction: prev.direction === 'asc' ? 'desc' : 'asc' }
+        : { column, direction: 'asc' }
+    );
+  };
+
+  const ariaSortFor = (
+    column: SortColumn
+  ): 'ascending' | 'descending' | 'none' => {
+    if (sortBy?.column !== column) return 'none';
+    return sortBy.direction === 'asc' ? 'ascending' : 'descending';
+  };
+
+  // Plain function rather than a nested component: a component defined inside
+  // AdminPanel would be a new type on every render and remount each icon.
+  const renderSortIcon = (column: SortColumn) => {
+    if (sortBy?.column !== column) {
+      return (
+        <ChevronsUpDown className="h-3 w-3 opacity-40 group-hover:opacity-100" />
+      );
+    }
+    return sortBy.direction === 'asc' ? (
+      <ChevronUp className="h-3 w-3" />
+    ) : (
+      <ChevronDown className="h-3 w-3" />
+    );
+  };
 
   return (
     <div className="space-y-8">
@@ -852,14 +927,34 @@ export default function AdminPanel() {
             <table className="min-w-full divide-y divide-[var(--color-border)]">
               <thead className="bg-[var(--color-bg-muted)]">
                 <tr>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-[var(--color-text-muted)] uppercase tracking-wider">
-                    Name
+                  <th
+                    className="px-6 py-3 text-left text-xs font-medium text-[var(--color-text-muted)] uppercase tracking-wider"
+                    aria-sort={ariaSortFor('full_name')}
+                  >
+                    <button
+                      type="button"
+                      onClick={() => toggleSort('full_name')}
+                      className="group inline-flex items-center gap-1 rounded-sm hover:text-[var(--color-text)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-orange-400"
+                    >
+                      Name
+                      {renderSortIcon('full_name')}
+                    </button>
                   </th>
                   <th className="px-6 py-3 text-left text-xs font-medium text-[var(--color-text-muted)] uppercase tracking-wider">
                     Grade
                   </th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-[var(--color-text-muted)] uppercase tracking-wider">
-                    Gender
+                  <th
+                    className="px-6 py-3 text-left text-xs font-medium text-[var(--color-text-muted)] uppercase tracking-wider"
+                    aria-sort={ariaSortFor('gender')}
+                  >
+                    <button
+                      type="button"
+                      onClick={() => toggleSort('gender')}
+                      className="group inline-flex items-center gap-1 rounded-sm hover:text-[var(--color-text)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-orange-400"
+                    >
+                      Gender
+                      {renderSortIcon('gender')}
+                    </button>
                   </th>
                   <th className="px-6 py-3 text-left text-xs font-medium text-[var(--color-text-muted)] uppercase tracking-wider">
                     Current Team
@@ -873,7 +968,7 @@ export default function AdminPanel() {
                 </tr>
               </thead>
               <tbody className="bg-[var(--color-card-bg)] divide-y divide-[var(--color-border)]">
-                {filteredProfiles.map(profile => (
+                {sortedProfiles.map(profile => (
                   <tr key={profile.id}>
                     <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-[var(--color-text)]">
                       {profile.full_name}
