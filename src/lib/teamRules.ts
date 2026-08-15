@@ -10,6 +10,7 @@
 // and every team.
 import { TeamColor } from './supabase';
 import { MAX_TEAM_SIZE, MAX_PLAYERS_PER_GRADE } from './constants';
+import { Gender, normalizeGender } from './gender';
 
 export const TEAM_KEYS: readonly TeamColor[] = [
   'red',
@@ -61,7 +62,7 @@ export interface TeamEligibility {
 }
 
 export interface CamperContext {
-  gender: 'male' | 'female';
+  gender: Gender | null;
   grade: number;
   currentTeam: TeamColor | null;
   switchesRemaining: number;
@@ -208,11 +209,16 @@ export function evaluateTeamEligibility(
   const softSurvivors: TeamColor[] = [];
   for (const key of hardSurvivors) {
     const c = countsFor(safeCounts, key);
-    const genderCount = camper.gender === 'male' ? c.male : c.female;
-    if (genderCount >= cfg.maxPerGender) {
-      teams[key].blockedBy = 'gender_cap';
-      teams[key].reason = 'Team already has enough campers of your gender';
-      continue;
+    // An unrecognized/missing gender must never block someone from joining —
+    // there's no gender bucket to check it against, so skip straight to the
+    // grade check instead of guessing which cap applies.
+    if (camper.gender !== null) {
+      const genderCount = camper.gender === 'male' ? c.male : c.female;
+      if (genderCount >= cfg.maxPerGender) {
+        teams[key].blockedBy = 'gender_cap';
+        teams[key].reason = 'Team already has enough campers of your gender';
+        continue;
+      }
     }
     const gradeCount = c.byGrade?.[camper.grade] ?? 0;
     if (gradeCount >= cfg.maxPerGrade) {
@@ -274,7 +280,10 @@ export function pickBestTeam(
 
   for (const key of candidates) {
     const c = countsFor(safeCounts, key);
-    const genderCount = camper.gender === 'male' ? c.male : c.female;
+    // Unknown gender has no bucket to compare — treat the tie-breaker as 0 so
+    // selection falls back to comparing team totals only.
+    const genderCount =
+      camper.gender === null ? 0 : camper.gender === 'male' ? c.male : c.female;
     if (
       c.total < bestTotal ||
       (c.total === bestTotal && genderCount < bestGenderCount)
@@ -335,7 +344,11 @@ export function shortReasonLabel(reason: BlockReason | null): string {
 export function countsFromPlayers(
   players: Record<
     string,
-    Array<{ gender: string; grade: number; is_admin?: boolean }>
+    // `gender` is deliberately `unknown`: callers pass rows straight from the
+    // database, where the column is free text, as well as already-normalized
+    // CampPlayer values. normalizeGender handles both, so the signature must
+    // not commit to either shape.
+    Array<{ gender: unknown; grade: number; is_admin?: boolean }>
   >
 ): TeamCounts[] {
   const safePlayers = players && typeof players === 'object' ? players : {};
@@ -350,8 +363,12 @@ export function countsFromPlayers(
     let male = 0;
     let female = 0;
     for (const p of campers) {
-      if (p.gender === 'male') male++;
-      else if (p.gender === 'female') female++;
+      // Unrecognized gender values still count toward the team's total (and
+      // grade balance) but must not be attributed to either gender bucket —
+      // guessing here would silently corrupt the balance counts.
+      const g = normalizeGender(p.gender);
+      if (g === 'male') male++;
+      else if (g === 'female') female++;
       if (typeof p.grade === 'number') {
         byGrade[p.grade] = (byGrade[p.grade] ?? 0) + 1;
       }

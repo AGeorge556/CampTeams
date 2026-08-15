@@ -1,111 +1,129 @@
-import { createContext, useContext, useState, useEffect, ReactNode } from 'react'
-import { supabase } from '../lib/supabase'
-import { useAuth } from '../hooks/useAuth'
+import {
+  createContext,
+  useContext,
+  useState,
+  useEffect,
+  ReactNode,
+} from 'react';
+import { supabase } from '../lib/supabase';
+import { useAuth } from '../hooks/useAuth';
+import { Gender, normalizeGender } from '../lib/gender';
 
 interface Camp {
-  id: string
-  name: string
-  season: 'winter' | 'summer'
-  year: number
-  start_date: string
-  end_date: string
-  is_active: boolean
-  registration_open: boolean
-  max_participants: number | null
-  description: string
-  bible_verse: string | null
-  verse_reference: string | null
-  theme_primary_color: string | null
-  theme_secondary_color: string | null
-  custom_content: Record<string, any> | null
+  id: string;
+  name: string;
+  season: 'winter' | 'summer';
+  year: number;
+  start_date: string;
+  end_date: string;
+  is_active: boolean;
+  registration_open: boolean;
+  max_participants: number | null;
+  description: string;
+  bible_verse: string | null;
+  verse_reference: string | null;
+  theme_primary_color: string | null;
+  theme_secondary_color: string | null;
+  custom_content: Record<string, any> | null;
 }
 
 interface CampRegistration {
-  id: string
-  camp_id: string
-  user_id: string
-  full_name: string
-  grade: number
-  gender: 'male' | 'female'
-  current_team: string | null
-  preferred_team: string | null
-  switches_remaining: number
-  participate_in_teams: boolean
-  role: string
+  id: string;
+  camp_id: string;
+  user_id: string;
+  full_name: string;
+  grade: number;
+  gender: Gender | null;
+  current_team: string | null;
+  preferred_team: string | null;
+  switches_remaining: number;
+  participate_in_teams: boolean;
+  role: string;
 }
 
 interface CampContextType {
-  currentCamp: Camp | null
-  currentRegistration: CampRegistration | null
-  loading: boolean
-  isRegistered: boolean
-  selectCamp: (campId: string) => void
-  clearCamp: () => void
-  refreshRegistration: () => Promise<void>
+  currentCamp: Camp | null;
+  currentRegistration: CampRegistration | null;
+  loading: boolean;
+  isRegistered: boolean;
+  selectCamp: (campId: string) => void;
+  clearCamp: () => void;
+  refreshRegistration: () => Promise<void>;
 }
 
-const CampContext = createContext<CampContextType | undefined>(undefined)
+const CampContext = createContext<CampContextType | undefined>(undefined);
 
 export function CampProvider({ children }: { children: ReactNode }) {
-  const { user } = useAuth()
-  const [currentCamp, setCurrentCamp] = useState<Camp | null>(null)
-  const [currentRegistration, setCurrentRegistration] = useState<CampRegistration | null>(null)
-  const [loading, setLoading] = useState(true)
+  const { user } = useAuth();
+  const [currentCamp, setCurrentCamp] = useState<Camp | null>(null);
+  const [currentRegistration, setCurrentRegistration] =
+    useState<CampRegistration | null>(null);
+  const [loading, setLoading] = useState(true);
 
   // Get camp ID from URL parameters
   const getCampIdFromUrl = () => {
-    const params = new URLSearchParams(window.location.search)
-    return params.get('camp')
-  }
+    const params = new URLSearchParams(window.location.search);
+    return params.get('camp');
+  };
 
   // Load camp data
   const loadCamp = async (campId: string) => {
     try {
       const { data: campData, error: campError } = await supabase
         .from('camps')
-        .select('id, name, season, year, start_date, end_date, is_active, registration_open, max_participants, description, bible_verse, verse_reference, theme_primary_color, theme_secondary_color, custom_content')
+        .select(
+          'id, name, season, year, start_date, end_date, is_active, registration_open, max_participants, description, bible_verse, verse_reference, theme_primary_color, theme_secondary_color, custom_content'
+        )
         .eq('id', campId)
-        .single()
+        .single();
 
-      if (campError) throw campError
-      setCurrentCamp(campData)
+      if (campError) throw campError;
+      setCurrentCamp(campData);
     } catch (error) {
-      console.error('Error loading camp:', error)
-      setCurrentCamp(null)
+      console.error('Error loading camp:', error);
+      setCurrentCamp(null);
     }
-  }
+  };
 
   // Load user's registration for this camp
   const loadRegistration = async (campId: string) => {
     if (!user) {
-      setCurrentRegistration(null)
-      return
+      setCurrentRegistration(null);
+      return;
     }
 
     try {
       // Select the user's own registration — all fields are safe here since this is the user reading their own data
       const { data: regData, error: regError } = await supabase
         .from('camp_registrations')
-        .select('id, camp_id, user_id, full_name, grade, gender, current_team, preferred_team, switches_remaining, participate_in_teams, role')
+        .select(
+          'id, camp_id, user_id, full_name, grade, gender, current_team, preferred_team, switches_remaining, participate_in_teams, role'
+        )
         .eq('camp_id', campId)
         .eq('user_id', user.id)
-        .single()
+        .single();
 
-      if (regError && regError.code !== 'PGRST116') { // PGRST116 = no rows returned
-        throw regError
+      if (regError && regError.code !== 'PGRST116') {
+        // PGRST116 = no rows returned
+        throw regError;
       }
 
-      setCurrentRegistration(regData || null)
+      // gender is a plain `string` column in Postgres (no enum/CHECK), so
+      // normalize it here rather than trusting the query result to already
+      // match the app's Gender union.
+      setCurrentRegistration(
+        regData ? { ...regData, gender: normalizeGender(regData.gender) } : null
+      );
     } catch (error) {
-      console.error('Error loading registration:', error)
-      setCurrentRegistration(null)
+      console.error('Error loading registration:', error);
+      setCurrentRegistration(null);
     }
-  }
+  };
 
   // Load camp and registration data
   const loadCampData = async () => {
-    setLoading(true)
-    let campId = getCampIdFromUrl()
+    setLoading(true);
+    let campId = getCampIdFromUrl();
 
     // SINGLE-CAMP MODE: auto-select the active camp if none in URL
     if (!campId) {
@@ -115,13 +133,13 @@ export function CampProvider({ children }: { children: ReactNode }) {
           .select('id')
           .eq('is_active', true)
           .limit(1)
-          .single()
+          .single();
 
         if (data?.id) {
-          campId = data.id
-          const url = new URL(window.location.href)
-          url.searchParams.set('camp', campId)
-          window.history.replaceState({}, '', url.toString())
+          campId = data.id;
+          const url = new URL(window.location.href);
+          url.searchParams.set('camp', campId);
+          window.history.replaceState({}, '', url.toString());
         }
       } catch {
         // No active camp — leave campId null
@@ -129,54 +147,54 @@ export function CampProvider({ children }: { children: ReactNode }) {
     }
 
     if (!campId) {
-      setCurrentCamp(null)
-      setCurrentRegistration(null)
-      setLoading(false)
-      return
+      setCurrentCamp(null);
+      setCurrentRegistration(null);
+      setLoading(false);
+      return;
     }
 
-    await loadCamp(campId)
-    await loadRegistration(campId)
-    setLoading(false)
-  }
+    await loadCamp(campId);
+    await loadRegistration(campId);
+    setLoading(false);
+  };
 
   // Initial load and URL change detection
   useEffect(() => {
-    loadCampData()
+    loadCampData();
 
     // Listen for URL changes (e.g., browser back/forward)
     const handlePopState = () => {
-      loadCampData()
-    }
+      loadCampData();
+    };
 
-    window.addEventListener('popstate', handlePopState)
-    return () => window.removeEventListener('popstate', handlePopState)
-  }, [user])
+    window.addEventListener('popstate', handlePopState);
+    return () => window.removeEventListener('popstate', handlePopState);
+  }, [user]);
 
   // Select a camp (navigate to it)
   const selectCamp = (campId: string) => {
-    const url = new URL(window.location.href)
-    url.searchParams.set('camp', campId)
-    window.history.pushState({}, '', url.toString())
-    loadCampData()
-  }
+    const url = new URL(window.location.href);
+    url.searchParams.set('camp', campId);
+    window.history.pushState({}, '', url.toString());
+    loadCampData();
+  };
 
   // Clear camp selection (go back to camp selection page)
   const clearCamp = () => {
-    const url = new URL(window.location.href)
-    url.searchParams.delete('camp')
-    window.history.pushState({}, '', url.toString())
-    setCurrentCamp(null)
-    setCurrentRegistration(null)
-  }
+    const url = new URL(window.location.href);
+    url.searchParams.delete('camp');
+    window.history.pushState({}, '', url.toString());
+    setCurrentCamp(null);
+    setCurrentRegistration(null);
+  };
 
   // Refresh registration data (useful after registration/updates)
   const refreshRegistration = async () => {
-    const campId = getCampIdFromUrl()
+    const campId = getCampIdFromUrl();
     if (campId) {
-      await loadRegistration(campId)
+      await loadRegistration(campId);
     }
-  }
+  };
 
   const value: CampContextType = {
     currentCamp,
@@ -186,15 +204,15 @@ export function CampProvider({ children }: { children: ReactNode }) {
     selectCamp,
     clearCamp,
     refreshRegistration,
-  }
+  };
 
-  return <CampContext.Provider value={value}>{children}</CampContext.Provider>
+  return <CampContext.Provider value={value}>{children}</CampContext.Provider>;
 }
 
 export function useCamp() {
-  const context = useContext(CampContext)
+  const context = useContext(CampContext);
   if (context === undefined) {
-    throw new Error('useCamp must be used within a CampProvider')
+    throw new Error('useCamp must be used within a CampProvider');
   }
-  return context
+  return context;
 }

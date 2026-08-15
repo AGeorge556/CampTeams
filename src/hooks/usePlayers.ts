@@ -2,13 +2,14 @@ import { useEffect, useState, useCallback, useMemo } from 'react';
 import { supabase } from '../lib/supabase';
 import { useCamp } from '../contexts/CampContext';
 import { TEAM_KEYS } from '../lib/teamRules';
+import { Gender, normalizeGender } from '../lib/gender';
 
 export interface CampPlayer {
   id: string;
   user_id: string;
   full_name: string;
   grade: number;
-  gender: 'male' | 'female';
+  gender: Gender | null;
   current_team: string | null;
   preferred_team: string | null;
   switches_remaining: number;
@@ -89,10 +90,10 @@ export function usePlayers() {
             user_id: registration.user_id,
             full_name: registration.full_name,
             grade: registration.grade,
-            // gender is a plain `string` in the DB schema but the app models it
-            // as a union. Anything unexpected falls back to 'male' rather than
-            // throwing — a bad value must not blank an entire team roster.
-            gender: registration.gender === 'female' ? 'female' : 'male',
+            // gender is a plain `string` in the DB schema; normalize through the
+            // shared helper rather than guessing so unrecognized values surface
+            // as null instead of silently corrupting team balance counts.
+            gender: normalizeGender(registration.gender),
             current_team: registration.current_team,
             preferred_team: registration.preferred_team,
             switches_remaining: registration.switches_remaining ?? 0,

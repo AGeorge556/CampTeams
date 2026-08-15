@@ -17,6 +17,7 @@ import GalleryModeration from './GalleryModeration';
 import { supabase, Profile, TEAMS, TeamColor } from '../lib/supabase';
 import { CampSettings } from '../lib/types';
 import { MAX_TEAM_SIZE } from '../lib/constants';
+import { GenderFilter, genderLabel, matchesGenderFilter } from '../lib/gender';
 import { useOilExtractionVisibility } from '../hooks/useOilExtractionVisibility';
 import { useGalleryVisibility } from '../hooks/useGalleryVisibility';
 import { useScheduleVisibility } from '../hooks/useScheduleVisibility';
@@ -82,6 +83,7 @@ export default function AdminPanel() {
   const [sportSelections, setSportSelections] = useState<SportSelection[]>([]);
   const [loading, setLoading] = useState(false);
   const [selectedTeam, setSelectedTeam] = useState<TeamColor | 'all'>('all');
+  const [genderFilter, setGenderFilter] = useState<GenderFilter>('all');
   const [activeTab, setActiveTab] = useState<
     'participants' | 'sports' | 'roles' | 'gallery' | 'settings'
   >('participants');
@@ -420,10 +422,10 @@ export default function AdminPanel() {
     const csvContent =
       'data:text/csv;charset=utf-8,' +
       'Name,Age,Grade,Gender,Team,Mobile Number,Parent Name,Parent Number,Switches Remaining\n' +
-      profiles
+      filteredProfiles
         .map(
           p =>
-            `"${p.full_name}",${p.age ?? ''},${p.grade},${p.gender},${p.current_team || 'Unassigned'},"${p.mobile_number || ''}","${p.parent_name || ''}","${p.parent_number || ''}",${p.switches_remaining ?? 0}`
+            `"${p.full_name}",${p.age ?? ''},${p.grade},${genderLabel(p.gender)},${p.current_team || 'Unassigned'},"${p.mobile_number || ''}","${p.parent_name || ''}","${p.parent_number || ''}",${p.switches_remaining ?? 0}`
         )
         .join('\n');
 
@@ -460,10 +462,11 @@ export default function AdminPanel() {
     document.body.removeChild(link);
   };
 
-  const filteredProfiles =
-    selectedTeam === 'all'
-      ? profiles
-      : profiles.filter(p => p.current_team === selectedTeam);
+  const filteredProfiles = profiles.filter(
+    p =>
+      (selectedTeam === 'all' || p.current_team === selectedTeam) &&
+      matchesGenderFilter(p.gender, genderFilter)
+  );
 
   return (
     <div className="space-y-8">
@@ -782,6 +785,16 @@ export default function AdminPanel() {
                     </option>
                   ))}
               </select>
+              <select
+                value={genderFilter}
+                onChange={e => setGenderFilter(e.target.value as GenderFilter)}
+                className="rounded-md border-[var(--color-border)] shadow-sm bg-[var(--color-input-bg)] focus:border-orange-300 focus:ring focus:ring-orange-200 focus:ring-opacity-50"
+              >
+                <option value="all">All Genders</option>
+                <option value="male">Male</option>
+                <option value="female">Female</option>
+                <option value="unknown">Unknown</option>
+              </select>
               <div className="flex space-x-2">
                 <button
                   onClick={exportRoster}
@@ -869,7 +882,7 @@ export default function AdminPanel() {
                       {getGradeDisplayWithNumber(profile.grade)}
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap text-sm text-[var(--color-text-muted)]">
-                      {profile.gender}
+                      {genderLabel(profile.gender)}
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap text-sm text-[var(--color-text-muted)]">
                       {profile.current_team &&
@@ -971,7 +984,7 @@ export default function AdminPanel() {
                               </p>
                               <p className="text-xs text-[var(--color-text-muted)]">
                                 {getGradeDisplayWithNumber(participant.grade)} •{' '}
-                                {participant.gender}
+                                {genderLabel(participant.gender)}
                                 {participant.current_team && (
                                   <span
                                     className={`ml-2 inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium ${

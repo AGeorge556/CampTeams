@@ -1,169 +1,262 @@
-import { useState, useEffect } from 'react'
-import { BarChart3, Users, Download } from 'lucide-react'
-import { supabase } from '../lib/supabase'
-import { useProfile } from '../hooks/useProfile'
-import { useToast } from './Toast'
-import { SessionWithAttendance, AttendanceWithUser, SESSION_TYPE_LABELS } from '../lib/types'
+import { useState, useEffect } from 'react';
+import { BarChart3, Users, Download } from 'lucide-react';
+import { supabase } from '../lib/supabase';
+import { useProfile } from '../hooks/useProfile';
+import { useCamp } from '../contexts/CampContext';
+import { useToast } from './Toast';
+import {
+  SessionWithAttendance,
+  AttendanceWithUser,
+  SESSION_TYPE_LABELS,
+} from '../lib/types';
+import {
+  Gender,
+  GenderFilter,
+  normalizeGender,
+  genderLabel,
+  matchesGenderFilter,
+} from '../lib/gender';
+
+// grade/gender/current_team are camp-scoped and must come from camp_registrations,
+// not the stale, non-camp-scoped profiles.gender — see src/lib/gender.ts.
+type AttendanceUser = Omit<AttendanceWithUser['user'], 'gender'> & {
+  gender: Gender | null;
+};
+type AttendanceRecordWithUser = Omit<AttendanceWithUser, 'user'> & {
+  user: AttendanceUser;
+};
+type SessionWithAttendanceRecords = Omit<
+  SessionWithAttendance,
+  'attendance_records'
+> & {
+  attendance_records: AttendanceRecordWithUser[];
+};
 
 export default function AttendanceReports() {
-  const { profile } = useProfile()
-  const { addToast } = useToast()
-  const [sessions, setSessions] = useState<SessionWithAttendance[]>([])
-  const [loading, setLoading] = useState(false)
-  const [selectedSession, setSelectedSession] = useState<SessionWithAttendance | null>(null)
-  const [filterStatus, setFilterStatus] = useState<string>('all')
-  const [filterTeam, setFilterTeam] = useState<string>('all')
+  const { profile } = useProfile();
+  const { currentCamp } = useCamp();
+  const { addToast } = useToast();
+  const [sessions, setSessions] = useState<SessionWithAttendanceRecords[]>([]);
+  const [loading, setLoading] = useState(false);
+  const [selectedSession, setSelectedSession] =
+    useState<SessionWithAttendanceRecords | null>(null);
+  const [filterStatus, setFilterStatus] = useState<string>('all');
+  const [filterTeam, setFilterTeam] = useState<string>('all');
+  const [filterGender, setFilterGender] = useState<GenderFilter>('all');
 
   useEffect(() => {
-    loadSessionsWithAttendance()
-  }, [])
+    loadSessionsWithAttendance();
+  }, [currentCamp]);
 
   const loadSessionsWithAttendance = async () => {
-    setLoading(true)
+    if (!currentCamp) return;
+    setLoading(true);
     try {
       // Get sessions with direct query
       const { data: sessionsData, error: sessionsError } = await supabase
         .from('camp_sessions')
         .select('*')
-        .order('start_time', { ascending: true })
+        .order('start_time', { ascending: true });
 
-      if (sessionsError) throw sessionsError
+      if (sessionsError) throw sessionsError;
 
-      // Get attendance records with direct query
+      // Get attendance records with direct query. full_name comes from profiles,
+      // but grade/gender/current_team are camp-scoped and must come from
+      // camp_registrations for the current camp (see fetchSportSelections in
+      // AdminPanel.tsx for the same pattern).
       const { data: attendanceData, error: attendanceError } = await supabase
         .from('attendance_records')
-        .select(`
+        .select(
+          `
           *,
           camp_sessions!inner(name),
-          profiles!attendance_records_user_id_fkey(full_name, grade, gender, current_team)
-        `)
-        .order('created_at', { ascending: false })
+          profiles!attendance_records_user_id_fkey(full_name)
+        `
+        )
+        .order('created_at', { ascending: false });
 
-      if (attendanceError) throw attendanceError
+      if (attendanceError) throw attendanceError;
+
+      const userIds = Array.from(
+        new Set(
+          (attendanceData || []).map((att: any) => att.user_id).filter(Boolean)
+        )
+      );
+      const regMap = new Map<
+        string,
+        {
+          grade: number | null;
+          gender: string | null;
+          current_team: string | null;
+        }
+      >();
+      if (userIds.length > 0) {
+        const { data: regs, error: regsError } = await supabase
+          .from('camp_registrations')
+          .select('user_id, grade, gender, current_team')
+          .eq('camp_id', currentCamp.id)
+          .in('user_id', userIds);
+
+        if (regsError) throw regsError;
+        regs?.forEach((r: any) => regMap.set(r.user_id, r));
+      }
 
       // Transform the data to match the expected format
-      const sessionsWithAttendance: SessionWithAttendance[] = (sessionsData || []).map((session: any) => {
-        const sessionAttendance = (attendanceData || []).filter((att: any) => att.session_id === session.id)
-        const presentCount = sessionAttendance.filter((att: any) => att.status === 'present').length
-        const totalParticipants = sessionAttendance.length
+      const sessionsWithAttendance: SessionWithAttendanceRecords[] = (
+        sessionsData || []
+      ).map((session: any) => {
+        const sessionAttendance = (attendanceData || []).filter(
+          (att: any) => att.session_id === session.id
+        );
+        const presentCount = sessionAttendance.filter(
+          (att: any) => att.status === 'present'
+        ).length;
+        const totalParticipants = sessionAttendance.length;
 
         return {
           ...session,
           attendance_count: presentCount,
           total_participants: totalParticipants,
-          attendance_records: sessionAttendance.map((att: any) => ({
-            id: att.id,
-            session_id: att.session_id,
-            user_id: att.user_id,
-            status: att.status,
-            checked_in_at: att.checked_in_at,
-            checked_in_by: att.checked_in_by,
-            notes: att.notes,
-            created_at: att.created_at,
-            user: {
-              id: att.user_id,
-              full_name: att.profiles?.full_name || 'Unknown',
-              grade: att.profiles?.grade || 0,
-              gender: att.profiles?.gender || 'male',
-              current_team: att.profiles?.current_team
-            }
-          })) as AttendanceWithUser[]
-        } as SessionWithAttendance
-      })
+          attendance_records: sessionAttendance.map((att: any) => {
+            const reg = regMap.get(att.user_id);
+            return {
+              id: att.id,
+              session_id: att.session_id,
+              user_id: att.user_id,
+              status: att.status,
+              checked_in_at: att.checked_in_at,
+              checked_in_by: att.checked_in_by,
+              notes: att.notes,
+              created_at: att.created_at,
+              user: {
+                id: att.user_id,
+                full_name: att.profiles?.full_name || 'Unknown',
+                grade: reg?.grade ?? 0,
+                gender: normalizeGender(reg?.gender),
+                current_team: reg?.current_team ?? undefined,
+              },
+            };
+          }) as AttendanceRecordWithUser[],
+        } as SessionWithAttendanceRecords;
+      });
 
-      setSessions(sessionsWithAttendance)
+      setSessions(sessionsWithAttendance);
     } catch (error) {
-      console.error('Error loading sessions with attendance:', error)
+      console.error('Error loading sessions with attendance:', error);
       addToast({
         type: 'error',
         title: 'Error',
-        message: 'Failed to load attendance data'
-      })
+        message: 'Failed to load attendance data',
+      });
     } finally {
-      setLoading(false)
+      setLoading(false);
     }
-  }
+  };
 
-  const getAttendancePercentage = (session: SessionWithAttendance) => {
-    if (session.total_participants === 0) return 0
-    return Math.round((session.attendance_count / session.total_participants) * 100)
-  }
+  const getAttendancePercentage = (session: SessionWithAttendanceRecords) => {
+    if (session.total_participants === 0) return 0;
+    return Math.round(
+      (session.attendance_count / session.total_participants) * 100
+    );
+  };
 
   const getStatusColor = (status: string) => {
     switch (status) {
       case 'present':
-        return 'text-green-600 bg-green-100'
+        return 'text-green-600 bg-green-100';
       case 'absent':
-        return 'text-red-600 bg-red-100'
+        return 'text-red-600 bg-red-100';
       case 'late':
-        return 'text-yellow-600 bg-yellow-100'
+        return 'text-yellow-600 bg-yellow-100';
       case 'excused':
-        return 'text-orange-600 bg-orange-100'
+        return 'text-orange-600 bg-orange-100';
       default:
-        return 'text-[var(--color-text-muted)] bg-[var(--color-bg-muted)]'
+        return 'text-[var(--color-text-muted)] bg-[var(--color-bg-muted)]';
     }
-  }
+  };
 
   const formatDateTime = (dateString: string) => {
-    return new Date(dateString).toLocaleString()
-  }
+    return new Date(dateString).toLocaleString();
+  };
 
-  const exportAttendanceData = async (session: SessionWithAttendance) => {
+  const exportAttendanceData = async (
+    session: SessionWithAttendanceRecords
+  ) => {
     try {
+      const recordsToExport = session.attendance_records.filter(record => {
+        const statusMatch =
+          filterStatus === 'all' || record.status === filterStatus;
+        const teamMatch =
+          filterTeam === 'all' || record.user.current_team === filterTeam;
+        const genderMatch = matchesGenderFilter(
+          record.user.gender,
+          filterGender
+        );
+        return statusMatch && teamMatch && genderMatch;
+      });
+
       const csvData = [
         ['Name', 'Grade', 'Gender', 'Team', 'Status', 'Check-in Time'],
-        ...session.attendance_records.map(record => [
+        ...recordsToExport.map(record => [
           record.user.full_name,
           record.user.grade.toString(),
-          record.user.gender,
+          genderLabel(record.user.gender),
           record.user.current_team || 'N/A',
           record.status,
-          formatDateTime(record.checked_in_at)
-        ])
-      ]
+          formatDateTime(record.checked_in_at),
+        ]),
+      ];
 
-      const csvContent = csvData.map(row => row.join(',')).join('\n')
-      const blob = new Blob([csvContent], { type: 'text/csv' })
-      const url = URL.createObjectURL(blob)
-      const link = document.createElement('a')
-      link.href = url
-      link.download = `attendance-${session.name}-${new Date().toISOString().split('T')[0]}.csv`
-      document.body.appendChild(link)
-      link.click()
-      document.body.removeChild(link)
-      URL.revokeObjectURL(url)
+      const csvContent = csvData.map(row => row.join(',')).join('\n');
+      const blob = new Blob([csvContent], { type: 'text/csv' });
+      const url = URL.createObjectURL(blob);
+      const link = document.createElement('a');
+      link.href = url;
+      link.download = `attendance-${session.name}-${new Date().toISOString().split('T')[0]}.csv`;
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+      URL.revokeObjectURL(url);
 
       addToast({
         type: 'success',
         title: 'Export Successful',
-        message: 'Attendance data has been exported'
-      })
+        message: 'Attendance data has been exported',
+      });
     } catch (error) {
-      console.error('Error exporting data:', error)
+      console.error('Error exporting data:', error);
       addToast({
         type: 'error',
         title: 'Export Failed',
-        message: 'Failed to export attendance data'
-      })
+        message: 'Failed to export attendance data',
+      });
     }
-  }
+  };
 
-  const filteredAttendanceRecords = selectedSession?.attendance_records.filter(record => {
-    const statusMatch = filterStatus === 'all' || record.status === filterStatus
-    const teamMatch = filterTeam === 'all' || record.user.current_team === filterTeam
-    return statusMatch && teamMatch
-  }) || []
+  const filteredAttendanceRecords =
+    selectedSession?.attendance_records.filter(record => {
+      const statusMatch =
+        filterStatus === 'all' || record.status === filterStatus;
+      const teamMatch =
+        filterTeam === 'all' || record.user.current_team === filterTeam;
+      const genderMatch = matchesGenderFilter(record.user.gender, filterGender);
+      return statusMatch && teamMatch && genderMatch;
+    }) || [];
 
   if (!profile?.is_admin) {
-    return null
+    return null;
   }
 
   return (
     <div className="space-y-6">
       {/* Header */}
       <div>
-        <h3 className="text-lg font-semibold text-[var(--color-text)]">Attendance Reports</h3>
-        <p className="text-sm text-[var(--color-text-muted)]">View and manage attendance records</p>
+        <h3 className="text-lg font-semibold text-[var(--color-text)]">
+          Attendance Reports
+        </h3>
+        <p className="text-sm text-[var(--color-text-muted)]">
+          View and manage attendance records
+        </p>
       </div>
 
       {/* Sessions Overview */}
@@ -176,27 +269,35 @@ export default function AttendanceReports() {
         </div>
         <div className="divide-y divide-[var(--color-border)]">
           {loading ? (
-            <div className="p-6 text-center text-[var(--color-text-muted)]">Loading sessions...</div>
+            <div className="p-6 text-center text-[var(--color-text-muted)]">
+              Loading sessions...
+            </div>
           ) : sessions.length === 0 ? (
-            <div className="p-6 text-center text-[var(--color-text-muted)]">No sessions found</div>
+            <div className="p-6 text-center text-[var(--color-text-muted)]">
+              No sessions found
+            </div>
           ) : (
-            sessions.map((session) => (
+            sessions.map(session => (
               <div key={session.id} className="p-6">
                 <div className="flex items-center justify-between">
                   <div className="flex-1">
                     <div className="flex items-center space-x-3">
-                        <h5 className="text-lg font-medium text-[var(--color-text)]">{session.name}</h5>
-                        <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-orange-100 text-orange-800">
+                      <h5 className="text-lg font-medium text-[var(--color-text)]">
+                        {session.name}
+                      </h5>
+                      <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-orange-100 text-orange-800">
                         {SESSION_TYPE_LABELS[session.session_type]}
                       </span>
                     </div>
                     <p className="text-sm text-[var(--color-text-muted)] mt-1">
-                      {formatDateTime(session.start_time)} - {formatDateTime(session.end_time)}
+                      {formatDateTime(session.start_time)} -{' '}
+                      {formatDateTime(session.end_time)}
                     </p>
                     <div className="flex items-center space-x-4 mt-2">
                       <div className="flex items-center text-sm text-[var(--color-text-muted)]">
                         <Users className="h-4 w-4 mr-1" />
-                        {session.attendance_count} / {session.total_participants} present
+                        {session.attendance_count} /{' '}
+                        {session.total_participants} present
                       </div>
                       <div className="flex items-center text-sm text-[var(--color-text-muted)]">
                         <BarChart3 className="h-4 w-4 mr-1" />
@@ -233,9 +334,12 @@ export default function AttendanceReports() {
             <div className="p-6 border-b border-[var(--color-border)]">
               <div className="flex items-center justify-between">
                 <div>
-                  <h3 className="text-lg font-medium text-[var(--color-text)]">{selectedSession.name}</h3>
+                  <h3 className="text-lg font-medium text-[var(--color-text)]">
+                    {selectedSession.name}
+                  </h3>
                   <p className="text-sm text-[var(--color-text-muted)]">
-                    {formatDateTime(selectedSession.start_time)} - {formatDateTime(selectedSession.end_time)}
+                    {formatDateTime(selectedSession.start_time)} -{' '}
+                    {formatDateTime(selectedSession.end_time)}
                   </p>
                 </div>
                 <button
@@ -251,10 +355,12 @@ export default function AttendanceReports() {
             <div className="p-6 border-b border-[var(--color-border)]">
               <div className="flex items-center space-x-4">
                 <div>
-                  <label className="block text-sm font-medium text-[var(--color-text-muted)] mb-1">Status</label>
+                  <label className="block text-sm font-medium text-[var(--color-text-muted)] mb-1">
+                    Status
+                  </label>
                   <select
                     value={filterStatus}
-                    onChange={(e) => setFilterStatus(e.target.value)}
+                    onChange={e => setFilterStatus(e.target.value)}
                     className="px-3 py-2 border border-[var(--color-border)] rounded-md focus:outline-none focus:ring-2 focus:ring-orange-400 bg-[var(--color-bg)] text-[var(--color-text)]"
                   >
                     <option value="all">All Statuses</option>
@@ -265,10 +371,12 @@ export default function AttendanceReports() {
                   </select>
                 </div>
                 <div>
-                  <label className="block text-sm font-medium text-[var(--color-text-muted)] mb-1">Team</label>
+                  <label className="block text-sm font-medium text-[var(--color-text-muted)] mb-1">
+                    Team
+                  </label>
                   <select
                     value={filterTeam}
-                    onChange={(e) => setFilterTeam(e.target.value)}
+                    onChange={e => setFilterTeam(e.target.value)}
                     className="px-3 py-2 border border-[var(--color-border)] rounded-md focus:outline-none focus:ring-2 focus:ring-orange-400 bg-[var(--color-bg)] text-[var(--color-text)]"
                   >
                     <option value="all">All Teams</option>
@@ -276,6 +384,23 @@ export default function AttendanceReports() {
                     <option value="blue">Blue Team</option>
                     <option value="green">Green Team</option>
                     <option value="yellow">Yellow Team</option>
+                  </select>
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-[var(--color-text-muted)] mb-1">
+                    Gender
+                  </label>
+                  <select
+                    value={filterGender}
+                    onChange={e =>
+                      setFilterGender(e.target.value as GenderFilter)
+                    }
+                    className="px-3 py-2 border border-[var(--color-border)] rounded-md focus:outline-none focus:ring-2 focus:ring-orange-400 bg-[var(--color-bg)] text-[var(--color-text)]"
+                  >
+                    <option value="all">All Genders</option>
+                    <option value="male">Male</option>
+                    <option value="female">Female</option>
+                    <option value="unknown">Unknown</option>
                   </select>
                 </div>
               </div>
@@ -294,6 +419,9 @@ export default function AttendanceReports() {
                         Grade
                       </th>
                       <th className="px-6 py-3 text-left text-xs font-medium text-[var(--color-text-muted)] uppercase tracking-wider">
+                        Gender
+                      </th>
+                      <th className="px-6 py-3 text-left text-xs font-medium text-[var(--color-text-muted)] uppercase tracking-wider">
                         Team
                       </th>
                       <th className="px-6 py-3 text-left text-xs font-medium text-[var(--color-text-muted)] uppercase tracking-wider">
@@ -305,7 +433,7 @@ export default function AttendanceReports() {
                     </tr>
                   </thead>
                   <tbody className="bg-[var(--color-card-bg)] divide-y divide-[var(--color-border)]">
-                    {filteredAttendanceRecords.map((record) => (
+                    {filteredAttendanceRecords.map(record => (
                       <tr key={record.id}>
                         <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-[var(--color-text)]">
                           {record.user.full_name}
@@ -314,10 +442,15 @@ export default function AttendanceReports() {
                           {record.user.grade}
                         </td>
                         <td className="px-6 py-4 whitespace-nowrap text-sm text-[var(--color-text-muted)]">
+                          {genderLabel(record.user.gender)}
+                        </td>
+                        <td className="px-6 py-4 whitespace-nowrap text-sm text-[var(--color-text-muted)]">
                           {record.user.current_team || 'N/A'}
                         </td>
                         <td className="px-6 py-4 whitespace-nowrap">
-                          <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${getStatusColor(record.status)}`}>
+                          <span
+                            className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${getStatusColor(record.status)}`}
+                          >
                             {record.status}
                           </span>
                         </td>
@@ -334,5 +467,5 @@ export default function AttendanceReports() {
         </div>
       )}
     </div>
-  )
+  );
 }
