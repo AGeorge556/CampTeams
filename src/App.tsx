@@ -14,7 +14,8 @@ import RulesAgreement from './components/RulesAgreement'
 import Dashboard from './components/Dashboard'
 import Schedule from './components/Schedule'
 import SportsSelection from './components/SportsSelection'
-const BigGame = lazy(() => import('./components/BigGame'))
+const BigGame = lazy(() => import('./components/big-game/WildernessBigGame'))
+const LeaderScreen = lazy(() => import('./components/big-game/LeaderScreen'))
 import MyProfile from './components/MyProfile'
 //
 // Oil Extraction (old big game — kept for reference, safe to delete)
@@ -54,6 +55,16 @@ function App() {
   const isResetPasswordPage = window.location.pathname.includes('/auth/reset-password') ||
     (window.location.hash.includes('type=recovery') && window.location.hash.includes('access_token'))
 
+  // BIG GAME: the tribe-leader screen is served standalone, before the auth
+  // gate. Leaders are handed a paper join code and may be on a co-leader's
+  // phone with no camp account at all; sending them through login ->
+  // onboarding -> rules -> registration -> team selection first would lose the
+  // game the moment a phone dies. The join code is the credential here, and it
+  // is validated server-side by bg_join().
+  const isWildernessPage = window.location.pathname
+    .replace(/\/+$/, '')
+    .toLowerCase() === '/wilderness'
+
   // If on reset password page, show that component
   if (isResetPasswordPage) {
     return (
@@ -62,6 +73,23 @@ function App() {
           <LanguageProvider>
             <ToastProvider>
               <ResetPassword />
+            </ToastProvider>
+          </LanguageProvider>
+        </ThemeProvider>
+      </ErrorBoundary>
+    )
+  }
+
+  // If on the standalone Big Game page, show only the tribe-leader screen.
+  if (isWildernessPage) {
+    return (
+      <ErrorBoundary>
+        <ThemeProvider>
+          <LanguageProvider>
+            <ToastProvider>
+              <Suspense fallback={<LoadingSpinner fullScreen text="Loading..." />}>
+                <LeaderScreen />
+              </Suspense>
             </ToastProvider>
           </LanguageProvider>
         </ThemeProvider>

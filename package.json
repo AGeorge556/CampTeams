@@ -11,7 +11,8 @@
     "lint": "eslint .",
     "lint:fix": "eslint . --fix",
     "format": "prettier --write \"src/**/*.{ts,tsx,js,jsx,json,css,md}\"",
-    "type-check": "tsc --noEmit"
+    "type-check": "tsc --noEmit",
+    "verify:big-game": "tsc -p tsconfig.verify.json && node .verify-out/scripts/verify-big-game.js"
   },
   "dependencies": {
     "@supabase/supabase-js": "^2.50.4",

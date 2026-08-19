@@ -1,0 +1,115 @@
+/*
+ * The Wilderness: Big Game — print styles for the moderator cards and tribe
+ * slips.
+ *
+ * Every rule is scoped under .bg-print-root or a .bg-print-* class. The rest of
+ * the site has no print stylesheet at all, and this feature is meant to be
+ * deleted after the event — neither of those survives a global @media print
+ * block.
+ *
+ * The output has one job: be readable at arm's length, in a field, by someone
+ * holding a rope. Black on white, big type, no decoration.
+ */
+
+@page {
+  size: A4 portrait;
+  margin: 12mm;
+}
+
+/* Screen preview: make the cards look like the pages they will become. */
+.bg-print-root {
+  --bg-print-ink: #000;
+  --bg-print-paper: #fff;
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+.bg-print-page {
+  background: var(--bg-print-paper);
+  color: var(--bg-print-ink);
+  border: 1px solid #d4d4d4;
+  border-radius: 8px;
+  padding: 1.75rem;
+  max-width: 210mm;
+  width: 100%;
+  margin-inline: auto;
+}
+
+.bg-print-page * {
+  color: var(--bg-print-ink);
+}
+
+.bg-print-code {
+  font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+}
+
+.bg-print-rule {
+  border: 0;
+  border-top: 2px solid var(--bg-print-ink);
+}
+
+.bg-print-slip {
+  background: var(--bg-print-paper);
+  color: var(--bg-print-ink);
+  border: 2px dashed #7a7a7a;
+  border-radius: 6px;
+  padding: 1rem;
+}
+
+.bg-print-slip * {
+  color: var(--bg-print-ink);
+}
+
+@media print {
+  /* The site ships a dark theme. Force paper regardless of what the organizer
+     happens to be looking at when they hit Print. */
+  .bg-print-root,
+  .bg-print-page,
+  .bg-print-slip {
+    background: #fff !important;
+    color: #000 !important;
+    box-shadow: none !important;
+    border-radius: 0 !important;
+  }
+
+  .bg-print-root *,
+  .bg-print-page *,
+  .bg-print-slip * {
+    background: transparent !important;
+    color: #000 !important;
+    box-shadow: none !important;
+    text-shadow: none !important;
+  }
+
+  .bg-print-hide {
+    display: none !important;
+  }
+
+  .bg-print-page {
+    border: 0 !important;
+    padding: 0 !important;
+    max-width: none !important;
+    break-after: page;
+    page-break-after: always;
+  }
+
+  .bg-print-page:last-child {
+    break-after: auto;
+    page-break-after: auto;
+  }
+
+  /* A code split across a page break is a code a moderator reads wrong. */
+  .bg-print-row,
+  .bg-print-code,
+  .bg-print-slip {
+    break-inside: avoid;
+    page-break-inside: avoid;
+  }
+
+  .bg-print-slip {
+    border: 1px dashed #000 !important;
+  }
+}
