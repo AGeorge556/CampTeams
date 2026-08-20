@@ -166,6 +166,12 @@ const GAME_STATUS_META: Record<
     className:
       'bg-amber-50 text-amber-700 border-amber-300 dark:bg-amber-950/40 dark:text-amber-300 dark:border-amber-800',
   },
+  FINALE: {
+    label: 'Finale',
+    icon: Radio,
+    className:
+      'bg-orange-50 text-orange-700 border-orange-300 dark:bg-orange-950/40 dark:text-orange-300 dark:border-orange-800',
+  },
   FINISHED: {
     label: 'Finished',
     icon: Flag,
@@ -191,25 +197,25 @@ const ROUND_STATUS_META: Record<
   RoundResultStatus,
   { label: string; className: string }
 > = {
-  COMPLETED: {
-    label: 'Done',
+  CLEAR: {
+    label: 'Clear',
     className:
       'bg-green-50 text-green-700 border-green-300 dark:bg-green-950/40 dark:text-green-300 dark:border-green-800',
+  },
+  PARTIAL: {
+    label: 'Partial',
+    className:
+      'bg-amber-50 text-amber-700 border-amber-300 dark:bg-amber-950/40 dark:text-amber-300 dark:border-amber-800',
+  },
+  FAIL: {
+    label: 'Fail',
+    className:
+      'bg-slate-100 text-slate-700 border-slate-300 dark:bg-slate-800/60 dark:text-slate-300 dark:border-slate-600',
   },
   MISSED: {
     label: 'Missed',
     className:
       'bg-red-50 text-red-700 border-red-300 dark:bg-red-950/40 dark:text-red-300 dark:border-red-800',
-  },
-  OVERRIDDEN: {
-    label: 'Overridden',
-    className:
-      'bg-violet-50 text-violet-700 border-violet-300 dark:bg-violet-950/40 dark:text-violet-300 dark:border-violet-800',
-  },
-  SKIPPED: {
-    label: 'Skipped',
-    className:
-      'bg-slate-100 text-slate-700 border-slate-300 dark:bg-slate-800/60 dark:text-slate-300 dark:border-slate-600',
   },
 };
 

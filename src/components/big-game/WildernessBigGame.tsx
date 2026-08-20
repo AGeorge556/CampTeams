@@ -11,14 +11,18 @@
 import { useState } from 'react';
 import {
   ClipboardList,
+  Flag,
   Gauge,
   Map as MapIcon,
   Settings2,
   Smartphone,
+  Table2,
   Ticket,
 } from 'lucide-react';
 import { useProfile } from '../../hooks/useProfile';
 import AdminDashboard from './AdminDashboard';
+import FinaleDirector from './FinaleDirector';
+import ScoreGrid from './ScoreGrid';
 import CodeSheet from './CodeSheet';
 import LeaderScreen from './LeaderScreen';
 import ModeratorCards from './ModeratorCards';
@@ -28,6 +32,8 @@ import TribeSlips from './TribeSlips';
 
 type AdminTab =
   | 'director'
+  | 'scores'
+  | 'finale'
   | 'setup'
   | 'routes'
   | 'codes'
@@ -37,6 +43,8 @@ type AdminTab =
 
 const TABS: { id: AdminTab; label: string; icon: typeof Gauge }[] = [
   { id: 'director', label: 'Director', icon: Gauge },
+  { id: 'scores', label: 'Scores', icon: Table2 },
+  { id: 'finale', label: 'Finale', icon: Flag },
   { id: 'setup', label: 'Setup', icon: Settings2 },
   { id: 'routes', label: 'Route tables', icon: MapIcon },
   { id: 'codes', label: 'Code sheet', icon: ClipboardList },
@@ -60,8 +68,8 @@ export default function WildernessBigGame() {
           The Wilderness: Big Game
         </h1>
         <p className="text-sm text-white/80">
-          12 tribes · 12 stations · 6 rounds. Rounds advance only when you
-          advance them.
+          12 tribes · 12 stations · 4 rounds, then the Finale. Rounds advance
+          only when you advance them.
         </p>
       </div>
 
@@ -92,6 +100,8 @@ export default function WildernessBigGame() {
       </div>
 
       {tab === 'director' && <AdminDashboard />}
+      {tab === 'scores' && <ScoreGrid />}
+      {tab === 'finale' && <FinaleDirector />}
       {tab === 'setup' && <SetupScreen onViewRoutes={() => setTab('routes')} />}
       {tab === 'routes' && <RouteMatrix />}
       {tab === 'codes' && <CodeSheet />}

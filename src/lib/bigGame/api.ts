@@ -9,6 +9,12 @@
 import { supabase } from '../supabase';
 import type {
   AdminOverview,
+  FinaleState,
+  ScoreBoard,
+  Standings,
+  RoundResultStatus,
+  TeamSummary,
+  TeamValidation,
   AdvancePreview,
   AuditEntry,
   ExportRow,
@@ -206,4 +212,109 @@ export function exportResults() {
 
 export function selfTest() {
   return call<SelfTestResult[]>('bg_selftest');
+}
+
+// ---------------------------------------------------------------------------
+// Scoring, hints and teams (admin only)
+// ---------------------------------------------------------------------------
+
+export function scoreBoard() {
+  return call<ScoreBoard>('bg_admin_scores');
+}
+
+/**
+ * Set one cell of the score grid. `warning` comes back non-null when the
+ * director marks CLEAR on a round where a hint was spent -- a warning, never a
+ * block, because moderators make mistakes and the director must be able to
+ * overrule them.
+ */
+export function setResult(params: {
+  tribeId: string;
+  round: number;
+  status: RoundResultStatus;
+}) {
+  return call<{ board: ScoreBoard; warning: string | null }>(
+    'bg_admin_set_result',
+    {
+      p_tribe_id: params.tribeId,
+      p_round: params.round,
+      p_status: params.status,
+    }
+  );
+}
+
+export function setHintsRemaining(tribeId: string, hintsRemaining: number) {
+  return call<ScoreBoard>('bg_admin_set_hints', {
+    p_tribe_id: tribeId,
+    p_hints_remaining: hintsRemaining,
+  });
+}
+
+export function setHintUsed(params: {
+  tribeId: string;
+  round: number;
+  used: boolean;
+}) {
+  return call<ScoreBoard>('bg_admin_set_hint_used', {
+    p_tribe_id: params.tribeId,
+    p_round: params.round,
+    p_used: params.used,
+  });
+}
+
+export function teams() {
+  return call<TeamSummary[]>('bg_admin_teams');
+}
+
+export function updateTeam(params: {
+  teamId: string;
+  displayName?: string;
+  phrase?: string;
+  padlockCode?: string;
+  tribeIds?: string[];
+}) {
+  return call<TeamSummary[]>('bg_admin_update_team', {
+    p_team_id: params.teamId,
+    p_display_name: params.displayName ?? null,
+    p_phrase: params.phrase ?? null,
+    p_padlock_code: params.padlockCode ?? null,
+    p_tribe_ids: params.tribeIds ?? null,
+  });
+}
+
+/** Coverage check: each team's three tribes must hit all 12 stations once. */
+export function validateTeams() {
+  return call<TeamValidation[]>('bg_admin_validate_teams');
+}
+
+// ---------------------------------------------------------------------------
+// The Finale
+// ---------------------------------------------------------------------------
+
+export function finaleState() {
+  return call<FinaleState>('bg_admin_finale_state');
+}
+
+/** Freezes the head-start ranking. A later score edit will not reshuffle it. */
+export function startFinale() {
+  return call<FinaleState>('bg_admin_start_finale');
+}
+
+export function markTeamOpened(teamId: string) {
+  return call<FinaleState>('bg_admin_team_opened', { p_team_id: teamId });
+}
+
+export function markShortHanded(teamId: string, shortHanded: boolean) {
+  return call<FinaleState>('bg_admin_mark_short_handed', {
+    p_team_id: teamId,
+    p_short_handed: shortHanded,
+  });
+}
+
+export function finishGame() {
+  return call<Standings>('bg_admin_finish_game');
+}
+
+export function standings() {
+  return call<Standings>('bg_admin_standings');
 }

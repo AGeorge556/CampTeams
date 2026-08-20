@@ -8,43 +8,12 @@
 -- The director drives the whole event from these: start, advance, pause,
 -- override, skip, reset, plus the two printed outputs (moderator cards and the
 -- code sheet) that the moderators actually run the game from.
-
--- ---------------------------------------------------------------------------
--- 1. Stations cannot be deactivated once the game is live
--- ---------------------------------------------------------------------------
 --
--- The rotation needs all twelve. Drop one mid-game and the tribe routed there
--- has nowhere to stand, while the tribe behind them walks into an occupied
--- station. A trigger rather than a check inside one RPC, because this has to
--- hold no matter which code path tries it.
-
-CREATE OR REPLACE FUNCTION public.bg_guard_station_active()
-RETURNS trigger
-LANGUAGE plpgsql
-SECURITY DEFINER
-SET search_path = public, auth
-AS $$
-DECLARE
-  v_status text;
-BEGIN
-  IF NEW.active = false AND OLD.active = true THEN
-    SELECT status INTO v_status FROM bg_game LIMIT 1;
-    IF v_status <> 'SETUP' THEN
-      RAISE EXCEPTION
-        'Station % cannot be deactivated while the game is %. The route rotates all twelve stations; removing one would put two tribes at the same station.',
-        NEW.id, v_status
-        USING ERRCODE = 'check_violation';
-    END IF;
-  END IF;
-  RETURN NEW;
-END;
-$$;
-
-DROP TRIGGER IF EXISTS bg_guard_station_active_trigger ON bg_stations;
-CREATE TRIGGER bg_guard_station_active_trigger
-  BEFORE UPDATE ON bg_stations
-  FOR EACH ROW
-  EXECUTE FUNCTION public.bg_guard_station_active();
+-- Stations can never be deactivated once the game leaves SETUP: the rotation
+-- needs all twelve, and dropping one mid-game would put two tribes at the same
+-- station. Enforced structurally rather than by a guard trigger —
+-- bg_admin_update_station below has no p_active parameter at all, so no code
+-- path through this file can ever flip the flag once setup is done.
 
 -- ---------------------------------------------------------------------------
 -- 2. Readiness checklist
@@ -313,7 +282,13 @@ BEGIN
     RAISE EXCEPTION 'The game has already started (status is %). Reset it first.', v_status;
   END IF;
 
-  SELECT string_agg(COALESCE(item->>'detail', item->>'label'), '; ')
+  -- Each fragment is prefixed with its own label: concatenating bare `detail`
+  -- strings from multiple failing checks reads as noise ("5 present, 3 unique;
+  -- S4, S7") with no indication of which check each fragment belongs to.
+  SELECT string_agg(
+    item->>'label' || ' — ' || COALESCE(item->>'detail', 'not satisfied'),
+    '; '
+  )
   INTO v_problems
   FROM jsonb_array_elements(public.bg_checklist()) AS item
   WHERE (item->>'ok')::boolean = false;
@@ -494,13 +469,16 @@ BEGIN
     RAISE EXCEPTION 'Unknown tribe %', p_tribe_id;
   END IF;
 
+  -- overridden_by is only meaningful for a genuine override: tagging a SKIPPED
+  -- row with the acting admin's id would misrepresent it in the results export
+  -- as a disputed completion rather than a broken challenge.
   INSERT INTO bg_round_results (
     tribe_id, round, station_id, status, completed_at, overridden_by
   )
   VALUES (
     p_tribe_id, v_game.current_round, v_station, p_status,
     CASE WHEN p_status = 'OVERRIDDEN' THEN now() ELSE NULL END,
-    auth.uid()
+    CASE WHEN p_status = 'OVERRIDDEN' THEN auth.uid() ELSE NULL END
   )
   ON CONFLICT (tribe_id, round) DO UPDATE SET
     status = EXCLUDED.status,
@@ -619,18 +597,18 @@ BEGIN
   PERFORM public.bg_require_admin();
 
   IF p_join_code IS NOT NULL THEN
-    v_code := upper(regexp_replace(p_join_code, '\s', '', 'g'));
+    v_code := upper(btrim(p_join_code));
     IF EXISTS (SELECT 1 FROM bg_tribes WHERE join_code = v_code AND id <> p_tribe_id) THEN
-      RAISE EXCEPTION 'Join code % is already used by another tribe', v_code;
+      RAISE EXCEPTION 'That join code is already used by another tribe: %.', v_code;
     END IF;
   END IF;
 
-  -- NULL means "leave unchanged". The tribe id is never updatable: the printed
-  -- moderator cards name tribes by id, so an id that moved would send the wrong
-  -- tribe to the wrong card.
+  -- NULL means "leave unchanged" for every parameter here. The tribe id is
+  -- never updatable: the printed moderator cards name tribes by id, so an id
+  -- that moved would send the wrong tribe to the wrong card.
   UPDATE bg_tribes SET
-    display_name = COALESCE(NULLIF(btrim(p_display_name), ''), display_name),
-    parent_team  = COALESCE(NULLIF(btrim(p_parent_team), ''), parent_team),
+    display_name = COALESCE(p_display_name, display_name),
+    parent_team  = COALESCE(p_parent_team, parent_team),
     join_code    = COALESCE(v_code, join_code)
   WHERE id = p_tribe_id;
 
@@ -659,8 +637,11 @@ BEGIN
   PERFORM public.bg_require_admin();
 
   -- The name and index are fixed; only the organizer-supplied fields move.
-  -- Passing an empty string for location is meaningful — it is how an organizer
-  -- re-opens the readiness check on a station they are no longer sure about.
+  -- There is deliberately no p_active parameter: the rotation requires all
+  -- twelve stations live for every round, and deactivating one mid-game would
+  -- put two tribes at the same station. Passing an empty string for location
+  -- is meaningful, though — it is how an organizer re-opens the readiness
+  -- check on a station they are no longer sure about.
   UPDATE bg_stations SET
     location          = COALESCE(p_location, location),
     short_description = COALESCE(p_short_description, short_description),
@@ -763,7 +744,7 @@ BEGIN
       VALUES (
         v_station.id,
         v_round,
-        v_station.theme_word
+        upper(v_station.theme_word)
           || substr(v_digits, (v_pair / 8) + 1, 1)
           || substr(v_digits, (v_pair % 8) + 1, 1)
       );
@@ -810,8 +791,10 @@ SECURITY DEFINER
 SET search_path = public, auth
 AS $$
 DECLARE
-  v_status text;
-  v_code   text;
+  v_status           text;
+  v_code             text;
+  v_conflict_station text;
+  v_conflict_round   int;
 BEGIN
   PERFORM public.bg_require_admin();
 
@@ -820,16 +803,18 @@ BEGIN
     RAISE EXCEPTION 'Codes cannot be edited once the game is %', v_status;
   END IF;
 
-  v_code := upper(btrim(regexp_replace(COALESCE(p_code, ''), '\s+', ' ', 'g')));
-  IF v_code = '' THEN
+  v_code := upper(btrim(p_code));
+  IF v_code IS NULL OR v_code = '' THEN
     RAISE EXCEPTION 'A code cannot be blank';
   END IF;
 
-  IF EXISTS (
-    SELECT 1 FROM bg_station_codes
-    WHERE code = v_code AND NOT (station_id = p_station_id AND round = p_round)
-  ) THEN
-    RAISE EXCEPTION 'The code % is already used at another station or round', v_code;
+  SELECT s.name, c.round INTO v_conflict_station, v_conflict_round
+  FROM bg_station_codes c
+  JOIN bg_stations s ON s.id = c.station_id
+  WHERE c.code = v_code AND NOT (c.station_id = p_station_id AND c.round = p_round);
+
+  IF v_conflict_station IS NOT NULL THEN
+    RAISE EXCEPTION 'That code is already used at % (round %).', v_conflict_station, v_conflict_round;
   END IF;
 
   INSERT INTO bg_station_codes (station_id, round, code)
@@ -900,7 +885,7 @@ $$;
 -- 9. Audit, export, self test
 -- ---------------------------------------------------------------------------
 
-CREATE OR REPLACE FUNCTION public.bg_admin_audit(p_limit int)
+CREATE OR REPLACE FUNCTION public.bg_admin_audit(p_limit int DEFAULT 100)
 RETURNS jsonb
 LANGUAGE plpgsql
 STABLE
@@ -918,7 +903,7 @@ BEGIN
          ) ORDER BY a.created_at DESC), '[]'::jsonb)
   INTO v_rows
   FROM (
-    SELECT * FROM bg_audit ORDER BY created_at DESC LIMIT COALESCE(p_limit, 100)
+    SELECT * FROM bg_audit ORDER BY created_at DESC LIMIT GREATEST(COALESCE(p_limit, 100), 0)
   ) AS a;
 
   RETURN v_rows;
@@ -975,6 +960,8 @@ DECLARE
   v_bad   text := NULL;
   v_count int;
   v_uniq  int;
+  v_wrap1 int;
+  v_wrap2 int;
 BEGIN
   PERFORM public.bg_require_admin();
 
@@ -1007,20 +994,20 @@ BEGIN
     FOR v_r IN 1..6 LOOP
       IF public.bg_tribe_index(public.bg_station_index(v_t, v_r), v_r) <> v_t THEN
         v_ok := false;
-        v_bad := format('failed at T%s R%s', v_t, v_r);
+        v_bad := COALESCE(v_bad || ', ', '') || format('T%s/R%s', v_t, v_r);
       END IF;
     END LOOP;
   END LOOP;
   v_out := v_out || jsonb_build_object(
     'name', 'Route inverse is exact for all 72 pairs', 'passed', v_ok, 'detail', v_bad);
 
-  v_ok := public.bg_station_index(12, 2) = 1
-      AND public.bg_station_index(8, 6) = 1
-      AND public.bg_tribe_index(1, 6) = 8
-      AND public.bg_tribe_index(1, 2) = 12;
+  v_wrap1 := public.bg_station_index(12, 2);
+  v_wrap2 := public.bg_station_index(8, 6);
+  v_ok := (v_wrap1 = 1 AND v_wrap2 = 1);
   v_out := v_out || jsonb_build_object(
-    'name', 'Wrap boundaries (T12 R2, T8 R6)', 'passed', v_ok,
-    'detail', CASE WHEN v_ok THEN NULL ELSE 'negative modulo is misbehaving' END);
+    'name', 'Wrap boundaries: T12/R2 and T8/R6 both land on S1', 'passed', v_ok,
+    'detail', CASE WHEN v_ok THEN NULL
+              ELSE format('Got S%s for T12/R2, S%s for T8/R6 (expected S1 for both)', v_wrap1, v_wrap2) END);
 
   SELECT count(*), count(DISTINCT code) INTO v_count, v_uniq FROM bg_station_codes;
   v_out := v_out || jsonb_build_object(
@@ -1055,7 +1042,6 @@ $$;
 -- The grant is not the authorization. bg_require_admin() inside each function
 -- is; this merely keeps anonymous callers from reaching the check at all.
 
-REVOKE ALL ON FUNCTION public.bg_guard_station_active() FROM PUBLIC;
 REVOKE ALL ON FUNCTION public.bg_checklist() FROM PUBLIC;
 REVOKE ALL ON FUNCTION public.bg_admin_force_result(text, text) FROM PUBLIC;
 REVOKE ALL ON FUNCTION public.bg_admin_setup_state() FROM PUBLIC;

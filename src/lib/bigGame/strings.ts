@@ -57,6 +57,18 @@ export interface BigGameStrings {
   offline: string;
   leaveTribe: string;
   missedNotice: string;
+
+  stoneCardReminder: string;
+  hintsRemaining: string;
+  hintsNone: string;
+
+  finaleTitle: string;
+  finaleBody: string;
+  finaleYourTeam: string;
+  finaleFindOthers: string;
+  finaleStartsIn: string;
+  finaleGo: string;
+  finaleWaiting: string;
 }
 
 const en: BigGameStrings = {
@@ -107,6 +119,19 @@ const en: BigGameStrings = {
   offline: 'No connection',
   leaveTribe: 'Leave tribe',
   missedNotice: 'This round was marked missed. Keep going with your tribe.',
+
+  stoneCardReminder:
+    'Collect your Stone Card from the moderator before you leave.',
+  hintsRemaining: 'Hint cards left',
+  hintsNone: 'No hint cards left',
+
+  finaleTitle: 'THE JORDAN',
+  finaleBody: 'All twelve tribes converge. Bring every Stone Card you hold.',
+  finaleYourTeam: 'Your team',
+  finaleFindOthers: 'Find these two tribes and pool your Stone Cards.',
+  finaleStartsIn: 'Your team starts in',
+  finaleGo: 'GO — your team may begin',
+  finaleWaiting: 'Wait for the director to start the Finale.',
 };
 
 const ar: BigGameStrings = {
@@ -155,6 +180,18 @@ const ar: BigGameStrings = {
   offline: 'لا يوجد اتصال',
   leaveTribe: 'مغادرة السبط',
   missedNotice: 'تم تسجيل هذه الجولة كفائتة. تابعوا مع سبطكم.',
+
+  stoneCardReminder: 'خذوا بطاقة الحجر من المشرف قبل المغادرة.',
+  hintsRemaining: 'بطاقات المساعدة المتبقية',
+  hintsNone: 'لا توجد بطاقات مساعدة',
+
+  finaleTitle: 'الأردن',
+  finaleBody: 'تجتمع الأسباط الاثنا عشر. أحضروا كل بطاقات الحجر التي معكم.',
+  finaleYourTeam: 'فريقكم',
+  finaleFindOthers: 'ابحثوا عن هذين السبطين واجمعوا بطاقات الحجر معاً.',
+  finaleStartsIn: 'يبدأ فريقكم خلال',
+  finaleGo: 'انطلقوا — يمكن لفريقكم البدء',
+  finaleWaiting: 'انتظروا إشارة المدير لبدء النهائي.',
 };
 
 export function bigGameStrings(language: Language): BigGameStrings {

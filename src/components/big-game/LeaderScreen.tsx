@@ -20,6 +20,7 @@ import {
   WifiOff,
 } from 'lucide-react';
 import { useLanguage } from '../../contexts/LanguageContext';
+import FinaleLeader from './FinaleLeader';
 import { bigGameStrings, type BigGameStrings } from '../../lib/bigGame/strings';
 import {
   useBigGameLeader,
@@ -441,6 +442,9 @@ function CompletedRoundScreen({
           <p className="text-base text-[var(--color-text-muted)]">
             {strings.completeBody}
           </p>
+          <p className="mt-4 rounded-xl border border-[var(--color-primary)] bg-[var(--color-bg-muted)] px-4 py-3 text-base font-semibold text-[var(--color-text)]">
+            {strings.stoneCardReminder}
+          </p>
         </>
       )}
 
@@ -631,7 +635,9 @@ export default function LeaderScreen() {
   const { game, tribe } = state;
 
   let body: ReactNode;
-  if (game.status === 'SETUP') {
+  if (game.status === 'FINALE') {
+    body = <FinaleLeader state={state} />;
+  } else if (game.status === 'SETUP') {
     body = <WaitingScreen strings={strings} tribe={tribe} />;
   } else if (game.status === 'PAUSED') {
     body = <PausedScreen strings={strings} tribe={tribe} />;
@@ -691,6 +697,14 @@ export default function LeaderScreen() {
         </div>
       )}
       {body}
+
+      {game.status !== 'SETUP' && game.status !== 'FINISHED' && (
+        <p className="mt-6 text-center text-sm text-[var(--color-text-muted)]">
+          {state.hintsRemaining > 0
+            ? `${strings.hintsRemaining}: ${state.hintsRemaining}`
+            : strings.hintsNone}
+        </p>
+      )}
     </Shell>
   );
 }

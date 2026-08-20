@@ -22,7 +22,12 @@ import {
   stationIndexForTribe,
   stationScheduleMatrix,
   tribeIndexAtStation,
+  teamIdForTribeIndex,
+  tribeIndexesForTeam,
   tribeRouteMatrix,
+  teamStationCoverage,
+  coversAllStationsExactlyOnce,
+  TEAM_IDS,
 } from '../src/lib/bigGame/route.js';
 
 let failures = 0;
@@ -53,39 +58,39 @@ function eqRow(actual: number[], expected: number[]): boolean {
 // hard-coded: the point is to catch a route engine that is self-consistent but
 // disagrees with the printed cards.
 const EXPECTED_TRIBE_ROUTE: number[][] = [
-  [1, 2, 3, 4, 5, 6],
-  [2, 3, 4, 5, 6, 7],
-  [3, 4, 5, 6, 7, 8],
-  [4, 5, 6, 7, 8, 9],
-  [5, 6, 7, 8, 9, 10],
-  [6, 7, 8, 9, 10, 11],
-  [7, 8, 9, 10, 11, 12],
-  [8, 9, 10, 11, 12, 1],
-  [9, 10, 11, 12, 1, 2],
-  [10, 11, 12, 1, 2, 3],
-  [11, 12, 1, 2, 3, 4],
-  [12, 1, 2, 3, 4, 5],
+  [1, 2, 3, 4],
+  [2, 3, 4, 5],
+  [3, 4, 5, 6],
+  [4, 5, 6, 7],
+  [5, 6, 7, 8],
+  [6, 7, 8, 9],
+  [7, 8, 9, 10],
+  [8, 9, 10, 11],
+  [9, 10, 11, 12],
+  [10, 11, 12, 1],
+  [11, 12, 1, 2],
+  [12, 1, 2, 3],
 ];
 
 const EXPECTED_STATION_SCHEDULE: number[][] = [
-  [1, 12, 11, 10, 9, 8],
-  [2, 1, 12, 11, 10, 9],
-  [3, 2, 1, 12, 11, 10],
-  [4, 3, 2, 1, 12, 11],
-  [5, 4, 3, 2, 1, 12],
-  [6, 5, 4, 3, 2, 1],
-  [7, 6, 5, 4, 3, 2],
-  [8, 7, 6, 5, 4, 3],
-  [9, 8, 7, 6, 5, 4],
-  [10, 9, 8, 7, 6, 5],
-  [11, 10, 9, 8, 7, 6],
-  [12, 11, 10, 9, 8, 7],
+  [1, 12, 11, 10],
+  [2, 1, 12, 11],
+  [3, 2, 1, 12],
+  [4, 3, 2, 1],
+  [5, 4, 3, 2],
+  [6, 5, 4, 3],
+  [7, 6, 5, 4],
+  [8, 7, 6, 5],
+  [9, 8, 7, 6],
+  [10, 9, 8, 7],
+  [11, 10, 9, 8],
+  [12, 11, 10, 9],
 ];
 
 console.log('The Wilderness: Big Game — route verification');
 
 section('Shape');
-check('exactly 6 rounds', ROUND_COUNT === 6, `got ${ROUND_COUNT}`);
+check('exactly 4 rounds', ROUND_COUNT === 4, `got ${ROUND_COUNT}`);
 check('exactly 12 tribes', TRIBE_COUNT === 12, `got ${TRIBE_COUNT}`);
 check('exactly 12 stations', STATION_COUNT === 12, `got ${STATION_COUNT}`);
 check(
@@ -109,12 +114,13 @@ check(
 // Theme words are deliberately absent from the client blueprint — see the note
 // in route.ts. Their spelling and distinctness are asserted by bg_selftest().
 check(
-  'tribes map 3-per-parent-team in order',
+  'tribes map to parent teams four apart, not consecutively',
   TRIBE_BLUEPRINT.every(
-    (t, i) =>
-      t.parentTeam ===
-      ['Team A', 'Team B', 'Team C', 'Team D'][Math.floor(i / 3)]
-  )
+    t => t.parentTeam === `Team ${teamIdForTribeIndex(t.index)}`
+  ) &&
+    TRIBE_BLUEPRINT[0].parentTeam === TRIBE_BLUEPRINT[4].parentTeam &&
+    TRIBE_BLUEPRINT[0].parentTeam !== TRIBE_BLUEPRINT[1].parentTeam,
+  TRIBE_BLUEPRINT.map(t => `${t.id}=${t.parentTeam}`).join(' ')
 );
 
 section('Negative-safe modulo');
@@ -140,7 +146,7 @@ section('No tribe visits the same station twice');
 for (const tribe of TRIBE_BLUEPRINT) {
   const stations = ROUNDS.map(r => stationIndexForTribe(tribe.index, r));
   check(
-    `${tribe.id}: 6 distinct stations`,
+    `${tribe.id}: ${ROUND_COUNT} distinct stations`,
     new Set(stations).size === ROUND_COUNT,
     stations.join(',')
   );
@@ -166,7 +172,7 @@ STATION_BLUEPRINT.forEach((station, i) => {
   );
 });
 
-section('Inverse is exact for all 72 pairs');
+section('Inverse is exact for every tribe/round pair');
 let inverseBroken: string | null = null;
 for (const tribe of TRIBE_BLUEPRINT) {
   for (const round of ROUNDS) {
@@ -190,14 +196,14 @@ check(
   `got S${stationIndexForTribe(12, 2)}`
 );
 check(
-  'T8 R6 is at S1',
-  stationIndexForTribe(8, 6) === 1,
-  `got S${stationIndexForTribe(8, 6)}`
+  'T10 R4 is at S1',
+  stationIndexForTribe(10, 4) === 1,
+  `got S${stationIndexForTribe(10, 4)}`
 );
 check(
-  'S1 R6 hosts T8 (inverse across the wrap)',
-  tribeIndexAtStation(1, 6) === 8,
-  `got T${tribeIndexAtStation(1, 6)}`
+  'S1 R4 hosts T10 (inverse across the wrap)',
+  tribeIndexAtStation(1, 4) === 10,
+  `got T${tribeIndexAtStation(1, 4)}`
 );
 check(
   'S1 R2 hosts T12 (inverse across the wrap)',
@@ -219,4 +225,26 @@ if (failures > 0) {
   console.error('\nROUTE VERIFICATION FAILED. Do not run the event.');
   process.exit(1);
 }
+section('Team grouping covers all twelve stations');
+for (const teamId of TEAM_IDS) {
+  const tribeIndexes = tribeIndexesForTeam(teamId);
+  const coverage = teamStationCoverage(tribeIndexes);
+  check(
+    `Team ${teamId} (T${tribeIndexes.join(', T')}) covers all 12 stations exactly once`,
+    coversAllStationsExactlyOnce(tribeIndexes),
+    `${coverage.length} slots, ${new Set(coverage).size} distinct`
+  );
+}
+check(
+  'three tribes per team, twelve tribes assigned in total',
+  TEAM_IDS.every(id => tribeIndexesForTeam(id).length === 3) &&
+    new Set(TEAM_IDS.flatMap(id => tribeIndexesForTeam(id))).size === TRIBE_COUNT
+);
+// The failure this guards against: group consecutively and a team lands on six
+// stations, three of them twice, so its Stone Cards cannot spell the phrase.
+check(
+  'consecutive grouping would NOT cover all twelve (guard is meaningful)',
+  !coversAllStationsExactlyOnce([1, 2, 3])
+);
+
 console.log('Route engine verified.\n');

@@ -13,6 +13,7 @@ import { useCallback, useEffect, useState } from 'react';
 import { AlertTriangle, Loader2, Printer } from 'lucide-react';
 import { moderatorCards } from '../../lib/bigGame/api';
 import type { ModeratorCard } from '../../lib/bigGame/types';
+import { ROUND_COUNT } from '../../lib/bigGame/route';
 import { useToast } from '../Toast';
 import './print.css';
 
@@ -53,7 +54,7 @@ export default function ModeratorCards() {
   }
 
   const missingCodes = (cards ?? []).some(card =>
-    card.rounds.some(round => !round.code)
+    card.rounds.filter(r => r.round <= ROUND_COUNT).some(round => !round.code)
   );
   const missingLocations = (cards ?? []).filter(card => !card.location.trim());
 
@@ -147,34 +148,36 @@ export default function ModeratorCards() {
                 </tr>
               </thead>
               <tbody>
-                {card.rounds.map(round => (
-                  <tr
-                    key={round.round}
-                    className="bg-print-row border-b border-black/40"
-                  >
-                    <td className="whitespace-nowrap py-3 pr-3 text-2xl font-black">
-                      ROUND {round.round}
-                    </td>
-                    <td className="py-3 pr-3 text-lg font-semibold">
-                      {round.tribeDisplayName ?? '—'}
-                      {round.tribeId &&
-                        round.tribeDisplayName !== round.tribeId && (
-                          <span className="font-normal">
-                            {' '}
-                            ({round.tribeId})
+                {card.rounds
+                  .filter(r => r.round <= ROUND_COUNT)
+                  .map(round => (
+                    <tr
+                      key={round.round}
+                      className="bg-print-row border-b border-black/40"
+                    >
+                      <td className="whitespace-nowrap py-3 pr-3 text-2xl font-black">
+                        ROUND {round.round}
+                      </td>
+                      <td className="py-3 pr-3 text-lg font-semibold">
+                        {round.tribeDisplayName ?? '—'}
+                        {round.tribeId &&
+                          round.tribeDisplayName !== round.tribeId && (
+                            <span className="font-normal">
+                              {' '}
+                              ({round.tribeId})
+                            </span>
+                          )}
+                        {round.tribeParentTeam && (
+                          <span className="block text-sm font-normal">
+                            {round.tribeParentTeam}
                           </span>
                         )}
-                      {round.tribeParentTeam && (
-                        <span className="block text-sm font-normal">
-                          {round.tribeParentTeam}
-                        </span>
-                      )}
-                    </td>
-                    <td className="bg-print-code py-3 text-3xl">
-                      {round.code ?? '— not generated —'}
-                    </td>
-                  </tr>
-                ))}
+                      </td>
+                      <td className="bg-print-code py-3 text-3xl">
+                        {round.code ?? '— not generated —'}
+                      </td>
+                    </tr>
+                  ))}
               </tbody>
             </table>
 

@@ -32,6 +32,7 @@ import {
 import { PARENT_TEAMS, ROUNDS, ROUND_COUNT } from '../../lib/bigGame/route';
 import type { SetupState, StationCode } from '../../lib/bigGame/types';
 import { useToast } from '../Toast';
+import TeamSetup from './TeamSetup';
 
 interface SetupScreenProps {
   onViewRoutes?: () => void;
@@ -484,6 +485,11 @@ export default function SetupScreen({ onViewRoutes }: SetupScreenProps) {
             );
           })}
         </div>
+      </section>
+
+      {/* Teams — the coverage validator here is what blocks Start. */}
+      <section className={cardClass}>
+        <TeamSetup />
       </section>
 
       {/* Station codes — hidden by default. */}

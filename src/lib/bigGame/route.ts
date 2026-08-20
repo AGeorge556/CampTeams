@@ -11,7 +11,7 @@
 // This module is pure and dependency-free on purpose: `npm run verify:big-game`
 // compiles and executes it directly to prove the invariants before the event.
 
-export const ROUND_COUNT = 6;
+export const ROUND_COUNT = 4;
 export const TRIBE_COUNT = 12;
 export const STATION_COUNT = 12;
 
@@ -138,15 +138,71 @@ export const STATION_BLUEPRINT: readonly StationBlueprint[] = [
 
 export const PARENT_TEAMS = ['Team A', 'Team B', 'Team C', 'Team D'] as const;
 
+export const TEAM_COUNT = 4;
+
+export const TEAM_IDS = ['A', 'B', 'C', 'D'] as const;
+export type TeamId = (typeof TEAM_IDS)[number];
+
+/**
+ * Teams group their three tribes FOUR APART, not consecutively.
+ *
+ * This is not cosmetic and must never be "tidied" into 1-2-3 / 4-5-6. The route
+ * is a rotation, so consecutive tribes walk almost the same path one step
+ * apart. Group T1,T2,T3 together over four rounds and the team covers S1..S6
+ * only -- six of the twelve stations -- revisiting S3 and S4 three times each.
+ * The Stone Card fragments are keyed to stations, so a team that never reaches
+ * half the stations cannot assemble its phrase and its vault is unopenable.
+ *
+ * Starting teammates a third of the way around the circle fixes it exactly:
+ * T1,T5,T9 walk S1-S4, S5-S8 and S9-S12 -- all twelve stations, zero overlap.
+ */
+export function teamIdForTribeIndex(tribeIndex: number): TeamId {
+  return TEAM_IDS[(tribeIndex - 1) % TEAM_COUNT];
+}
+
 export const TRIBE_BLUEPRINT: readonly TribeBlueprint[] = Array.from(
   { length: TRIBE_COUNT },
   (_, i) => ({
     id: `T${i + 1}`,
     index: i + 1,
-    // T1-T3 -> Team A, T4-T6 -> Team B, T7-T9 -> Team C, T10-T12 -> Team D
-    parentTeam: PARENT_TEAMS[Math.floor(i / 3)],
+    // Four apart: T1,T5,T9 -> Team A; T2,T6,T10 -> Team B; and so on.
+    parentTeam: PARENT_TEAMS[i % TEAM_COUNT],
   })
 );
+
+export function tribeIndexesForTeam(teamId: TeamId): number[] {
+  return TRIBE_BLUEPRINT.filter(
+    t => teamIdForTribeIndex(t.index) === teamId
+  ).map(t => t.index);
+}
+
+/**
+ * Every station index this team's tribes visit across rounds 1..roundCount.
+ * Duplicates are kept so a caller can tell "covered twelve" apart from
+ * "covered six, twice each".
+ */
+export function teamStationCoverage(
+  tribeIndexes: number[],
+  roundCount: number = ROUND_COUNT
+): number[] {
+  const stations: number[] = [];
+  for (const tribeIndex of tribeIndexes) {
+    for (let round = 1; round <= roundCount; round += 1) {
+      stations.push(stationIndexForTribe(tribeIndex, round));
+    }
+  }
+  return stations;
+}
+
+/** True when these tribes cover all twelve stations exactly once. */
+export function coversAllStationsExactlyOnce(
+  tribeIndexes: number[],
+  roundCount: number = ROUND_COUNT
+): boolean {
+  const stations = teamStationCoverage(tribeIndexes, roundCount);
+  if (stations.length !== STATION_COUNT) return false;
+  return new Set(stations).size === STATION_COUNT;
+}
 
 export function stationByIndex(index: number): StationBlueprint | undefined {
   return STATION_BLUEPRINT.find(s => s.index === index);
